@@ -1,7 +1,6 @@
 <?php
 namespace DrdPlus\Tests\ProfessionLevels;
 
-use Doctrineum\Scalar\EnumInterface;
 use DrdPlus\ProfessionLevels\LevelRank;
 use DrdPlus\Tools\Tests\TestWithMockery;
 
@@ -24,17 +23,6 @@ class LevelRankTest extends TestWithMockery
     {
         $instance = LevelRank::getEnum($value = 12345);
         $this->assertInstanceOf(LevelRank::class, $instance);
-        $this->assertSame($value, $instance->getValue());
-        $this->assertInstanceOf(EnumInterface::class, $instance);
-
-        $sameInstance = LevelRank::getIt($value);
-        $this->assertSame($instance, $sameInstance);
-
-        $differentInstance = LevelRank::getIt($value + 1);
-        $this->assertInstanceOf(LevelRank::class, $instance);
-        $this->assertNotSame($instance, $differentInstance);
-
-        return $instance;
     }
 
     /**
@@ -43,8 +31,16 @@ class LevelRankTest extends TestWithMockery
     public function I_can_get_its_value()
     {
         $levelRank = LevelRank::getEnum($value = 12345);
-        $this->assertSame($value, $levelRank->getEnumValue());
         $this->assertSame($value, $levelRank->getValue());
         $this->assertSame("$value", "$levelRank");
+    }
+
+    /**
+     * @test
+     */
+    public function I_can_easily_find_out_if_is_first_level()
+    {
+        $levelRank = LevelRank::getEnum(1);
+        $this->assertTrue($levelRank->isFirstLevel());
     }
 }

@@ -1,5 +1,6 @@
 <?php
 namespace DrdPlus\ProfessionLevels;
+
 use Doctrineum\Integer\IntegerEnum;
 
 /**
@@ -17,5 +18,13 @@ class LevelRank extends IntegerEnum
     public static function getIt($value)
     {
         return static::getEnum($value);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFirstLevel()
+    {
+        return $this->getValue() === 1;
     }
 }
