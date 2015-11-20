@@ -50,6 +50,8 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
         $levelRank = \Mockery::mock(LevelRank::class);
         $levelRank->shouldReceive('getValue')
             ->andReturn(1);
+        $levelRank->shouldReceive('isFirstLevel')
+            ->andReturn(true);
 
         return $levelRank;
     }
