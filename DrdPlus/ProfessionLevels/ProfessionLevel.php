@@ -4,7 +4,6 @@ namespace DrdPlus\ProfessionLevels;
 use Doctrine\ORM\Mapping as ORM;
 use DrdPlus\Properties\Base\Agility;
 use DrdPlus\Properties\Base\BaseProperty;
-use DrdPlus\Properties\Body\WeightInKg;
 use DrdPlus\Properties\Base\Charisma;
 use DrdPlus\Properties\Base\Intelligence;
 use DrdPlus\Properties\Base\Knack;
@@ -95,12 +94,23 @@ abstract class ProfessionLevel extends StrictObject
      */
     private $charismaIncrement;
 
-    /**
-     * @var WeightInKg
-     *
-     * @ORM\Column(type="weight_in_kg")
-     */
-    private $weightInKgIncrement;
+    public static function createFirstLevel(
+        AbstractProfession $profession,
+        \DateTimeImmutable $levelUpAt = null
+    )
+    {
+        return new static(
+            $profession,
+            new LevelRank(1),
+            Strength::getIt(static::getBasePropertyFirstLevelModifier(Strength::STRENGTH, $profession)),
+            Agility::getIt(static::getBasePropertyFirstLevelModifier(Agility::AGILITY, $profession)),
+            Knack::getIt(static::getBasePropertyFirstLevelModifier(Knack::KNACK, $profession)),
+            Will::getIt(static::getBasePropertyFirstLevelModifier(Will::WILL, $profession)),
+            Intelligence::getIt(static::getBasePropertyFirstLevelModifier(Intelligence::INTELLIGENCE, $profession)),
+            Charisma::getIt(static::getBasePropertyFirstLevelModifier(Charisma::CHARISMA, $profession)),
+            $levelUpAt
+        );
+    }
 
     protected function __construct(
         AbstractProfession $profession,
@@ -111,7 +121,6 @@ abstract class ProfessionLevel extends StrictObject
         Will $willIncrement,
         Intelligence $intelligenceIncrement,
         Charisma $charismaIncrement,
-        WeightInKg $weightInKgIncrement,
         \DateTimeImmutable $levelUpAt = null
     )
     {
@@ -130,15 +139,13 @@ abstract class ProfessionLevel extends StrictObject
         $this->intelligenceIncrement = $intelligenceIncrement;
         $this->checkPropertyIncrement($charismaIncrement, $levelRank);
         $this->charismaIncrement = $charismaIncrement;
-        $this->checkWeightIncrement($weightInKgIncrement, $levelRank);
-        $this->weightInKgIncrement = $weightInKgIncrement;
         $this->levelUpAt = $levelUpAt ?: new \DateTimeImmutable();
     }
 
     private function checkLevelRank(LevelRank $levelRank)
     {
         if ($levelRank->getValue() > self::MAXIMUM_LEVEL) {
-            throw new \LogicException(
+            throw new Exceptions\MaximumLevelExceeded(
                 "Level can not be greater than " . self::MAXIMUM_LEVEL . ", got {$levelRank->getValue()}"
             );
         }
@@ -147,7 +154,7 @@ abstract class ProfessionLevel extends StrictObject
 
     private function checkPropertyIncrement(BaseProperty $property, LevelRank $levelRank)
     {
-        if ($levelRank->getValue() === 1) {
+        if ($levelRank->isFirstLevel()) {
             $this->checkPropertyFirstLevelIncrement($property);
         } else {
             $this->checkNextLevelPropertyIncrement($property);
@@ -155,7 +162,7 @@ abstract class ProfessionLevel extends StrictObject
     }
 
     /**
-     * Its only the increment based on first level of specific profession.
+     * It is only the increment based on first level of specific profession.
      * There are other increments like race, size etc., solved in
      * @see \DrdPlus\Cave\UnitBundle\Person\Attributes\Properties\FirstLevelProperties
      *
@@ -163,9 +170,13 @@ abstract class ProfessionLevel extends StrictObject
      */
     private function checkPropertyFirstLevelIncrement(BaseProperty $property)
     {
-        if ($property->getValue() !== $this->getPropertyFirstLevelModifier($property->getCode())) {
+        $propertyFirstLevelModifier = static::getBasePropertyFirstLevelModifier(
+            $property->getCode(),
+            $this->getProfession()
+        );
+        if ($property->getValue() !== $propertyFirstLevelModifier) {
             throw new \LogicException(
-                "On first level has to be the property {$property->getCode()} of value {$this->getPropertyFirstLevelModifier($property->getCode())}"
+                "On first level has to be the property {$property->getCode()} of value {$propertyFirstLevelModifier}"
             );
         }
     }
@@ -179,15 +190,6 @@ abstract class ProfessionLevel extends StrictObject
                 'Next level property change has to be between '
                 . self::MIN_NEXT_LEVEL_PROPERTY_MODIFIER . ' and '
                 . self::MAX_NEXT_LEVEL_PROPERTY_MODIFIER . ", got {$property->getValue()}"
-            );
-        }
-    }
-
-    private function checkWeightIncrement(WeightInKg $weightInKg, LevelRank $levelRank)
-    {
-        if ($levelRank->getValue() > 1 && $weightInKg->getValue() !== 0) {
-            throw new \LogicException(
-                "Only first level can change weight. Given {$weightInKg->getValue()} kg weight change on level {$levelRank->getValue()}"
             );
         }
     }
@@ -220,12 +222,13 @@ abstract class ProfessionLevel extends StrictObject
 
     /**
      * @param string $propertyCode
+     * @param AbstractProfession $profession
      *
      * @return int
      */
-    private function getPropertyFirstLevelModifier($propertyCode)
+    private static function getBasePropertyFirstLevelModifier($propertyCode, AbstractProfession $profession)
     {
-        return $this->isPrimaryProperty($propertyCode)
+        return static::isProfessionPrimaryProperty($profession, $propertyCode)
             ? self::PROPERTY_FIRST_LEVEL_MODIFIER
             : 0;
     }
@@ -248,12 +251,15 @@ abstract class ProfessionLevel extends StrictObject
      */
     public function isPrimaryProperty($propertyCode)
     {
-        return $this->getProfession()->isPrimaryProperty($propertyCode);
+        return static::isProfessionPrimaryProperty($this->getProfession(), $propertyCode);
+    }
+
+    private static function isProfessionPrimaryProperty(AbstractProfession $profession, $propertyCode)
+    {
+        return $profession->isPrimaryProperty($propertyCode);
     }
 
     /**
-     * Get strength increment
-     *
      * @return Strength
      */
     public function getStrengthIncrement()
@@ -262,8 +268,6 @@ abstract class ProfessionLevel extends StrictObject
     }
 
     /**
-     * Get agility increment
-     *
      * @return Agility
      */
     public function getAgilityIncrement()
@@ -272,28 +276,6 @@ abstract class ProfessionLevel extends StrictObject
     }
 
     /**
-     * Get charisma increment
-     *
-     * @return Charisma
-     */
-    public function getCharismaIncrement()
-    {
-        return $this->charismaIncrement;
-    }
-
-    /**
-     * Get intelligence increment
-     *
-     * @return Intelligence
-     */
-    public function getIntelligenceIncrement()
-    {
-        return $this->intelligenceIncrement;
-    }
-
-    /**
-     * Get knack increment
-     *
      * @return Knack
      */
     public function getKnackIncrement()
@@ -302,8 +284,6 @@ abstract class ProfessionLevel extends StrictObject
     }
 
     /**
-     * Get will increment
-     *
      * @return Will
      */
     public function getWillIncrement()
@@ -312,13 +292,19 @@ abstract class ProfessionLevel extends StrictObject
     }
 
     /**
-     * Get will increment
-     *
-     * @return WeightInKg
+     * @return Intelligence
      */
-    public function getWeightInKgIncrement()
+    public function getIntelligenceIncrement()
     {
-        return $this->weightInKgIncrement;
+        return $this->intelligenceIncrement;
+    }
+
+    /**
+     * @return Charisma
+     */
+    public function getCharismaIncrement()
+    {
+        return $this->charismaIncrement;
     }
 
     /**

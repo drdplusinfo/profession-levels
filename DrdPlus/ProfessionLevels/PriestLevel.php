@@ -3,7 +3,6 @@ namespace DrdPlus\ProfessionLevels;
 
 use Doctrine\ORM\Mapping as ORM;
 use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Body\WeightInKg;
 use DrdPlus\Properties\Base\Charisma;
 use DrdPlus\Properties\Base\Intelligence;
 use DrdPlus\Properties\Base\Knack;
@@ -36,7 +35,6 @@ class PriestLevel extends ProfessionLevel
         Will $willIncrement,
         Intelligence $intelligenceIncrement,
         Charisma $charismaIncrement,
-        WeightInKg $weightInKgIncrement,
         \DateTimeImmutable $levelUpAt = null
     )
     {
@@ -49,7 +47,6 @@ class PriestLevel extends ProfessionLevel
             $willIncrement,
             $intelligenceIncrement,
             $charismaIncrement,
-            $weightInKgIncrement,
             $levelUpAt
         );
     }

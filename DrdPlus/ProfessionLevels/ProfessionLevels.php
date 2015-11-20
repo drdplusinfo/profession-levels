@@ -16,6 +16,7 @@ use \DrdPlus\Professions\Ranger;
 use \DrdPlus\Professions\Theurgist;
 use \DrdPlus\Professions\Thief;
 use \DrdPlus\Professions\Wizard;
+use Granam\Scalar\Tools\ValueDescriber;
 use Granam\Strict\Object\StrictObject;
 
 /**
@@ -450,29 +451,32 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
         return $this->getPropertyModifierForFirstProfession(Strength::STRENGTH);
     }
 
+    /**
+     * @param $propertyName
+     * @return int
+     */
     private function getPropertyModifierForFirstProfession($propertyName)
     {
         if (!$this->hasFirstLevel()) {
             return 0;
         }
-        $getPropertyIncrement = $this->composePropertyIncrementGetter($propertyName);
 
-        return $this->getFirstLevel()->$getPropertyIncrement()->getValue();
-    }
-
-    private function composePropertyIncrementGetter($propertyName)
-    {
-        $propertyName = implode(
-            array_map(
-                function ($part) {
-                    return ucfirst($part);
-                },
-                explode('_', $propertyName)
-            )
-        );
-
-        // like "weight_in_kg" = getWeightInKg
-        return "get{$propertyName}Increment";
+        switch ($propertyName) {
+            case Strength::STRENGTH :
+                return $this->getFirstLevel()->getStrengthIncrement()->getValue();
+            case Agility::AGILITY :
+                return $this->getFirstLevel()->getAgilityIncrement()->getValue();
+            case Knack::KNACK :
+                return $this->getFirstLevel()->getKnackIncrement()->getValue();
+            case Will::WILL :
+                return $this->getFirstLevel()->getWillIncrement()->getValue();
+            case Intelligence::INTELLIGENCE :
+                return $this->getFirstLevel()->getIntelligenceIncrement()->getValue();
+            case Charisma::CHARISMA :
+                return $this->getFirstLevel()->getCharismaIncrement()->getValue();
+            default :
+                throw new \LogicException('Unknown property ' . ValueDescriber::describe($propertyName));
+        }
     }
 
     /**
@@ -534,18 +538,6 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     }
 
     /**
-     * Get weight modifier in kg
-     *
-     * @return int
-     */
-    public function getWeightKgModifierForFirstLevel()
-    {
-        return $this->hasFirstLevel()
-            ? $this->getFirstLevel()->getWeightInKgIncrement()->getValue()
-            : 0;
-    }
-
-    /**
      * Get strength modifier
      *
      * @return int
@@ -572,7 +564,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      */
     private function sumNextLevelsProperty($propertyName)
     {
-        return (int)array_sum($this->getNextLevelsPropertyModifiers($propertyName));
+        return array_sum($this->getNextLevelsPropertyModifiers($propertyName));
     }
 
     /**

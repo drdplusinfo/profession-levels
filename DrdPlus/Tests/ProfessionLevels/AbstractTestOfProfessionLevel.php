@@ -2,7 +2,6 @@
 namespace DrdPlus\Tests\ProfessionLevels;
 
 use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Body\WeightInKg;
 use DrdPlus\Properties\Base\Charisma;
 use DrdPlus\Properties\Base\Intelligence;
 use DrdPlus\Properties\Base\Knack;
@@ -11,6 +10,7 @@ use DrdPlus\Properties\Base\Will;
 use DrdPlus\ProfessionLevels\LevelRank;
 use DrdPlus\ProfessionLevels\ProfessionLevel;
 use \DrdPlus\Professions\AbstractProfession;
+use DrdPlus\Properties\PropertyInterface;
 use DrdPlus\Tools\Tests\TestWithMockery;
 use Mockery\MockInterface;
 
@@ -22,48 +22,55 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
      *
      * @test
      */
-    public function I_can_create_it()
+    public function I_can_create_first_level()
+    {
+        $professionLevelClass = $this->getProfessionLevelClass();
+        $instance = new $professionLevelClass(
+            $this->createProfession(),
+            $this->createFirstLevelRank(),
+            $this->createFirstLevelStrength(),
+            $this->createFirstLevelAgility(),
+            $this->createFirstLevelKnack(),
+            $this->createFirstLevelWill(),
+            $this->createFirstLevelIntelligence(),
+            $this->createFirstLevelCharisma()
+        );
+        $this->assertInstanceOf($this->getProfessionLevelClass(), $instance);
+        /** @var ProfessionLevel $instance */
+        $this->assertNull($instance->getId());
+        $this->assertSame($this->getProfessionCode(), $instance->getProfession()->getCode());
+
+        return $instance;
+    }
+
+    /** @return LevelRank */
+    private function createFirstLevelRank()
     {
         /** @var LevelRank|\Mockery\MockInterface $levelRank */
         $levelRank = \Mockery::mock(LevelRank::class);
         $levelRank->shouldReceive('getValue')
             ->andReturn(1);
-        /** @var Strength|\Mockery\MockInterface $strengthIncrement */
-        $strengthIncrement = \Mockery::mock(Strength::class);
-        $this->addPropertyFirstLevelExpectation($strengthIncrement, Strength::STRENGTH);
-        /** @var Agility|\Mockery\MockInterface $agilityIncrement */
-        $agilityIncrement = \Mockery::mock(Agility::class);
-        $this->addPropertyFirstLevelExpectation($agilityIncrement, Agility::AGILITY);
-        /** @var Knack|\Mockery\MockInterface $knackIncrement */
-        $knackIncrement = \Mockery::mock(Knack::class);
-        $this->addPropertyFirstLevelExpectation($knackIncrement, Knack::KNACK);
-        /** @var Will|\Mockery\MockInterface $willIncrement */
-        $willIncrement = \Mockery::mock(Will::class);
-        $this->addPropertyFirstLevelExpectation($willIncrement, Will::WILL);
-        /** @var Intelligence|\Mockery\MockInterface $intelligenceIncrement */
-        $intelligenceIncrement = \Mockery::mock(Intelligence::class);
-        $this->addPropertyFirstLevelExpectation($intelligenceIncrement, Intelligence::INTELLIGENCE);
-        /** @var Charisma|\Mockery\MockInterface $charismaIncrement */
-        $charismaIncrement = \Mockery::mock(Charisma::class);
-        $this->addPropertyFirstLevelExpectation($charismaIncrement, Charisma::CHARISMA);
-        /** @var WeightInKg|\Mockery\MockInterface $weightInKg */
-        $weightInKg = \Mockery::mock(WeightInKg::class);
-        /** @var ProfessionLevel|string $professionLevelClass */
-        $professionLevelClass = $this->getProfessionLevelClass();
-        $instance = new $professionLevelClass(
-            $this->createProfession(),
-            $levelRank,
-            $strengthIncrement,
-            $agilityIncrement,
-            $knackIncrement,
-            $willIncrement,
-            $intelligenceIncrement,
-            $charismaIncrement,
-            $weightInKg
-        );
-        $this->assertInstanceOf($this->getProfessionLevelClass(), $instance);
 
-        return $instance;
+        return $levelRank;
+    }
+
+    /** @return Strength */
+    private function createFirstLevelStrength()
+    {
+        return $this->createFirstLevelProperty(Strength::class, Strength::STRENGTH);
+    }
+
+    /**
+     * @param string $propertyClass
+     * @param string $propertyCode
+     * @return MockInterface|PropertyInterface
+     */
+    private function createFirstLevelProperty($propertyClass, $propertyCode)
+    {
+        $property = \Mockery::mock($propertyClass);
+        $this->addPropertyFirstLevelExpectation($property, $propertyCode);
+
+        return $property;
     }
 
     private function addPropertyFirstLevelExpectation(MockInterface $property, $propertyName)
@@ -90,6 +97,36 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
      * @return string[]
      */
     abstract protected function getPrimaryProperties();
+
+    /** @return Agility */
+    private function createFirstLevelAgility()
+    {
+        return $this->createFirstLevelProperty(Agility::class, Agility::AGILITY);
+    }
+
+    /** @return Knack */
+    private function createFirstLevelKnack()
+    {
+        return $this->createFirstLevelProperty(Knack::class, Knack::KNACK);
+    }
+
+    /** @return Will */
+    private function createFirstLevelWill()
+    {
+        return $this->createFirstLevelProperty(Will::class, Will::WILL);
+    }
+
+    /** @return Intelligence */
+    private function createFirstLevelIntelligence()
+    {
+        return $this->createFirstLevelProperty(Intelligence::class, Intelligence::INTELLIGENCE);
+    }
+
+    /** @return Charisma */
+    private function createFirstLevelCharisma()
+    {
+        return $this->createFirstLevelProperty(Charisma::class, Charisma::CHARISMA);
+    }
 
     /**
      * @return MockInterface|AbstractProfession
@@ -137,123 +174,46 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     }
 
     /**
-     * @param ProfessionLevel $professionLevel
-     *
      * @test
-     * @depends I_can_create_it
+     * @depends I_can_create_first_level
      */
-    public function has_not_set_id_on_creation(ProfessionLevel $professionLevel)
+    public function I_can_let_time_of_level_up_to_generate()
     {
-        $this->assertNull($professionLevel->getId());
-    }
-
-    /**
-     * @test
-     * @depends I_can_create_it
-     */
-    public function time_of_level_up_is_creation_time()
-    {
-        /** @var LevelRank|\Mockery\MockInterface $levelRank */
-        $levelRank = \Mockery::mock(LevelRank::class);
-        $levelRank->shouldReceive('getValue')
-            ->andReturn(1);
-        /** @var Strength|\Mockery\MockInterface $strengthIncrement */
-        $strengthIncrement = \Mockery::mock(Strength::class);
-        $this->addPropertyFirstLevelExpectation($strengthIncrement, Strength::STRENGTH);
-        /** @var Agility|\Mockery\MockInterface $agilityIncrement */
-        $agilityIncrement = \Mockery::mock(Agility::class);
-        $this->addPropertyFirstLevelExpectation($agilityIncrement, Agility::AGILITY);
-        /** @var Knack|\Mockery\MockInterface $knackIncrement */
-        $knackIncrement = \Mockery::mock(Knack::class);
-        $this->addPropertyFirstLevelExpectation($knackIncrement, Knack::KNACK);
-        /** @var Will|\Mockery\MockInterface $willIncrement */
-        $willIncrement = \Mockery::mock(Will::class);
-        $this->addPropertyFirstLevelExpectation($willIncrement, Will::WILL);
-        /** @var Intelligence|\Mockery\MockInterface $intelligenceIncrement */
-        $intelligenceIncrement = \Mockery::mock(Intelligence::class);
-        $this->addPropertyFirstLevelExpectation($intelligenceIncrement, Intelligence::INTELLIGENCE);
-        /** @var Charisma|\Mockery\MockInterface $charismaIncrement */
-        $charismaIncrement = \Mockery::mock(Charisma::class);
-        $this->addPropertyFirstLevelExpectation($charismaIncrement, Charisma::CHARISMA);
-        /** @var WeightInKg|\Mockery\MockInterface $weightInKg */
-        $weightInKg = \Mockery::mock(WeightInKg::class);
         $professionLevelClass = $this->getProfessionLevelClass();
-        /** @var ProfessionLevel $professionLevel */
         $professionLevel = new $professionLevelClass(
             $this->createProfession(),
-            $levelRank,
-            $strengthIncrement,
-            $agilityIncrement,
-            $knackIncrement,
-            $willIncrement,
-            $intelligenceIncrement,
-            $charismaIncrement,
-            $weightInKg
+            $this->createFirstLevelRank(),
+            $this->createFirstLevelStrength(),
+            $this->createFirstLevelAgility(),
+            $this->createFirstLevelKnack(),
+            $this->createFirstLevelWill(),
+            $this->createFirstLevelIntelligence(),
+            $this->createFirstLevelCharisma()
         );
+        /** @var ProfessionLevel $professionLevel */
         $this->assertEquals(time(), $professionLevel->getLevelUpAt()->getTimestamp());
     }
 
     /**
-     * @param ProfessionLevel $professionLevel
-     *
      * @test
-     * @depends I_can_create_it
+     * @depends I_can_create_first_level
      */
-    public function gives_expected_profession_code(ProfessionLevel $professionLevel)
+    public function I_can_get_level_details()
     {
-        $class = $this->getProfessionLevelClass();
-        // like /projects/drd/plus/cave/src/DrdPlus/Cave/UnitBundle/Person/Attributes/ProfessionLevels/FighterLevel.php = Fighter
-        $baseName = preg_replace('~(\w+\\\)*(\w+)Level~', '$2', $class);
-        $underscored = preg_replace('~(\w)([A-Z])~', '$1_$2', $baseName);
-        $lowered = strtolower($underscored);
-
-        $this->assertSame($lowered, $professionLevel->getProfession()->getCode());
-    }
-
-    /**
-     * @test
-     * @depends I_can_create_it
-     */
-    public function returns_given_parameters()
-    {
-        /** @var LevelRank|\Mockery\MockInterface $levelRank */
-        $levelRank = \Mockery::mock(LevelRank::class);
-        $levelRank->shouldReceive('getValue')
-            ->andReturn(1);
-        /** @var Strength|\Mockery\MockInterface $strengthIncrement */
-        $strengthIncrement = \Mockery::mock(Strength::class);
-        $this->addPropertyFirstLevelExpectation($strengthIncrement, Strength::STRENGTH);
-        /** @var Agility|\Mockery\MockInterface $agilityIncrement */
-        $agilityIncrement = \Mockery::mock(Agility::class);
-        $this->addPropertyFirstLevelExpectation($agilityIncrement, Agility::AGILITY);
-        /** @var Knack|\Mockery\MockInterface $knackIncrement */
-        $knackIncrement = \Mockery::mock(Knack::class);
-        $this->addPropertyFirstLevelExpectation($knackIncrement, Knack::KNACK);
-        /** @var Will|\Mockery\MockInterface $willIncrement */
-        $willIncrement = \Mockery::mock(Will::class);
-        $this->addPropertyFirstLevelExpectation($willIncrement, Will::WILL);
-        /** @var Intelligence|\Mockery\MockInterface $intelligenceIncrement */
-        $intelligenceIncrement = \Mockery::mock(Intelligence::class);
-        $this->addPropertyFirstLevelExpectation($intelligenceIncrement, Intelligence::INTELLIGENCE);
-        /** @var Charisma|\Mockery\MockInterface $charismaIncrement */
-        $charismaIncrement = \Mockery::mock(Charisma::class);
-        $this->addPropertyFirstLevelExpectation($charismaIncrement, Charisma::CHARISMA);
-        /** @var WeightInKg|\Mockery\MockInterface $weightInKg */
-        $weightInKg = \Mockery::mock(WeightInKg::class);
         $professionLevelClass = $this->getProfessionLevelClass();
         /** @var ProfessionLevel $professionLevel */
         $professionLevel = new $professionLevelClass(
-            $this->createProfession(),
-            $levelRank,
-            $strengthIncrement,
-            $agilityIncrement,
-            $knackIncrement,
-            $willIncrement,
-            $intelligenceIncrement,
-            $charismaIncrement,
-            $weightInKg,
+            $profession = $this->createProfession(),
+            $levelRank = $this->createFirstLevelRank(),
+            $strengthIncrement = $this->createFirstLevelStrength(),
+            $agilityIncrement = $this->createFirstLevelAgility(),
+            $knackIncrement = $this->createFirstLevelKnack(),
+            $willIncrement = $this->createFirstLevelWill(),
+            $intelligenceIncrement = $this->createFirstLevelIntelligence(),
+            $charismaIncrement = $this->createFirstLevelCharisma(),
             $levelUpAt = new \DateTimeImmutable()
         );
+        $this->assertSame($profession, $professionLevel->getProfession());
         $this->assertSame($levelRank, $professionLevel->getLevelRank());
         $this->assertSame($strengthIncrement, $professionLevel->getStrengthIncrement());
         $this->assertSame($agilityIncrement, $professionLevel->getAgilityIncrement());
@@ -268,16 +228,14 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
      * @param ProfessionLevel $professionLevel
      *
      * @test
-     * @depends I_can_create_it
+     * @depends I_can_create_first_level
      */
-    public function gives_proper_strength_first_level_modifier(ProfessionLevel $professionLevel)
+    public function I_can_get_first_level_strength(ProfessionLevel $professionLevel)
     {
-        $this->assertSame($this->getStrengthFirstLevelModifier(), $professionLevel->getStrengthIncrement()->getValue());
-    }
-
-    protected function getStrengthFirstLevelModifier()
-    {
-        return $this->getPropertyFirstLevelModifier(Strength::STRENGTH);
+        $this->assertSame(
+            $this->getPropertyFirstLevelModifier(Strength::STRENGTH),
+            $professionLevel->getStrengthIncrement()->getValue()
+        );
     }
 
     private function getPropertyFirstLevelModifier($propertyName)
@@ -291,80 +249,93 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
      * @param ProfessionLevel $professionLevel
      *
      * @test
-     * @depends I_can_create_it
+     * @depends I_can_create_first_level
      */
-    public function gives_proper_agility_first_level_modifier(ProfessionLevel $professionLevel)
+    public function I_can_get_first_level_agility(ProfessionLevel $professionLevel)
     {
-        $this->assertSame($this->getAgilityFirstLevelModifier(), $professionLevel->getAgilityIncrement()->getValue());
-    }
-
-    protected function getAgilityFirstLevelModifier()
-    {
-        return $this->getPropertyFirstLevelModifier(Agility::AGILITY);
+        $this->assertSame(
+            $this->getPropertyFirstLevelModifier(Agility::AGILITY),
+            $professionLevel->getAgilityIncrement()->getValue()
+        );
     }
 
     /**
      * @param ProfessionLevel $professionLevel
      *
      * @test
-     * @depends I_can_create_it
+     * @depends I_can_create_first_level
      */
-    public function gives_proper_knack_first_level_modifier(ProfessionLevel $professionLevel)
+    public function I_can_get_first_level_knack(ProfessionLevel $professionLevel)
     {
-        $this->assertSame($this->getKnackFirstLevelModifier(), $professionLevel->getKnackIncrement()->getValue());
-    }
-
-    protected function getKnackFirstLevelModifier()
-    {
-        return $this->getPropertyFirstLevelModifier(Knack::KNACK);
+        $this->assertSame(
+            $this->getPropertyFirstLevelModifier(Knack::KNACK),
+            $professionLevel->getKnackIncrement()->getValue()
+        );
     }
 
     /**
      * @param ProfessionLevel $professionLevel
      *
      * @test
-     * @depends I_can_create_it
+     * @depends I_can_create_first_level
      */
-    public function gives_proper_charisma_first_level_modifier(ProfessionLevel $professionLevel)
+    public function I_can_get_first_level_charisma(ProfessionLevel $professionLevel)
     {
-        $this->assertSame($this->getCharismaFirstLevelModifier(), $professionLevel->getCharismaIncrement()->getValue());
-    }
-
-    protected function getCharismaFirstLevelModifier()
-    {
-        return $this->getPropertyFirstLevelModifier(Charisma::CHARISMA);
+        $this->assertSame(
+            $this->getPropertyFirstLevelModifier(Charisma::CHARISMA),
+            $professionLevel->getCharismaIncrement()->getValue()
+        );
     }
 
     /**
      * @param ProfessionLevel $professionLevel
      *
      * @test
-     * @depends I_can_create_it
+     * @depends I_can_create_first_level
      */
-    public function gives_proper_intelligence_first_level_modifier(ProfessionLevel $professionLevel)
+    public function I_can_get_first_level_intelligence(ProfessionLevel $professionLevel)
     {
-        $this->assertSame($this->getIntelligenceFirstLevelModifier(), $professionLevel->getIntelligenceIncrement()->getValue());
-    }
-
-    protected function getIntelligenceFirstLevelModifier()
-    {
-        return $this->getPropertyFirstLevelModifier(Intelligence::INTELLIGENCE);
+        $this->assertSame(
+            $this->getPropertyFirstLevelModifier(Intelligence::INTELLIGENCE),
+            $professionLevel->getIntelligenceIncrement()->getValue()
+        );
     }
 
     /**
      * @param ProfessionLevel $professionLevel
      *
      * @test
-     * @depends I_can_create_it
+     * @depends I_can_create_first_level
      */
-    public function gives_proper_will_first_level_modifier(ProfessionLevel $professionLevel)
+    public function I_can_get_first_level_will(ProfessionLevel $professionLevel)
     {
-        $this->assertSame($this->getWillFirstLevelModifier(), $professionLevel->getWillIncrement()->getValue());
+        $this->assertSame(
+            $this->getPropertyFirstLevelModifier(Will::WILL),
+            $professionLevel->getWillIncrement()->getValue()
+        );
     }
 
-    protected function getWillFirstLevelModifier()
+    /**
+     * @test
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\MaximumLevelExceeded
+     */
+    public function I_can_not_create_higher_level_than_twenty()
     {
-        return $this->getPropertyFirstLevelModifier(Will::WILL);
-    }
+        /** @var LevelRank|\Mockery\MockInterface $levelRank */
+        $levelRank = \Mockery::mock(LevelRank::class);
+        $levelRank->shouldReceive('getValue')
+            ->andReturn(21);
+        $professionLevelClass = $this->getProfessionLevelClass();
 
+        new $professionLevelClass(
+            \Mockery::mock($this->getProfessionClass()),
+            $levelRank,
+            \Mockery::mock(Strength::class),
+            \Mockery::mock(Agility::class),
+            \Mockery::mock(Knack::class),
+            \Mockery::mock(Will::class),
+            \Mockery::mock(Intelligence::class),
+            \Mockery::mock(Charisma::class)
+        );
+    }
 }
