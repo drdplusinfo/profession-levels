@@ -177,6 +177,27 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
 
     /**
      * @test
+     */
+    public function I_can_let_create_first_level_by_factory()
+    {
+        $professionLevelClass = $this->getProfessionLevelClass();
+        $professionLevel = $professionLevelClass::createFirstLevel(
+            $profession = $this->createProfession()
+        );
+        /** @var ProfessionLevel $professionLevel */
+        $this->assertSame($profession, $professionLevel->getProfession());
+        $this->assertSame(1, $professionLevel->getLevelRank()->getValue());
+        $this->assertSame($this->isPrimaryProperty(Strength::STRENGTH) ? 1 : 0, $professionLevel->getStrengthIncrement()->getValue());
+        $this->assertSame($this->isPrimaryProperty(Agility::AGILITY) ? 1 : 0, $professionLevel->getAgilityIncrement()->getValue());
+        $this->assertSame($this->isPrimaryProperty(Knack::KNACK) ? 1 : 0, $professionLevel->getKnackIncrement()->getValue());
+        $this->assertSame($this->isPrimaryProperty(Will::WILL) ? 1 : 0, $professionLevel->getWillIncrement()->getValue());
+        $this->assertSame($this->isPrimaryProperty(Intelligence::INTELLIGENCE) ? 1 : 0, $professionLevel->getIntelligenceIncrement()->getValue());
+        $this->assertSame($this->isPrimaryProperty(Charisma::CHARISMA) ? 1 : 0, $professionLevel->getCharismaIncrement()->getValue());
+        $this->assertEquals(time(), $professionLevel->getLevelUpAt()->getTimestamp());
+    }
+
+    /**
+     * @test
      * @depends I_can_create_first_level
      */
     public function I_can_let_time_of_level_up_to_generate()
