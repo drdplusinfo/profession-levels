@@ -9,7 +9,7 @@ use DrdPlus\Properties\Base\Intelligence;
 use DrdPlus\Properties\Base\Knack;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
-use \DrdPlus\Professions\AbstractProfession;
+use \DrdPlus\Professions\Profession;
 use Granam\Strict\Object\StrictObject;
 
 /**
@@ -34,7 +34,7 @@ abstract class ProfessionLevel extends StrictObject
     protected $id;
 
     /**
-     * @var AbstractProfession
+     * @var Profession
      */
     private $profession;
 
@@ -95,7 +95,7 @@ abstract class ProfessionLevel extends StrictObject
     private $charismaIncrement;
 
     public static function createFirstLevel(
-        AbstractProfession $profession,
+        Profession $profession,
         \DateTimeImmutable $levelUpAt = null
     )
     {
@@ -113,7 +113,7 @@ abstract class ProfessionLevel extends StrictObject
     }
 
     protected function __construct(
-        AbstractProfession $profession,
+        Profession $profession,
         LevelRank $levelRank,
         Strength $strengthIncrement,
         Agility $agilityIncrement,
@@ -222,11 +222,11 @@ abstract class ProfessionLevel extends StrictObject
 
     /**
      * @param string $propertyCode
-     * @param AbstractProfession $profession
+     * @param Profession $profession
      *
      * @return int
      */
-    private static function getBasePropertyFirstLevelModifier($propertyCode, AbstractProfession $profession)
+    private static function getBasePropertyFirstLevelModifier($propertyCode, Profession $profession)
     {
         return static::isProfessionPrimaryProperty($profession, $propertyCode)
             ? self::PROPERTY_FIRST_LEVEL_MODIFIER
@@ -254,7 +254,7 @@ abstract class ProfessionLevel extends StrictObject
         return static::isProfessionPrimaryProperty($this->getProfession(), $propertyCode);
     }
 
-    private static function isProfessionPrimaryProperty(AbstractProfession $profession, $propertyCode)
+    private static function isProfessionPrimaryProperty(Profession $profession, $propertyCode)
     {
         return $profession->isPrimaryProperty($propertyCode);
     }
@@ -308,7 +308,7 @@ abstract class ProfessionLevel extends StrictObject
     }
 
     /**
-     * @return AbstractProfession
+     * @return Profession
      */
     public function getProfession()
     {

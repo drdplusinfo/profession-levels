@@ -278,7 +278,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     {
         if (count($previousLevels) !== count($this->getLevels())) {
             throw new \LogicException(
-                'AbstractProfession levels of ID ' . var_export($this->id, true) . ' are already set for profession' .
+                'Profession levels of ID ' . var_export($this->id, true) . ' are already set for profession' .
                 ' ' . $this->getAlreadySetProfessionCode() . ', given  ' . $newLevel->getProfession()->getCode()
                 . ' . Multi-profession is not allowed.'
             );
