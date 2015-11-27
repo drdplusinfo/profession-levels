@@ -49,6 +49,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         /** @var ProfessionLevelsTest $this */
         $this->assertSame(0, $professionLevels->getStrengthModifierForFirstProfession());
+        $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Strength::STRENGTH));
     }
 
     /**
@@ -73,6 +74,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         /** @var ProfessionLevelsTest $this */
         $this->assertSame(0, $professionLevels->getAgilityModifierForFirstProfession());
+        $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Agility::AGILITY));
     }
 
     /**
@@ -97,6 +99,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         /** @var ProfessionLevelsTest $this */
         $this->assertSame(0, $professionLevels->getKnackModifierForFirstProfession());
+        $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Knack::KNACK));
     }
 
     /**
@@ -121,6 +124,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         /** @var ProfessionLevelsTest $this */
         $this->assertSame(0, $professionLevels->getWillModifierForFirstProfession());
+        $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Will::WILL));
     }
 
     /**
@@ -145,6 +149,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         /** @var ProfessionLevelsTest $this */
         $this->assertSame(0, $professionLevels->getIntelligenceModifierForFirstProfession());
+        $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Intelligence::INTELLIGENCE));
     }
 
     /**
@@ -169,6 +174,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         /** @var ProfessionLevelsTest $this */
         $this->assertSame(0, $professionLevels->getCharismaModifierForFirstProfession());
+        $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Charisma::CHARISMA));
     }
 
     /**

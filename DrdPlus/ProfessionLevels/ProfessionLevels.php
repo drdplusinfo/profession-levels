@@ -455,7 +455,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      * @param $propertyName
      * @return int
      */
-    private function getPropertyModifierForFirstProfession($propertyName)
+    public function getPropertyModifierForFirstProfession($propertyName)
     {
         if (!$this->hasFirstLevel()) {
             return 0;
