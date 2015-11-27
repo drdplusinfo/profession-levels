@@ -9,7 +9,7 @@ use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
 use \DrdPlus\Professions\Fighter;
 use \DrdPlus\Professions\Priest;
-use \DrdPlus\Professions\AbstractProfession;
+use \DrdPlus\Professions\Profession;
 use \DrdPlus\Professions\Ranger;
 use \DrdPlus\Professions\Theurgist;
 use \DrdPlus\Professions\Thief;
@@ -223,7 +223,7 @@ class ProfessionLevelsTest extends TestWithMockery
         $getProfessionLevels = 'get' . ucfirst($professionName) . 'Levels';
         $levels = $professionLevels->$getProfessionLevels();
         $this->assertInternalType('array', $levels);
-        $this->isEmpty($levels);
+        $this->assertEmpty($levels);
     }
 
     /**
@@ -296,7 +296,7 @@ class ProfessionLevelsTest extends TestWithMockery
         /** @var \Mockery\MockInterface|ProfessionLevel $professionLevel */
         $professionLevel = $this->mockery($this->getFirstLevelsProfessionLevelClass($professionName));
         $professionLevel->shouldReceive('getProfession')
-            ->andReturn($profession = $this->mockery(AbstractProfession::class));
+            ->andReturn($profession = $this->mockery(Profession::class));
         $profession->shouldReceive('getCode')
             ->andReturn($professionName);
         $professionLevel->shouldReceive('getLevelRank')
@@ -483,7 +483,7 @@ class ProfessionLevelsTest extends TestWithMockery
         /** @var \Mockery\MockInterface|ProfessionLevel $professionLevel */
         $professionLevel = $this->mockery($this->getFirstLevelsProfessionLevelClass($professionName));
         $professionLevel->shouldReceive('getProfession')
-            ->andReturn($profession = $this->mockery(AbstractProfession::class));
+            ->andReturn($profession = $this->mockery(Profession::class));
         $profession->shouldReceive('getCode')
             ->andReturn($professionName);
         $professionLevel->shouldReceive('getLevelRank')
@@ -557,7 +557,7 @@ class ProfessionLevelsTest extends TestWithMockery
         /** @var \Mockery\MockInterface|ProfessionLevel $professionLevel */
         $professionLevel = $this->mockery($this->getFirstLevelsProfessionLevelClass($professionName));
         $professionLevel->shouldReceive('getProfession')
-            ->andReturn($profession = $this->mockery(AbstractProfession::class));
+            ->andReturn($profession = $this->mockery(Profession::class));
         $profession->shouldReceive('getCode')
             ->andReturn($professionName);
         $professionLevel->shouldReceive('getLevelRank')
@@ -890,7 +890,7 @@ class ProfessionLevelsTest extends TestWithMockery
         /** @var FighterLevel|\Mockery\MockInterface $anotherLevel */
         $anotherLevel = $this->mockery($this->geProfessionLevelClass($professionName));
         $anotherLevel->shouldReceive('getProfession')
-            ->andReturn($profession = $this->mockery(AbstractProfession::class));
+            ->andReturn($profession = $this->mockery(Profession::class));
         $profession->shouldReceive('getCode')
             ->andReturn(Fighter::FIGHTER);
         $anotherLevel->shouldReceive('getLevelRank')
@@ -1226,7 +1226,7 @@ class ProfessionLevelsTest extends TestWithMockery
         $this->professionLevels[Wizard::WIZARD] = $this->mockery(WizardLevel::class);
         foreach ($this->professionLevels as $professionCode => $level) {
             $level->shouldReceive('getProfession')
-                ->andReturn($profession = $this->mockery(AbstractProfession::class));
+                ->andReturn($profession = $this->mockery(Profession::class));
             $profession->shouldReceive('getCode')
                 ->andReturn($professionCode);
         }

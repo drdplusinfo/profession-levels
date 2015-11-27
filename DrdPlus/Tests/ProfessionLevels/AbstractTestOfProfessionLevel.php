@@ -9,7 +9,7 @@ use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
 use DrdPlus\ProfessionLevels\LevelRank;
 use DrdPlus\ProfessionLevels\ProfessionLevel;
-use \DrdPlus\Professions\AbstractProfession;
+use \DrdPlus\Professions\Profession;
 use DrdPlus\Properties\PropertyInterface;
 use DrdPlus\Tools\Tests\TestWithMockery;
 use Mockery\MockInterface;
@@ -25,7 +25,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     public function I_can_create_first_level()
     {
         $professionLevelClass = $this->getProfessionLevelClass();
-        $instance = new $professionLevelClass(
+        $professionLevel = new $professionLevelClass(
             $this->createProfession(),
             $this->createFirstLevelRank(),
             $this->createFirstLevelStrength(),
@@ -35,12 +35,17 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
             $this->createFirstLevelIntelligence(),
             $this->createFirstLevelCharisma()
         );
-        $this->assertInstanceOf($this->getProfessionLevelClass(), $instance);
-        /** @var ProfessionLevel $instance */
-        $this->assertNull($instance->getId());
-        $this->assertSame($this->getProfessionCode(), $instance->getProfession()->getCode());
+        $this->assertInstanceOf($this->getProfessionLevelClass(), $professionLevel);
+        /** @var ProfessionLevel $professionLevel */
+        $this->assertNull($professionLevel->getId());
+        $this->assertSame($this->getProfessionCode(), $professionLevel->getProfession()->getCode());
+        $this->assertTrue($professionLevel->isFirstLevel());
+        $this->assertFalse($professionLevel->isNextLevel());
+        foreach ([Strength::STRENGTH, Agility::AGILITY, Knack::KNACK, Will::WILL, Intelligence::INTELLIGENCE, Charisma::CHARISMA] as $propertyCode) {
+            $this->assertSame($this->isPrimaryProperty($propertyCode), $professionLevel->isPrimaryProperty($propertyCode));
+        }
 
-        return $instance;
+        return $professionLevel;
     }
 
     /** @return LevelRank */
@@ -56,43 +61,51 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
         return $levelRank;
     }
 
-    /** @return Strength */
-    private function createFirstLevelStrength()
+    /**
+     * @param int|null $propertyValue = null
+     * @return Strength
+     */
+    private function createFirstLevelStrength($propertyValue = null)
     {
-        return $this->createFirstLevelProperty(Strength::class, Strength::STRENGTH);
+        return $this->createFirstLevelProperty(Strength::class, Strength::STRENGTH, $propertyValue);
     }
 
     /**
      * @param string $propertyClass
      * @param string $propertyCode
+     * @param string|null $propertyValue = null
      * @return MockInterface|PropertyInterface
      */
-    private function createFirstLevelProperty($propertyClass, $propertyCode)
+    private function createFirstLevelProperty($propertyClass, $propertyCode, $propertyValue = null)
     {
         $property = \Mockery::mock($propertyClass);
-        $this->addPropertyFirstLevelExpectation($property, $propertyCode);
+        $this->addPropertyFirstLevelExpectation($property, $propertyCode, $propertyValue);
 
         return $property;
     }
 
-    private function addPropertyFirstLevelExpectation(MockInterface $property, $propertyName)
+    private function addPropertyFirstLevelExpectation(MockInterface $property, $propertyName, $propertyValue = null)
     {
         $property->shouldReceive('getValue')
-            ->atLeast()->once()
-            ->andReturn($this->isPrimaryProperty($propertyName) ? 1 : 0);
+            ->andReturn((is_null($propertyValue)
+                ? ($this->isPrimaryProperty($propertyName)
+                    ? 1
+                    : 0
+                )
+                : $propertyValue
+            ));
         $property->shouldReceive('getCode')
-            ->atLeast()->once()
             ->andReturn($propertyName);
     }
 
     /**
-     * @param string $propertyName
+     * @param string $propertyCode
      *
      * @return bool
      */
-    private function isPrimaryProperty($propertyName)
+    private function isPrimaryProperty($propertyCode)
     {
-        return in_array($propertyName, $this->getPrimaryProperties());
+        return in_array($propertyCode, $this->getPrimaryProperties());
     }
 
     /**
@@ -100,38 +113,53 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
      */
     abstract protected function getPrimaryProperties();
 
-    /** @return Agility */
-    private function createFirstLevelAgility()
+    /**
+     * @param int|null $value
+     * @return Agility
+     */
+    private function createFirstLevelAgility($value = null)
     {
-        return $this->createFirstLevelProperty(Agility::class, Agility::AGILITY);
-    }
-
-    /** @return Knack */
-    private function createFirstLevelKnack()
-    {
-        return $this->createFirstLevelProperty(Knack::class, Knack::KNACK);
-    }
-
-    /** @return Will */
-    private function createFirstLevelWill()
-    {
-        return $this->createFirstLevelProperty(Will::class, Will::WILL);
-    }
-
-    /** @return Intelligence */
-    private function createFirstLevelIntelligence()
-    {
-        return $this->createFirstLevelProperty(Intelligence::class, Intelligence::INTELLIGENCE);
-    }
-
-    /** @return Charisma */
-    private function createFirstLevelCharisma()
-    {
-        return $this->createFirstLevelProperty(Charisma::class, Charisma::CHARISMA);
+        return $this->createFirstLevelProperty(Agility::class, Agility::AGILITY, $value);
     }
 
     /**
-     * @return MockInterface|AbstractProfession
+     * @param int|null $value
+     * @return Knack
+     */
+    private function createFirstLevelKnack($value = null)
+    {
+        return $this->createFirstLevelProperty(Knack::class, Knack::KNACK, $value);
+    }
+
+    /**
+     * @param int|null $value
+     * @return Will
+     */
+    private function createFirstLevelWill($value = null)
+    {
+        return $this->createFirstLevelProperty(Will::class, Will::WILL, $value);
+    }
+
+    /**
+     * @param int|null $value
+     * @return Intelligence
+     */
+    private function createFirstLevelIntelligence($value = null)
+    {
+        return $this->createFirstLevelProperty(Intelligence::class, Intelligence::INTELLIGENCE, $value);
+    }
+
+    /**
+     * @param int|null $value
+     * @return Charisma
+     */
+    private function createFirstLevelCharisma($value = null)
+    {
+        return $this->createFirstLevelProperty(Charisma::class, Charisma::CHARISMA, $value);
+    }
+
+    /**
+     * @return MockInterface|Profession
      */
     private function createProfession()
     {
@@ -158,7 +186,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     }
 
     /**
-     * @return string|AbstractProfession
+     * @return string|Profession
      */
     private function getProfessionClass()
     {
@@ -360,5 +388,129 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
             \Mockery::mock(Intelligence::class),
             \Mockery::mock(Charisma::class)
         );
+    }
+
+    /**
+     * @test
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\MinimumLevelExceeded
+     */
+    public function I_can_not_create_lesser_level_than_one()
+    {
+        /** @var LevelRank|\Mockery\MockInterface $zeroLevelRank */
+        $zeroLevelRank = \Mockery::mock(LevelRank::class);
+        $zeroLevelRank->shouldReceive('getValue')
+            ->andReturn(0);
+        $professionLevelClass = $this->getProfessionLevelClass();
+
+        new $professionLevelClass(
+            \Mockery::mock($this->getProfessionClass()),
+            $zeroLevelRank,
+            \Mockery::mock(Strength::class),
+            \Mockery::mock(Agility::class),
+            \Mockery::mock(Knack::class),
+            \Mockery::mock(Will::class),
+            \Mockery::mock(Intelligence::class),
+            \Mockery::mock(Charisma::class)
+        );
+    }
+
+    /**
+     * @test
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\InvalidFirstLevelPropertyValue
+     * @dataProvider getTooHighFirstLevelPropertiesOneByOne
+     *
+     * @param $strength
+     * @param $agility
+     * @param $knack
+     * @param $will
+     * @param $intelligence
+     * @param $charisma
+     */
+    public function I_can_not_use_greater_than_allowed_first_level_property(
+        $strength, $agility, $knack, $will, $intelligence, $charisma
+    )
+    {
+        $professionLevelClass = $this->getProfessionLevelClass();
+
+        new $professionLevelClass(
+            $this->createProfession(),
+            $this->createFirstLevelRank(),
+            $this->createFirstLevelStrength($strength),
+            $this->createFirstLevelAgility($agility),
+            $this->createFirstLevelKnack($knack),
+            $this->createFirstLevelWill($will),
+            $this->createFirstLevelIntelligence($intelligence),
+            $this->createFirstLevelCharisma($charisma)
+        );
+    }
+
+    public function getTooHighFirstLevelPropertiesOneByOne()
+    {
+        $values = [];
+        $singleTestValuesPattern = [
+            $this->createFirstLevelStrength()->getValue(),
+            $this->createFirstLevelAgility()->getValue(),
+            $this->createFirstLevelKnack()->getValue(),
+            $this->createFirstLevelWill()->getValue(),
+            $this->createFirstLevelIntelligence()->getValue(),
+            $this->createFirstLevelCharisma()->getValue(),
+        ];
+        foreach ($singleTestValuesPattern as $index => $value) {
+            $singleTestValues = $singleTestValuesPattern;
+            $singleTestValues[$index] = $value + 1;
+            $values[] = $singleTestValues;
+        }
+
+        return $values;
+    }
+
+    /**
+     * @test
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\InvalidFirstLevelPropertyValue
+     * @dataProvider getTooLowFirstLevelPropertiesOneByOne
+     *
+     * @param $strength
+     * @param $agility
+     * @param $knack
+     * @param $will
+     * @param $intelligence
+     * @param $charisma
+     */
+    public function I_can_not_use_lesser_than_allowed_first_level_property(
+        $strength, $agility, $knack, $will, $intelligence, $charisma
+    )
+    {
+        $professionLevelClass = $this->getProfessionLevelClass();
+
+        new $professionLevelClass(
+            $this->createProfession(),
+            $this->createFirstLevelRank(),
+            $this->createFirstLevelStrength($strength),
+            $this->createFirstLevelAgility($agility),
+            $this->createFirstLevelKnack($knack),
+            $this->createFirstLevelWill($will),
+            $this->createFirstLevelIntelligence($intelligence),
+            $this->createFirstLevelCharisma($charisma)
+        );
+    }
+
+    public function getTooLowFirstLevelPropertiesOneByOne()
+    {
+        $values = [];
+        $singleTestValuesPattern = [
+            $this->createFirstLevelStrength()->getValue(),
+            $this->createFirstLevelAgility()->getValue(),
+            $this->createFirstLevelKnack()->getValue(),
+            $this->createFirstLevelWill()->getValue(),
+            $this->createFirstLevelIntelligence()->getValue(),
+            $this->createFirstLevelCharisma()->getValue(),
+        ];
+        foreach ($singleTestValuesPattern as $index => $value) {
+            $singleTestValues = $singleTestValuesPattern;
+            $singleTestValues[$index] = $value - 1;
+            $values[] = $singleTestValues;
+        }
+
+        return $values;
     }
 }

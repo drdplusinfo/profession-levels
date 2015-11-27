@@ -19,6 +19,7 @@ abstract class ProfessionLevel extends StrictObject
 {
 
     const PROPERTY_FIRST_LEVEL_MODIFIER = +1;
+    const MINIMUM_LEVEL = 1;
     const MAXIMUM_LEVEL = 20;
     const MIN_NEXT_LEVEL_PROPERTY_MODIFIER = 0;
     const MAX_NEXT_LEVEL_PROPERTY_MODIFIER = 1;
@@ -149,7 +150,11 @@ abstract class ProfessionLevel extends StrictObject
                 "Level can not be greater than " . self::MAXIMUM_LEVEL . ", got {$levelRank->getValue()}"
             );
         }
-
+        if ($levelRank->getValue() < self::MINIMUM_LEVEL) {
+            throw new Exceptions\MinimumLevelExceeded(
+                "Level can not be lesser than " . self::MINIMUM_LEVEL . ", got {$levelRank->getValue()}"
+            );
+        }
     }
 
     private function checkPropertyIncrement(BaseProperty $property, LevelRank $levelRank)
@@ -175,8 +180,9 @@ abstract class ProfessionLevel extends StrictObject
             $this->getProfession()
         );
         if ($property->getValue() !== $propertyFirstLevelModifier) {
-            throw new \LogicException(
-                "On first level has to be the property {$property->getCode()} of value {$propertyFirstLevelModifier}"
+            throw new Exceptions\InvalidFirstLevelPropertyValue(
+                "On first level has to be {$property->getCode()} of value {$propertyFirstLevelModifier}"
+                . ", got {$property->getValue()}"
             );
         }
     }
