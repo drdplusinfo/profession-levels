@@ -10,6 +10,7 @@ use DrdPlus\Properties\Base\Knack;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
 use \DrdPlus\Professions\Profession;
+use Granam\Scalar\Tools\ValueDescriber;
 use Granam\Strict\Object\StrictObject;
 
 /**
@@ -36,6 +37,8 @@ abstract class ProfessionLevel extends StrictObject
 
     /**
      * @var Profession
+     *
+     * @ORM\Column(type="profession")
      */
     private $profession;
 
@@ -100,6 +103,12 @@ abstract class ProfessionLevel extends StrictObject
         \DateTimeImmutable $levelUpAt = null
     )
     {
+        if (static::class === self::class) {
+            throw new Exceptions\CanNotCreateLevelForGenericProfession(
+                'First level factory method has to be called on specific profession class'
+            );
+        }
+
         return new static(
             $profession,
             new LevelRank(1),
@@ -311,6 +320,26 @@ abstract class ProfessionLevel extends StrictObject
     public function getCharismaIncrement()
     {
         return $this->charismaIncrement;
+    }
+
+    public function getBasePropertyIncrement($propertyCode)
+    {
+        switch ($propertyCode) {
+            case Strength::STRENGTH :
+                return $this->getStrengthIncrement();
+            case Agility::AGILITY :
+                return $this->getAgilityIncrement();
+            case Knack::KNACK :
+                return $this->getKnackIncrement();
+            case Will::WILL :
+                return $this->getWillIncrement();
+            case Intelligence::INTELLIGENCE :
+                return $this->getIntelligenceIncrement();
+            case Charisma::CHARISMA :
+                return $this->getCharismaIncrement();
+            default :
+                throw new \LogicException('Unknown property ' . ValueDescriber::describe($propertyCode));
+        }
     }
 
     /**
