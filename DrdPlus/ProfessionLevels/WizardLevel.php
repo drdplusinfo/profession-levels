@@ -26,6 +26,11 @@ class WizardLevel extends ProfessionLevel
      */
     protected $professionLevels;
 
+    public static function createFirstLevel(Wizard $wizard, \DateTimeImmutable $levelUpAt = null)
+    {
+        return parent::createFirstLevelFor($wizard, $levelUpAt);
+    }
+
     public function __construct(
         Wizard $wizard,
         LevelRank $levelRank,

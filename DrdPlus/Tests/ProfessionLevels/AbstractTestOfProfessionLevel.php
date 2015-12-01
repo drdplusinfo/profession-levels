@@ -1,6 +1,18 @@
 <?php
 namespace DrdPlus\Tests\ProfessionLevels;
 
+use DrdPlus\ProfessionLevels\FighterLevel;
+use DrdPlus\ProfessionLevels\PriestLevel;
+use DrdPlus\ProfessionLevels\RangerLevel;
+use DrdPlus\ProfessionLevels\TheurgistLevel;
+use DrdPlus\ProfessionLevels\ThiefLevel;
+use DrdPlus\ProfessionLevels\WizardLevel;
+use DrdPlus\Professions\Fighter;
+use DrdPlus\Professions\Priest;
+use DrdPlus\Professions\Ranger;
+use DrdPlus\Professions\Theurgist;
+use DrdPlus\Professions\Thief;
+use DrdPlus\Professions\Wizard;
 use DrdPlus\Properties\Base\Agility;
 use DrdPlus\Properties\Base\Charisma;
 use DrdPlus\Properties\Base\Intelligence;
@@ -57,6 +69,8 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
             ->andReturn(1);
         $levelRank->shouldReceive('isFirstLevel')
             ->andReturn(true);
+        $levelRank->shouldReceive('isNextLevel')
+            ->andReturn(false);
 
         return $levelRank;
     }
@@ -159,7 +173,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     }
 
     /**
-     * @return MockInterface|Profession
+     * @return MockInterface|Profession|Fighter|Wizard|Priest|Theurgist|Thief|Ranger
      */
     private function createProfession()
     {
@@ -171,6 +185,8 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
                     return in_array($propertyCode, $this->getPrimaryProperties());
                 }
             );
+        $profession->shouldReceive('getPrimaryProperties')
+            ->andReturn($this->getPrimaryProperties());
         $profession->shouldReceive('getCode')
             ->andReturn($this->getProfessionCode());
 
@@ -196,7 +212,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     }
 
     /**
-     * @return string|ProfessionLevel
+     * @return ProfessionLevel|FighterLevel|WizardLevel|PriestLevel|TheurgistLevel|ThiefLevel|RangerLevel
      */
     private function getProfessionLevelClass()
     {

@@ -26,6 +26,11 @@ class PriestLevel extends ProfessionLevel
      */
     protected $professionLevels;
 
+    public static function createFirstLevel(Priest $priest, \DateTimeImmutable $levelUpAt = null)
+    {
+        return parent::createFirstLevelFor($priest, $levelUpAt);
+    }
+
     public function __construct(
         Priest $priest,
         LevelRank $levelRank,

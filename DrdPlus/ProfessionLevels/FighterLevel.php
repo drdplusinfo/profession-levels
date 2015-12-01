@@ -26,6 +26,10 @@ class FighterLevel extends ProfessionLevel
      */
     protected $professionLevels;
 
+    public static function createFirstLevel(Fighter $fighter, \DateTimeImmutable $levelUpAt = null)
+    {
+        return parent::createFirstLevelFor($fighter, $levelUpAt);
+    }
 
     public function __construct(
         Fighter $fighter,

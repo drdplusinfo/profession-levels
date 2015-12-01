@@ -26,6 +26,11 @@ class ThiefLevel extends ProfessionLevel
      */
     protected $professionLevels;
 
+    public static function createFirstLevel(Thief $thief, \DateTimeImmutable $levelUpAt = null)
+    {
+        return parent::createFirstLevelFor($thief, $levelUpAt);
+    }
+
     public function __construct(
         Thief $thief,
         LevelRank $levelRank,

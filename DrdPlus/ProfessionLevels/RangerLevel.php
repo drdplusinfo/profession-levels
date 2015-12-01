@@ -26,6 +26,11 @@ class RangerLevel extends ProfessionLevel
      */
     protected $professionLevels;
 
+    public static function createFirstLevel(Ranger $ranger, \DateTimeImmutable $levelUpAt = null)
+    {
+        return parent::createFirstLevelFor($ranger, $levelUpAt);
+    }
+
     public function __construct(
         Ranger $ranger,
         LevelRank $levelRank,

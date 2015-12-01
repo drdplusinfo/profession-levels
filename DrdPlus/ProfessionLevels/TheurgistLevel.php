@@ -27,6 +27,10 @@ class TheurgistLevel extends ProfessionLevel
      */
     protected $professionLevels;
 
+    public static function createFirstLevel(Theurgist $theurgist, \DateTimeImmutable $levelUpAt = null)
+    {
+        return parent::createFirstLevelFor($theurgist, $levelUpAt);
+    }
 
     public function __construct(
         Theurgist $theurgist,
