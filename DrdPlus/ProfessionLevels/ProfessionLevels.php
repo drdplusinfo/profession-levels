@@ -182,7 +182,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
             return false;
         }
 
-        return $this->sortByLevelRank($levels)[0];
+        return $levels[0];
     }
 
     /**
@@ -197,7 +197,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
             if ($difference === 0) {
                 throw new \LogicException(
                     'Two profession levels of IDs' .
-                    ' ' . var_export($aLevel->getId(), true) . ', ' . var_export($anotherLevel->getId(), true)
+                    ' ' . ValueDescriber::describe($aLevel->getId()) . ', ' . ValueDescriber::describe($anotherLevel->getId())
                     . ' have the same level rank.'
                 );
             }
@@ -238,7 +238,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     /**
      * @param ProfessionLevel $newLevel
      */
-    private function addLevel(ProfessionLevel $newLevel)
+    public function addLevel(ProfessionLevel $newLevel)
     {
         $previousLevels = $this->getPreviousProfessionLevels($newLevel);
         $this->checkProhibitedMultiProfession($previousLevels, $newLevel);
@@ -277,8 +277,8 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     private function checkProhibitedMultiProfession(ArrayCollection $previousLevels, ProfessionLevel $newLevel)
     {
         if (count($previousLevels) !== count($this->getLevels())) {
-            throw new \LogicException(
-                'Profession levels of ID ' . var_export($this->id, true) . ' are already set for profession' .
+            throw new Exceptions\MultiProfessionsAreProhibited(
+                'Profession levels of ID ' . ValueDescriber::describe($this->id) . ' are already set for profession' .
                 ' ' . $this->getAlreadySetProfessionCode() . ', given  ' . $newLevel->getProfession()->getCode()
                 . ' . Multi-profession is not allowed.'
             );
@@ -300,13 +300,15 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     {
         if (!$newLevel->getLevelRank()->getValue()) {
             throw new \LogicException(
-                'Missing level value of given level of profession ' . $newLevel->getProfession()->getCode() . ' with ID ' . var_export($newLevel->getId(), true)
+                'Missing level value of given level of profession ' . $newLevel->getProfession()->getCode()
+                . ' with ID ' . ValueDescriber::describe($newLevel->getId())
             );
         }
 
         if ($newLevel->getLevelRank()->getValue() !== ($previousProfessionLevels->count() + 1)) {
             throw new \LogicException(
-                'Unexpected level of given profession level. Expected ' . ($previousProfessionLevels->count() + 1) . ', got ' . $newLevel->getLevelRank()->getValue()
+                'Unexpected level of given profession level. Expected ' . ($previousProfessionLevels->count() + 1)
+                . ', got ' . $newLevel->getLevelRank()->getValue()
             );
         }
     }
@@ -371,22 +373,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
 
     private function getSamePropertyIncrement(ProfessionLevel $searchedThroughProfessionLevel, BaseProperty $patternPropertyIncrement)
     {
-        switch ($patternPropertyIncrement->getCode()) {
-            case Strength::STRENGTH :
-                return $searchedThroughProfessionLevel->getStrengthIncrement();
-            case Agility::AGILITY :
-                return $searchedThroughProfessionLevel->getAgilityIncrement();
-            case Knack::KNACK :
-                return $searchedThroughProfessionLevel->getKnackIncrement();
-            case Will::WILL :
-                return $searchedThroughProfessionLevel->getWillIncrement();
-            case Intelligence::INTELLIGENCE :
-                return $searchedThroughProfessionLevel->getIntelligenceIncrement();
-            case Charisma::CHARISMA :
-                return $searchedThroughProfessionLevel->getCharismaIncrement();
-            default :
-                throw new \LogicException;
-        }
+        return $searchedThroughProfessionLevel->getBasePropertyIncrement($patternPropertyIncrement->getCode());
     }
 
     private function checkSecondaryPropertyIncrementInARow(ArrayCollection $previousNextLevels, BaseProperty $propertyIncrement)
@@ -398,7 +385,9 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
         if (!$this->hasIncrementSameProperty($previousNextLevels->last(), $propertyIncrement)) {
             return true;
         }
-        throw new \LogicException("Secondary property increase has to be at least alternately, got {$propertyIncrement->getCode()} again to increase.");
+        throw new \LogicException(
+            "Secondary property increase has to be at least alternately, got {$propertyIncrement->getCode()} again to increase."
+        );
     }
 
     /**
@@ -452,31 +441,16 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     }
 
     /**
-     * @param $propertyName
+     * @param $propertyCode
      * @return int
      */
-    public function getPropertyModifierForFirstProfession($propertyName)
+    public function getPropertyModifierForFirstProfession($propertyCode)
     {
         if (!$this->hasFirstLevel()) {
             return 0;
         }
 
-        switch ($propertyName) {
-            case Strength::STRENGTH :
-                return $this->getFirstLevel()->getStrengthIncrement()->getValue();
-            case Agility::AGILITY :
-                return $this->getFirstLevel()->getAgilityIncrement()->getValue();
-            case Knack::KNACK :
-                return $this->getFirstLevel()->getKnackIncrement()->getValue();
-            case Will::WILL :
-                return $this->getFirstLevel()->getWillIncrement()->getValue();
-            case Intelligence::INTELLIGENCE :
-                return $this->getFirstLevel()->getIntelligenceIncrement()->getValue();
-            case Charisma::CHARISMA :
-                return $this->getFirstLevel()->getCharismaIncrement()->getValue();
-            default :
-                throw new \LogicException('Unknown property ' . ValueDescriber::describe($propertyName));
-        }
+        return $this->getFirstLevel()->getBasePropertyIncrement($propertyCode)->getValue();
     }
 
     /**
@@ -552,7 +526,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      *
      * @return int
      */
-    private function getPropertyModifierSummary($propertyName)
+    public function getPropertyModifierSummary($propertyName)
     {
         return $this->getPropertyModifierForFirstProfession($propertyName) + $this->sumNextLevelsProperty($propertyName);
     }
@@ -568,30 +542,15 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     }
 
     /**
-     * @param $propertyName
+     * @param $propertyCode
      *
      * @return int[]
      */
-    private function getNextLevelsPropertyModifiers($propertyName)
+    private function getNextLevelsPropertyModifiers($propertyCode)
     {
         return array_map(
-            function (ProfessionLevel $professionLevel) use ($propertyName) {
-                switch ($propertyName) {
-                    case Strength::STRENGTH :
-                        return $professionLevel->getStrengthIncrement()->getValue();
-                    case Agility::AGILITY :
-                        return $professionLevel->getAgilityIncrement()->getValue();
-                    case Knack::KNACK :
-                        return $professionLevel->getKnackIncrement()->getValue();
-                    case Will::WILL :
-                        return $professionLevel->getWillIncrement()->getValue();
-                    case Intelligence::INTELLIGENCE :
-                        return $professionLevel->getIntelligenceIncrement()->getValue();
-                    case Charisma::CHARISMA :
-                        return $professionLevel->getCharismaIncrement()->getValue();
-                    default :
-                        throw new \LogicException;
-                }
+            function (ProfessionLevel $professionLevel) use ($propertyCode) {
+                return $professionLevel->getBasePropertyIncrement($propertyCode)->getValue();
             },
             $this->getNextLevels()
         );
