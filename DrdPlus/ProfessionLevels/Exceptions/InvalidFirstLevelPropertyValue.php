@@ -1,7 +1,7 @@
 <?php
 namespace DrdPlus\ProfessionLevels\Exceptions;
 
-class InvalidFirstLevelPropertyValue extends \LogicException implements Logic
+class InvalidFirstLevelPropertyValue extends InvalidPropertyValue
 {
 
 }

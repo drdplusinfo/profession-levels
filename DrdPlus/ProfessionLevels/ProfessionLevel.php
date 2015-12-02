@@ -182,8 +182,8 @@ abstract class ProfessionLevel extends StrictObject
         Charisma $charisma
     )
     {
-        $sumOfProperties = $this->sumProperties($strength, $agility, $knack, $will, $intelligence, $charisma);
         if ($levelRank->isNextLevel()) { // note: first level properties are covered by one-by-one tests
+            $sumOfProperties = $this->sumProperties($strength, $agility, $knack, $will, $intelligence, $charisma);
             if ($sumOfProperties !== $this->getExpectedSumOfNextLevelProperties()) {
                 throw new Exceptions\InvalidNextLevelPropertiesSum(
                     "Sum of {$levelRank->getValue()}. level properties should be "
@@ -245,10 +245,10 @@ abstract class ProfessionLevel extends StrictObject
 
     private function checkNextLevelPropertyIncrement(BaseProperty $property)
     {
-        if ($property->getValue() < self::MIN_NEXT_LEVEL_PROPERTY_MODIFIER
-            || $property->getValue() > self::MAX_NEXT_LEVEL_PROPERTY_MODIFIER
+        if ($property->getValue() < self::MIN_NEXT_LEVEL_PROPERTY_MODIFIER // 0
+            || $property->getValue() > self::MAX_NEXT_LEVEL_PROPERTY_MODIFIER // 1
         ) {
-            throw new \LogicException(
+            throw new Exceptions\InvalidNextLevelPropertyValue(
                 'Next level property change has to be between '
                 . self::MIN_NEXT_LEVEL_PROPERTY_MODIFIER . ' and '
                 . self::MAX_NEXT_LEVEL_PROPERTY_MODIFIER . ", got {$property->getValue()}"
@@ -385,7 +385,9 @@ abstract class ProfessionLevel extends StrictObject
             case Charisma::CHARISMA :
                 return $this->getCharismaIncrement();
             default :
-                throw new \LogicException('Unknown property ' . ValueDescriber::describe($propertyCode));
+                throw new Exceptions\UnknownBaseProperty(
+                    'Unknown property ' . ValueDescriber::describe($propertyCode)
+                );
         }
     }
 

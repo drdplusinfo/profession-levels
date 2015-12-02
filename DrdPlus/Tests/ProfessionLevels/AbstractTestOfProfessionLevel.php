@@ -1,6 +1,7 @@
 <?php
 namespace DrdPlus\Tests\ProfessionLevels;
 
+use DrdPlus\Codes\ProfessionCodes;
 use DrdPlus\ProfessionLevels\FighterLevel;
 use DrdPlus\ProfessionLevels\PriestLevel;
 use DrdPlus\ProfessionLevels\RangerLevel;
@@ -55,9 +56,34 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
         $this->assertFalse($professionLevel->isNextLevel());
         foreach ([Strength::STRENGTH, Agility::AGILITY, Knack::KNACK, Will::WILL, Intelligence::INTELLIGENCE, Charisma::CHARISMA] as $propertyCode) {
             $this->assertSame($this->isPrimaryProperty($propertyCode), $professionLevel->isPrimaryProperty($propertyCode));
+            $this->assertInstanceOf(
+                $this->getPropertyClassByCode($propertyCode),
+                $propertyIncrement = $professionLevel->getBasePropertyIncrement($propertyCode)
+            );
+            $this->assertSame($this->isPrimaryProperty($propertyCode) ? 1 : 0, $propertyIncrement->getValue());
         }
 
         return $professionLevel;
+    }
+
+    private function getPropertyClassByCode($propertyCode)
+    {
+        switch ($propertyCode) {
+            case Strength::STRENGTH :
+                return Strength::class;
+            case Agility::AGILITY :
+                return Agility::class;
+            case Knack::KNACK :
+                return Knack::class;
+            case Will::WILL :
+                return Will::class;
+            case Intelligence::INTELLIGENCE :
+                return Intelligence::class;
+            case Charisma::CHARISMA :
+                return Charisma::class;
+            default :
+                throw new \LogicException('Where did you get that? ' . $propertyCode);
+        }
     }
 
     /** @return LevelRank */
@@ -179,7 +205,6 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     {
         $profession = \Mockery::mock($this->getProfessionClass());
         $profession->shouldReceive('isPrimaryProperty')
-            ->atLeast()->once()
             ->andReturnUsing(
                 function ($propertyCode) {
                     return in_array($propertyCode, $this->getPrimaryProperties());
@@ -224,10 +249,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
      */
     public function I_can_let_create_first_level_by_factory()
     {
-        $professionLevelClass = $this->getProfessionLevelClass();
-        $professionLevel = $professionLevelClass::createFirstLevel(
-            $profession = $this->createProfession()
-        );
+        $professionLevel = $this->createFirstLevelByFactoryFor($profession = $this->createProfession());
         /** @var ProfessionLevel $professionLevel */
         $this->assertSame($profession, $professionLevel->getProfession());
         $this->assertSame(1, $professionLevel->getLevelRank()->getValue());
@@ -238,6 +260,38 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
         $this->assertSame($this->isPrimaryProperty(Intelligence::INTELLIGENCE) ? 1 : 0, $professionLevel->getIntelligenceIncrement()->getValue());
         $this->assertSame($this->isPrimaryProperty(Charisma::CHARISMA) ? 1 : 0, $professionLevel->getCharismaIncrement()->getValue());
         $this->assertEquals(time(), $professionLevel->getLevelUpAt()->getTimestamp());
+
+        $firstLevelWithOurLevelUpAt = $this->createFirstLevelByFactoryFor(
+            $profession,
+            $levelUpAt = new \DateTimeImmutable('Wed Nov 18 11:44:09 2015 +0100')
+        );
+        $this->assertSame($levelUpAt, $firstLevelWithOurLevelUpAt->getLevelUpAt());
+    }
+
+    private function createFirstLevelByFactoryFor(Profession $profession, \DateTimeImmutable $levelUpAt = null)
+    {
+        switch ($profession->getCode()) {
+            case ProfessionCodes::FIGHTER :
+                /** @var Fighter $profession */
+                return FighterLevel::createFirstLevel($profession, $levelUpAt);
+            case ProfessionCodes::WIZARD :
+                /** @var Wizard $profession */
+                return WizardLevel::createFirstLevel($profession, $levelUpAt);
+            case ProfessionCodes::PRIEST :
+                /** @var Priest $profession */
+                return PriestLevel::createFirstLevel($profession, $levelUpAt);
+            case ProfessionCodes::THEURGIST :
+                /** @var Theurgist $profession */
+                return TheurgistLevel::createFirstLevel($profession, $levelUpAt);
+            case ProfessionCodes::THIEF :
+                /** @var Thief $profession */
+                return ThiefLevel::createFirstLevel($profession, $levelUpAt);
+            case ProfessionCodes::RANGER :
+                /** @var Ranger $profession */
+                return RangerLevel::createFirstLevel($profession, $levelUpAt);
+            default :
+                throw new \LogicException('Where did you get that? ' . $profession->getCode());
+        }
     }
 
     /**
@@ -528,5 +582,129 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
         }
 
         return $values;
+    }
+
+    /**
+     * @test
+     */
+    public function I_can_create_next_level()
+    {
+        $professionLevelClass = $this->getProfessionLevelClass();
+        $profession = $this->createProfession();
+
+        /**
+         * @var ProfessionLevel $nextLevel
+         */
+        $nextLevel = new $professionLevelClass(
+            $profession,
+            $levelRank = LevelRank::getIt(2),
+            Strength::getIt($profession->isPrimaryProperty(Strength::STRENGTH) ? 1 : 0),
+            Agility::getIt($profession->isPrimaryProperty(Agility::AGILITY) ? 1 : 0),
+            Knack::getIt($profession->isPrimaryProperty(Knack::KNACK) ? 1 : 0),
+            Will::getIt($profession->isPrimaryProperty(Will::WILL) ? 1 : 0),
+            Intelligence::getIt($profession->isPrimaryProperty(Intelligence::INTELLIGENCE) ? 1 : 0),
+            Charisma::getIt($profession->isPrimaryProperty(Charisma::CHARISMA) ? 1 : 0)
+        );
+
+        $this->assertSame($levelRank, $nextLevel->getLevelRank());
+    }
+
+    /**
+     * @test
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\InvalidNextLevelPropertiesSum
+     * @expectedExceptionMessageRegExp " 2, got 6$"
+     */
+    public function I_can_not_create_next_level_with_too_high_properties_sum()
+    {
+        $professionLevelClass = $this->getProfessionLevelClass();
+
+        /**
+         * @var ProfessionLevel $nextLevel
+         */
+        $nextLevel = new $professionLevelClass(
+            $this->createProfession(),
+            $levelRank = LevelRank::getIt(2),
+            Strength::getIt(1),
+            Agility::getIt(1),
+            Knack::getIt(1),
+            Will::getIt(1),
+            Intelligence::getIt(1),
+            Charisma::getIt(1)
+        );
+
+        $this->assertSame($levelRank, $nextLevel->getLevelRank());
+    }
+
+    /**
+     * @test
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\InvalidNextLevelPropertiesSum
+     * @expectedExceptionMessageRegExp " 2, got 0$"
+     */
+    public function I_can_not_create_next_level_with_too_low_properties_sum()
+    {
+        $professionLevelClass = $this->getProfessionLevelClass();
+
+        /**
+         * @var ProfessionLevel $nextLevel
+         */
+        $nextLevel = new $professionLevelClass(
+            $this->createProfession(),
+            $levelRank = LevelRank::getIt(2),
+            Strength::getIt(0),
+            Agility::getIt(0),
+            Knack::getIt(0),
+            Will::getIt(0),
+            Intelligence::getIt(0),
+            Charisma::getIt(0)
+        );
+
+        $this->assertSame($levelRank, $nextLevel->getLevelRank());
+    }
+
+    /**
+     * @param ProfessionLevel $professionLevel
+     *
+     * @test
+     * @depends I_can_create_first_level
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\UnknownBaseProperty
+     */
+    public function I_am_stopped_on_use_of_unknown_property_code(ProfessionLevel $professionLevel)
+    {
+        $professionLevel->getBasePropertyIncrement('invalid');
+    }
+
+    /**
+     * @param string $propertyCodeToNegative
+     *
+     * @test
+     * @dataProvider providePropertyCodeOneByOne
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\InvalidNextLevelPropertyValue
+     */
+    public function I_can_not_create_next_level_with_negative_properties_sum($propertyCodeToNegative)
+    {
+        $professionLevelClass = $this->getProfessionLevelClass();
+
+        new $professionLevelClass(
+            $this->createProfession(),
+            $levelRank = LevelRank::getIt(2),
+            Strength::getIt($propertyCodeToNegative === Strength::STRENGTH ? -1 : 0),
+            Agility::getIt($propertyCodeToNegative === Agility::AGILITY ? -1 : 0),
+            Knack::getIt($propertyCodeToNegative === Knack::KNACK ? -1 : 0),
+            Will::getIt($propertyCodeToNegative === Will::WILL ? -1 : 0),
+            Intelligence::getIt($propertyCodeToNegative === Intelligence::INTELLIGENCE ? -1 : 0),
+            Charisma::getIt($propertyCodeToNegative === Charisma::CHARISMA ? -1 : 0)
+        );
+    }
+
+    public function providePropertyCodeOneByOne()
+    {
+        return [
+            [Strength::STRENGTH],
+            [Agility::AGILITY],
+            [Knack::KNACK],
+            [Will::WILL],
+            [Intelligence::INTELLIGENCE],
+            [Charisma::CHARISMA],
+        ];
     }
 }
