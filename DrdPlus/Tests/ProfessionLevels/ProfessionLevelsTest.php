@@ -122,7 +122,6 @@ class ProfessionLevelsTest extends TestWithMockery
     private function addNextLevelAnswer(MockInterface $professionLevel, $isNextLevel)
     {
         $professionLevel->shouldReceive('isNextLevel')
-            ->atLeast()->once()
             ->andReturn($isNextLevel);
     }
 
@@ -253,7 +252,6 @@ class ProfessionLevelsTest extends TestWithMockery
     private function addValueGetter(MockInterface $property, $value)
     {
         $property->shouldReceive('getValue')
-            ->atLeast()->once()
             ->andReturn($value);
     }
 
@@ -281,11 +279,11 @@ class ProfessionLevelsTest extends TestWithMockery
             ->andReturn($profession = $this->mockery(Profession::class));
         $profession->shouldReceive('getValue')
             ->andReturn($professionCode);
+        $this->addFirstLevelAnswer($professionLevel, $levelValue === 1);
+        $this->addNextLevelAnswer($professionLevel, $levelValue > 1);
         $professionLevel->shouldReceive('getLevelRank')
-            ->atLeast()->once()
             ->andReturn($levelRank = $this->mockery(LevelRank::class));
         $levelRank->shouldReceive('getValue')
-            ->atLeast()->once()
             ->andReturn($levelValue);
 
         return $professionLevel;
@@ -838,5 +836,45 @@ class ProfessionLevelsTest extends TestWithMockery
             ->andReturn($profession);
 
         return $professionLevels;
+    }
+
+    /*
+     * SAME PROPERTY INCREMENT IN A ROW
+     */
+
+    /**
+     * @param string $mainProfessionCode
+     * @test
+     * @dataProvider provideProfessionCode
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\TooHighPrimaryPropertyIncrease
+     */
+    public function I_can_not_increase_primary_property_three_times_in_a_row($mainProfessionCode)
+    {
+        $professionLevelsArray = $this->createProfessionLevelsForPrimaryPropertyThreeTimesTest($mainProfessionCode);
+        $professionLevels = new ProfessionLevels();
+        foreach ($professionLevelsArray as $professionLevel) {
+            $professionLevels->addLevel($professionLevel);
+        }
+    }
+
+    private function createProfessionLevelsForPrimaryPropertyThreeTimesTest($professionCode)
+    {
+        $professionLevelsArray = [];
+        foreach ([1, 2, 3, 4] as $levelValue) {
+            $professionLevel = $this->createProfessionLevel($professionCode, $levelValue);
+            $this->addPropertyIncrementGetters(
+                $professionLevel,
+                $strength = $this->isPrimaryProperty(Strength::STRENGTH, $professionCode) ? 1 : 0,
+                $agility = $this->isPrimaryProperty(Agility::AGILITY, $professionCode) ? 1 : 0,
+                $knack = $this->isPrimaryProperty(Knack::KNACK, $professionCode) ? 1 : 0,
+                $will = $this->isPrimaryProperty(Will::WILL, $professionCode) ? 1 : 0,
+                $intelligence = $this->isPrimaryProperty(Intelligence::INTELLIGENCE, $professionCode) ? 1 : 0,
+                $charisma = $this->isPrimaryProperty(Charisma::CHARISMA, $professionCode) ? 1 : 0
+            );
+            $this->addPrimaryPropertiesAnswer($professionLevel, $professionCode);
+            $professionLevelsArray[] = $professionLevel;
+        }
+
+        return $professionLevelsArray;
     }
 }

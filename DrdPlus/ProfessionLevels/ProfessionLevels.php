@@ -335,20 +335,27 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
         }
     }
 
+    /**
+     * @param ArrayCollection|ProfessionLevel[] $previousNextLevels
+     * @param BaseProperty $propertyIncrement
+     * @return bool
+     */
     private function checkPrimaryPropertyIncrementInARow(ArrayCollection $previousNextLevels, BaseProperty $propertyIncrement)
     {
         // main property can be increased only twice in sequence
         if ($previousNextLevels->count() < 2) {
             return true;
         }
-        if (!$this->hasIncrementSameProperty($previousNextLevels->last(), $propertyIncrement)) {
+        $lastPrevious = $previousNextLevels->last();
+        if (!$this->hasIncrementSameProperty($lastPrevious, $propertyIncrement)) {
             return true;
         }
-        $lastButOne = $previousNextLevels->get($previousNextLevels->count() - 2);
-        if (!$this->hasIncrementSameProperty($lastButOne, $propertyIncrement)) {
+        /** @var ProfessionLevel $lastPrevious */
+        $lastButOnePrevious = $previousNextLevels->get($lastPrevious->getLevelRank()->getValue() - 1);
+        if (!$this->hasIncrementSameProperty($lastButOnePrevious, $propertyIncrement)) {
             return true;
         }
-        throw new \LogicException(
+        throw new Exceptions\TooHighPrimaryPropertyIncrease(
             "Primary property can not be increased more then twice in a row, got {$propertyIncrement->getCode()} to increase."
         );
     }
