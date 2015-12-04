@@ -21,10 +21,6 @@ use Mockery\MockInterface;
 class ProfessionLevelsTest extends TestWithMockery
 {
 
-    private $propertyNames = [
-        Strength::STRENGTH, Agility::AGILITY, Knack::KNACK, Will::WILL, Intelligence::INTELLIGENCE, Charisma::CHARISMA
-    ];
-
     /**
      * @return ProfessionLevels
      *
@@ -53,10 +49,12 @@ class ProfessionLevelsTest extends TestWithMockery
         $this->assertSame(0, $professionLevels->getStrengthModifierForFirstProfession());
         $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Strength::STRENGTH));
         $this->assertSame(0, $professionLevels->getStrengthModifierSummary());
+        $this->assertSame(0, $professionLevels->getNextLevelsStrengthModifier());
 
         $this->assertSame(0, $professionLevels->getAgilityModifierForFirstProfession());
         $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Agility::AGILITY));
         $this->assertSame(0, $professionLevels->getAgilityModifierSummary());
+        $this->assertSame(0, $professionLevels->getNextLevelsAgilityModifier());
 
         $this->assertSame(0, $professionLevels->getKnackModifierForFirstProfession());
         $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Knack::KNACK));
@@ -65,48 +63,50 @@ class ProfessionLevelsTest extends TestWithMockery
         $this->assertSame(0, $professionLevels->getWillModifierForFirstProfession());
         $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Will::WILL));
         $this->assertSame(0, $professionLevels->getWillModifierSummary());
+        $this->assertSame(0, $professionLevels->getNextLevelsWillModifier());
 
         $this->assertSame(0, $professionLevels->getIntelligenceModifierForFirstProfession());
         $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Intelligence::INTELLIGENCE));
         $this->assertSame(0, $professionLevels->getIntelligenceModifierSummary());
+        $this->assertSame(0, $professionLevels->getNextLevelsIntelligenceModifier());
 
         $this->assertSame(0, $professionLevels->getCharismaModifierForFirstProfession());
         $this->assertSame(0, $professionLevels->getPropertyModifierForFirstProfession(Charisma::CHARISMA));
         $this->assertSame(0, $professionLevels->getCharismaModifierSummary());
+        $this->assertSame(0, $professionLevels->getNextLevelsCharismaModifier());
 
         $this->assertSame([], $professionLevels->getLevels());
 
         $this->assertFalse($professionLevels->getFirstLevel());
 
-        foreach ($this->getProfessionCodes() as $professionCode) {
-            $getProfessionLevels = 'get' . ucfirst($professionCode) . 'Levels';
-            $levels = $professionLevels->$getProfessionLevels();
-            $this->assertInternalType('array', $levels);
-            $this->assertEmpty($levels);
-        }
-    }
+        $this->assertNull($professionLevels->getId());
 
-    private function getProfessionCodes()
-    {
-        return [
-            Fighter::FIGHTER, Wizard::WIZARD, Priest::PRIEST,
-            Theurgist::THEURGIST, Thief::THIEF, Ranger::RANGER
-        ];
+        $this->assertEquals([], $professionLevels->getFighterLevels());
+        $this->assertEquals([], $professionLevels->getWizardLevels());
+        $this->assertEquals([], $professionLevels->getPriestLevels());
+        $this->assertEquals([], $professionLevels->getTheurgistLevels());
+        $this->assertEquals([], $professionLevels->getThiefLevels());
+        $this->assertEquals([], $professionLevels->getRangerLevels());
     }
 
     /*
      * FIRST LEVELS
      */
 
-    private function addPrimaryPropertiesAnswer(MockInterface $professionLevel, $professionName)
+    private $propertyCodes = [
+        Strength::STRENGTH, Agility::AGILITY, Knack::KNACK,
+        Will::WILL, Intelligence::INTELLIGENCE, Charisma::CHARISMA
+    ];
+
+    private function addPrimaryPropertiesAnswer(MockInterface $professionLevel, $professionCode)
     {
         $modifiers = [];
-        foreach ($this->propertyNames as $propertyName) {
-            $modifiers[$propertyName] = $this->isPrimaryProperty($propertyName, $professionName) ? 1 : 0;
+        foreach ($this->propertyCodes as $propertyName) {
+            $modifiers[$propertyName] = $this->isPrimaryProperty($propertyName, $professionCode) ? 1 : 0;
         }
         $primaryProperties = array_keys(array_filter($modifiers));
 
-        foreach ($this->propertyNames as $propertyName) {
+        foreach ($this->propertyCodes as $propertyName) {
             $professionLevel->shouldReceive('isPrimaryProperty')
                 ->with($propertyName)
                 ->andReturn(in_array($propertyName, $primaryProperties));
@@ -116,7 +116,6 @@ class ProfessionLevelsTest extends TestWithMockery
     private function addFirstLevelAnswer(MockInterface $professionLevel, $isFirstLevel)
     {
         $professionLevel->shouldReceive('isFirstLevel')
-            ->atLeast()->once()
             ->andReturn($isFirstLevel);
     }
 
@@ -127,56 +126,64 @@ class ProfessionLevelsTest extends TestWithMockery
             ->andReturn($isNextLevel);
     }
 
-    /**
-     * @test
-     *
-     * @return ProfessionLevels
-     */
-    public function fighter_at_first_level_has_strength_and_agility_increment()
+    public function provideProfessionCode()
     {
-        return $this->askFirstLevelForPrimaryPropertiesIncrement(Fighter::FIGHTER);
+        return [
+            [Fighter::FIGHTER],
+            [Wizard::WIZARD],
+            [Priest::PRIEST],
+            [Theurgist::THEURGIST],
+            [Thief::THIEF],
+            [Ranger::RANGER]
+        ];
     }
 
-    private function askFirstLevelForPrimaryPropertiesIncrement($professionName)
+    /**
+     * @test
+     * @dataProvider provideProfessionCode
+     * @param string $professionCode
+     * @return ProfessionLevels
+     */
+    public function I_will_get_proper_value_of_first_level_properties($professionCode)
     {
-        $firstLevel = $this->createFirstLevelProfession($professionName);
-        $this->assertInstanceOf($this->getFirstLevelsProfessionLevelClass($professionName), $firstLevel);
-        $this->addFirstLevelPropertyIncrementGetters($firstLevel, $professionName);
-        $this->addPrimaryPropertiesAnswer($firstLevel, $professionName);
-        $professionLevels = $this->createProfessionLevelsWith($professionName, $firstLevel);
+        $firstLevel = $this->createFirstLevelProfession($professionCode);
+        $this->assertInstanceOf($this->getProfessionLevelClass($professionCode), $firstLevel);
+        $this->addFirstLevelPropertyIncrementGetters($firstLevel, $professionCode);
+        $this->addPrimaryPropertiesAnswer($firstLevel, $professionCode);
+        $professionLevels = $this->createProfessionLevelsWith($professionCode, $firstLevel);
         $this->assertSame(
-            $this->isPrimaryProperty(Strength::STRENGTH, $professionName) ? 1 : 0,
+            $this->isPrimaryProperty(Strength::STRENGTH, $professionCode) ? 1 : 0,
             $professionLevels->getStrengthModifierForFirstProfession()
         );
         $this->assertSame(
-            $this->isPrimaryProperty(Agility::AGILITY, $professionName) ? 1 : 0,
+            $this->isPrimaryProperty(Agility::AGILITY, $professionCode) ? 1 : 0,
             $professionLevels->getAgilityModifierForFirstProfession()
         );
         $this->assertSame(
-            $this->isPrimaryProperty(Knack::KNACK, $professionName) ? 1 : 0,
+            $this->isPrimaryProperty(Knack::KNACK, $professionCode) ? 1 : 0,
             $professionLevels->getKnackModifierForFirstProfession()
         );
         $this->assertSame(
-            $this->isPrimaryProperty(Will::WILL, $professionName) ? 1 : 0,
+            $this->isPrimaryProperty(Will::WILL, $professionCode) ? 1 : 0,
             $professionLevels->getWillModifierForFirstProfession()
         );
         $this->assertSame(
-            $this->isPrimaryProperty(Intelligence::INTELLIGENCE, $professionName) ? 1 : 0,
+            $this->isPrimaryProperty(Intelligence::INTELLIGENCE, $professionCode) ? 1 : 0,
             $professionLevels->getIntelligenceModifierForFirstProfession()
         );
         $this->assertSame(
-            $this->isPrimaryProperty(Charisma::CHARISMA, $professionName) ? 1 : 0,
+            $this->isPrimaryProperty(Charisma::CHARISMA, $professionCode) ? 1 : 0,
             $professionLevels->getCharismaModifierForFirstProfession()
         );
 
         return $professionLevels;
     }
 
-    private function addFirstLevelPropertyIncrementGetters(MockInterface $professionLevel, $professionName)
+    private function addFirstLevelPropertyIncrementGetters(MockInterface $professionLevel, $professionCode)
     {
         $modifiers = [];
-        foreach ($this->propertyNames as $propertyName) {
-            $modifiers[$propertyName] = $this->isPrimaryProperty($propertyName, $professionName) ? 1 : 0;
+        foreach ($this->propertyCodes as $propertyName) {
+            $modifiers[$propertyName] = $this->isPrimaryProperty($propertyName, $professionCode) ? 1 : 0;
         }
         $this->addPropertyIncrementGetters(
             $professionLevel,
@@ -200,53 +207,47 @@ class ProfessionLevelsTest extends TestWithMockery
     )
     {
         $professionLevel->shouldReceive('getStrengthIncrement')
-            ->atLeast()->once()
             ->andReturn($strength = $this->mockery(Strength::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(Strength::STRENGTH)
             ->andReturn($strength);
         $this->addValueGetter($strength, $strengthValue);
-        $this->addNameGetter($strength, Strength::STRENGTH);
+        $this->addCodeGetter($strength, Strength::STRENGTH);
         $professionLevel->shouldReceive('getAgilityIncrement')
-            ->atLeast()->once()
             ->andReturn($agility = $this->mockery(Agility::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(Agility::AGILITY)
             ->andReturn($agility);
         $this->addValueGetter($agility, $agilityValue);
-        $this->addNameGetter($agility, Agility::AGILITY);
+        $this->addCodeGetter($agility, Agility::AGILITY);
         $professionLevel->shouldReceive('getKnackIncrement')
-            ->atLeast()->once()
             ->andReturn($knack = $this->mockery(Knack::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(Knack::KNACK)
             ->andReturn($knack);
         $this->addValueGetter($knack, $knackValue);
-        $this->addNameGetter($knack, Knack::KNACK);
+        $this->addCodeGetter($knack, Knack::KNACK);
         $professionLevel->shouldReceive('getWillIncrement')
-            ->atLeast()->once()
             ->andReturn($will = $this->mockery(Will::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(Will::WILL)
             ->andReturn($will);
         $this->addValueGetter($will, $willValue);
-        $this->addNameGetter($will, Will::WILL);
+        $this->addCodeGetter($will, Will::WILL);
         $professionLevel->shouldReceive('getIntelligenceIncrement')
-            ->atLeast()->once()
             ->andReturn($intelligence = $this->mockery(Intelligence::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(Intelligence::INTELLIGENCE)
             ->andReturn($intelligence);
         $this->addValueGetter($intelligence, $intelligenceValue);
-        $this->addNameGetter($intelligence, Intelligence::INTELLIGENCE);
+        $this->addCodeGetter($intelligence, Intelligence::INTELLIGENCE);
         $professionLevel->shouldReceive('getCharismaIncrement')
-            ->atLeast()->once()
             ->andReturn($charisma = $this->mockery(Charisma::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(Charisma::CHARISMA)
             ->andReturn($charisma);
         $this->addValueGetter($charisma, $charismaValue);
-        $this->addNameGetter($charisma, Charisma::CHARISMA);
+        $this->addCodeGetter($charisma, Charisma::CHARISMA);
     }
 
     private function addValueGetter(MockInterface $property, $value)
@@ -256,30 +257,30 @@ class ProfessionLevelsTest extends TestWithMockery
             ->andReturn($value);
     }
 
-    private function addNameGetter(MockInterface $property, $name)
+    private function addCodeGetter(MockInterface $property, $code)
     {
         $property->shouldReceive('getCode')
-            ->andReturn($name);
+            ->andReturn($code);
     }
 
     /**
-     * @param string $professionName
+     * @param string $professionCode
      *
      * @return ProfessionLevel|\Mockery\MockInterface
      */
-    private function createFirstLevelProfession($professionName)
+    private function createFirstLevelProfession($professionCode)
     {
-        return $this->createProfessionLevel($professionName, 1);
+        return $this->createProfessionLevel($professionCode, 1);
     }
 
-    private function createProfessionLevel($professionName, $levelValue)
+    private function createProfessionLevel($professionCode, $levelValue)
     {
         /** @var \Mockery\MockInterface|ProfessionLevel $professionLevel */
-        $professionLevel = $this->mockery($this->getFirstLevelsProfessionLevelClass($professionName));
+        $professionLevel = $this->mockery($this->getProfessionLevelClass($professionCode));
         $professionLevel->shouldReceive('getProfession')
             ->andReturn($profession = $this->mockery(Profession::class));
-        $profession->shouldReceive('getCode')
-            ->andReturn($professionName);
+        $profession->shouldReceive('getValue')
+            ->andReturn($professionCode);
         $professionLevel->shouldReceive('getLevelRank')
             ->atLeast()->once()
             ->andReturn($levelRank = $this->mockery(LevelRank::class));
@@ -292,18 +293,18 @@ class ProfessionLevelsTest extends TestWithMockery
 
     /**
      * @param string $propertyName
-     * @param string $professionName
+     * @param string $professionCode
      *
      * @return bool
      */
-    public function isPrimaryProperty($propertyName, $professionName)
+    private function isPrimaryProperty($propertyName, $professionCode)
     {
-        return in_array($propertyName, $this->getPrimaryProperties($professionName));
+        return in_array($propertyName, $this->getPrimaryProperties($professionCode));
     }
 
-    private function getPrimaryProperties($professionName)
+    private function getPrimaryProperties($professionCode)
     {
-        switch ($professionName) {
+        switch ($professionCode) {
             case Fighter::FIGHTER :
                 return [Strength::STRENGTH, Agility::AGILITY];
             case Priest::PRIEST :
@@ -317,23 +318,23 @@ class ProfessionLevelsTest extends TestWithMockery
             case Wizard::WIZARD :
                 return [Will::WILL, Intelligence::INTELLIGENCE];
             default :
-                throw new \RuntimeException('Unknown profession name ' . var_export($professionName, true));
+                throw new \RuntimeException('Unknown profession name ' . var_export($professionCode, true));
         }
     }
 
     /**
-     * @param string $professionName
+     * @param string $professionCode
      * @param ProfessionLevel $professionLevel
      *
      * @return ProfessionLevels
      */
-    private function createProfessionLevelsWith($professionName, ProfessionLevel $professionLevel)
+    private function createProfessionLevelsWith($professionCode, ProfessionLevel $professionLevel)
     {
         $professionLevels = new ProfessionLevels();
-        $addProfessionLevel = 'add' . ucfirst($professionName) . 'Level';
+        $addProfessionLevel = 'add' . ucfirst($professionCode) . 'Level';
         $professionLevels->$addProfessionLevel($professionLevel);
         $this->assertSame($professionLevel, $professionLevels->getFirstLevel());
-        $levelsGetter = 'get' . ucfirst($professionName) . 'levels';
+        $levelsGetter = 'get' . ucfirst($professionCode) . 'levels';
         $this->assertSame([$professionLevel], $professionLevels->$levelsGetter());
         $this->assertSame([$professionLevel], $professionLevels->getLevels());
 
@@ -341,19 +342,21 @@ class ProfessionLevelsTest extends TestWithMockery
     }
 
     /**
-     * @param string $professionName
      * @param ProfessionLevels $professionLevels
      *
      * @return ProfessionLevels
      */
-    private function missingLevelValueCauseException($professionName, ProfessionLevels $professionLevels)
+    private function missingLevelValueCauseException(ProfessionLevels $professionLevels)
     {
+        $professionCode = $professionLevels->getFirstLevel()->getProfession()->getValue();
         /** @var \Mockery\MockInterface|ProfessionLevel $professionLevel */
-        $professionLevel = $this->mockery($this->getFirstLevelsProfessionLevelClass($professionName));
+        $professionLevel = $this->mockery($this->getProfessionLevelClass(
+            $professionCode
+        ));
         $professionLevel->shouldReceive('getProfession')
             ->andReturn($profession = $this->mockery(Profession::class));
-        $profession->shouldReceive('getCode')
-            ->andReturn($professionName);
+        $profession->shouldReceive('getValue')
+            ->andReturn($professionCode);
         $professionLevel->shouldReceive('getLevelRank')
             ->atLeast()->once()
             ->andReturn($levelRank = $this->mockery(LevelRank::class));
@@ -362,196 +365,78 @@ class ProfessionLevelsTest extends TestWithMockery
             ->andReturn(0);
         $professionLevel->shouldReceive('getId')
             ->andReturn('foo');
-        $adder = 'add' . ucfirst($professionName) . 'Level';
-        $professionLevels->$adder($professionLevel);
+        $addProfessionLevel = 'add' . ucfirst($professionCode) . 'Level';
+        $professionLevels->$addProfessionLevel($professionLevel);
     }
 
     /**
      * @test
-     */
-    public function I_can_add_fighter_level()
-    {
-        return $this->levelCanBeAdded(Fighter::FIGHTER);
-    }
-
-    /**
-     * @param string $professionName
+     * @dataProvider provideProfessionCode
+     * @param string $professionCode
      *
      * @return ProfessionLevels
      */
-    private function levelCanBeAdded($professionName)
+    public function I_can_add_profession_level($professionCode)
     {
         $professionLevels = new ProfessionLevels();
         /** @var \Mockery\MockInterface|ProfessionLevel $professionLevel */
-        $professionLevel = $this->mockery($this->getFirstLevelsProfessionLevelClass($professionName));
+        $professionLevel = $this->mockery($this->getProfessionLevelClass($professionCode));
         $professionLevel->shouldReceive('getProfession')
             ->andReturn($profession = $this->mockery(Profession::class));
-        $profession->shouldReceive('getCode')
-            ->andReturn($professionName);
+        $profession->shouldReceive('getValue')
+            ->andReturn($professionCode);
         $professionLevel->shouldReceive('getLevelRank')
             ->atLeast()->once()
             ->andReturn($levelRank = $this->mockery(LevelRank::class));
         $levelRank->shouldReceive('getValue')
             ->atLeast()->once()
             ->andReturn(1);
-        $this->addPropertyIncrementGetters($professionLevel);
-        $addProfessionLevel = 'add' . ucfirst($professionName) . 'Level';
+        $this->addPropertyIncrementGetters(
+            $professionLevel,
+            $strength = $this->isPrimaryProperty(Strength::STRENGTH, $professionCode) ? 1 : 0,
+            $agility = $this->isPrimaryProperty(Agility::AGILITY, $professionCode) ? 1 : 0,
+            $knack = $this->isPrimaryProperty(Knack::KNACK, $professionCode) ? 1 : 0,
+            $will = $this->isPrimaryProperty(Will::WILL, $professionCode) ? 1 : 0,
+            $intelligence = $this->isPrimaryProperty(Intelligence::INTELLIGENCE, $professionCode) ? 1 : 0,
+            $charisma = $this->isPrimaryProperty(Charisma::CHARISMA, $professionCode) ? 1 : 0
+        );
+        $this->addPrimaryPropertiesAnswer($professionLevel, $professionCode);
+        $addProfessionLevel = 'add' . ucfirst($professionCode) . 'Level';
         $professionLevels->$addProfessionLevel($professionLevel);
+
         $this->assertSame($professionLevel, $professionLevels->getFirstLevel());
-        $levelsGetter = 'get' . ucfirst($professionName) . 'levels';
+        $levelsGetter = 'get' . ucfirst($professionCode) . 'levels';
         $this->assertSame([$professionLevel], $professionLevels->$levelsGetter());
         $this->assertSame([$professionLevel], $professionLevels->getLevels());
+        $this->assertEquals($levelRank, $professionLevels->getHighestLevelRank());
+
+        $this->assertSame($strength, $professionLevels->getStrengthModifierSummary());
+        $this->assertSame($agility, $professionLevels->getAgilityModifierSummary());
+        $this->assertSame($knack, $professionLevels->getKnackModifierSummary());
+        $this->assertSame($will, $professionLevels->getWillModifierSummary());
+        $this->assertSame($intelligence, $professionLevels->getIntelligenceModifierSummary());
+        $this->assertSame($charisma, $professionLevels->getCharismaModifierSummary());
+
+        $this->assertSame($strength, $professionLevels->getStrengthModifierForFirstProfession());
+        $this->assertSame($agility, $professionLevels->getAgilityModifierForFirstProfession());
+        $this->assertSame($knack, $professionLevels->getKnackModifierForFirstProfession());
+        $this->assertSame($will, $professionLevels->getWillModifierForFirstProfession());
+        $this->assertSame($intelligence, $professionLevels->getIntelligenceModifierForFirstProfession());
+        $this->assertSame($charisma, $professionLevels->getCharismaModifierForFirstProfession());
+
+        $this->assertSame(0, $professionLevels->getNextLevelsStrengthModifier());
+        $this->assertSame(0, $professionLevels->getNextLevelsAgilityModifier());
+        $this->assertSame(0, $professionLevels->getNextLevelsKnackModifier());
+        $this->assertSame(0, $professionLevels->getNextLevelsWillModifier());
+        $this->assertSame(0, $professionLevels->getNextLevelsIntelligenceModifier());
+        $this->assertSame(0, $professionLevels->getNextLevelsCharismaModifier());
 
         return $professionLevels;
     }
 
-    private function getFirstLevelsProfessionLevelClass($professionName)
+    private function getProfessionLevelClass($professionCode)
     {
-        return '\DrdPlus\ProfessionLevels\\' . ucfirst($professionName) . 'Level';
-    }
-
-    /**
-     * @test
-     */
-    public function I_can_add_priest_level()
-    {
-        return $this->levelCanBeAdded(Priest::PRIEST);
-    }
-
-    /**
-     * @test
-     */
-    public function priest_at_first_level_has_will_and_charisma_increment()
-    {
-        $this->askFirstLevelForPrimaryPropertiesIncrement(Priest::PRIEST);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_priest_level
-     * @expectedException \LogicException
-     */
-    public function priest_missing_level_value_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->missingLevelValueCauseException(Priest::PRIEST, $professionLevels);
-    }
-
-    /**
-     * @test
-     * @depends I_can_create_it
-     */
-    public function I_can_add_ranger_level()
-    {
-        return $this->levelCanBeAdded(Ranger::RANGER);
-    }
-
-    /**
-     * @test
-     */
-    public function ranger_at_first_level_has_strength_and_knack_increment()
-    {
-        $this->askFirstLevelForPrimaryPropertiesIncrement(Ranger::RANGER);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_ranger_level
-     * @expectedException \LogicException
-     */
-    public function ranger_missing_level_value_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->missingLevelValueCauseException(Ranger::RANGER, $professionLevels);
-    }
-
-    /**
-     * @test
-     * @depends I_can_create_it
-     */
-    public function I_can_add_theurgist_level()
-    {
-        return $this->levelCanBeAdded(Theurgist::THEURGIST);
-    }
-
-    /**
-     * @test
-     */
-    public function theurgist_at_first_level_has_intelligence_and_charisma_increment()
-    {
-        $this->askFirstLevelForPrimaryPropertiesIncrement(Theurgist::THEURGIST);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_theurgist_level
-     * @expectedException \LogicException
-     */
-    public function theurgist_missing_level_value_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->missingLevelValueCauseException(Theurgist::THEURGIST, $professionLevels);
-    }
-
-    /**
-     * @test
-     * @depends I_can_create_it
-     */
-    public function I_can_add_thief_level()
-    {
-        return $this->levelCanBeAdded(Thief::THIEF);
-    }
-
-    /**
-     * @test
-     */
-    public function thief_at_first_level_has_agility_and_knack_increment()
-    {
-        $this->askFirstLevelForPrimaryPropertiesIncrement(Thief::THIEF);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_thief_level
-     * @expectedException \LogicException
-     */
-    public function thief_missing_level_value_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->missingLevelValueCauseException(Thief::THIEF, $professionLevels);
-    }
-
-    /**
-     * @test
-     * @depends I_can_create_it
-     */
-    public function I_can_add_wizard_level()
-    {
-        return $this->levelCanBeAdded(Wizard::WIZARD);
-    }
-
-    /**
-     * @test
-     */
-    public function wizard_at_first_level_has_will_and_intelligence_increment()
-    {
-        $this->askFirstLevelForPrimaryPropertiesIncrement(Wizard::WIZARD);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_wizard_level
-     * @expectedException \LogicException
-     */
-    public function wizard_missing_level_value_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->missingLevelValueCauseException(Wizard::WIZARD, $professionLevels);
+        return '\DrdPlus\ProfessionLevels\\' . ucfirst($professionCode) . 'Level';
     }
 
     /*
@@ -559,58 +444,61 @@ class ProfessionLevelsTest extends TestWithMockery
      */
 
     /**
+     * @param string $professionCode
      * @return ProfessionLevels
      *
-     * @depends I_can_add_fighter_level
      * @test
+     * @dataProvider provideProfessionCode
      */
-    public function I_can_add_more_fighter_levels()
+    public function I_can_add_more_levels_of_same_profession($professionCode)
     {
-        return $this->levelsCanBeAdded(Fighter::FIGHTER);
-    }
-
-    private function levelsCanBeAdded($professionName)
-    {
-        $firstLevel = $this->createFirstLevelProfession($professionName);
-        $this->addFirstLevelPropertyIncrementGetters($firstLevel, $professionName);
-        $this->addPrimaryPropertiesAnswer($firstLevel, $professionName);
+        $firstLevel = $this->createFirstLevelProfession($professionCode);
+        $this->addPrimaryPropertiesAnswer($firstLevel, $professionCode);
         $this->addFirstLevelAnswer($firstLevel, true);
         $this->addNextLevelAnswer($firstLevel, false);
-        $professionLevels = $this->createProfessionLevelsWith($professionName, $firstLevel);
+        $this->addPropertyIncrementGetters(
+            $firstLevel, $strength = 1, $agility = 2, $knack = 3, $will = 4, $intelligence = 5, $charisma = 6
+        );
+        $professionLevels = $this->createProfessionLevelsWith($professionCode, $firstLevel);
 
-        $this->assertInstanceOf($this->geProfessionLevelClass($professionName), $firstLevel);
+        $this->assertInstanceOf($this->geProfessionLevelClass($professionCode), $firstLevel);
         $this->assertSame(1, count($professionLevels->getLevels()));
         $this->assertSame([$firstLevel], $professionLevels->getLevels());
-        $getProfessionLevels = 'get' . ucfirst($professionName) . 'Levels';
+        $getProfessionLevels = 'get' . ucfirst($professionCode) . 'Levels';
         $this->assertSame([$firstLevel], $professionLevels->$getProfessionLevels());
 
-        $propertiesSummary = [];
-        foreach ($this->propertyNames as $propertyName) {
-            $propertiesSummary[$propertyName] = 0;
+        $propertiesSummary = $firstLevelProperties = [];
+        foreach ($this->propertyCodes as $propertyName) {
+            $firstLevelProperties[$propertyName] = $propertiesSummary[$propertyName] = $$propertyName;
         }
-        $secondLevel = $this->createProfessionLevel($professionName, 2);
-        $this->addPropertyIncrementGetters($secondLevel, $strength = 1, $agility = 2, $knack = 3, $will = 4, $intelligence = 5, $charisma = 6);
-        $this->addPrimaryPropertiesAnswer($secondLevel, $professionName);
+        $secondLevel = $this->createProfessionLevel($professionCode, 2);
+        $this->addPropertyIncrementGetters(
+            $secondLevel, $strength = 1, $agility = 2, $knack = 3, $will = 4, $intelligence = 5, $charisma = 6
+        );
+        $this->addPrimaryPropertiesAnswer($secondLevel, $professionCode);
         $this->addNextLevelAnswer($secondLevel, true);
-        foreach ($this->propertyNames as $propertyName) {
+        $nextLevelProperties = [];
+        foreach ($this->propertyCodes as $propertyName) {
+            $nextLevelProperties[$propertyName] = $$propertyName;
             $propertiesSummary[$propertyName] += $$propertyName;
         }
-        $addProfessionLevel = 'add' . ucfirst($professionName) . 'Level';
+        $addProfessionLevel = 'add' . ucfirst($professionCode) . 'Level';
         $professionLevels->$addProfessionLevel($secondLevel);
 
-        $thirdLevel = $this->createProfessionLevel($professionName, 3);
+        $thirdLevel = $this->createProfessionLevel($professionCode, 3);
         $this->addPropertyIncrementGetters(
             $thirdLevel,
-            $strength = ($this->isPrimaryProperty(Strength::STRENGTH, $professionName) ? 7 : 0),
-            $agility = ($this->isPrimaryProperty(Agility::AGILITY, $professionName) ? 8 : 0),
-            $knack = ($this->isPrimaryProperty(Knack::KNACK, $professionName) ? 9 : 0),
-            $will = ($this->isPrimaryProperty(Will::WILL, $professionName) ? 10 : 0),
-            $intelligence = ($this->isPrimaryProperty(Intelligence::INTELLIGENCE, $professionName) ? 11 : 0),
-            $charisma = ($this->isPrimaryProperty(Charisma::CHARISMA, $professionName) ? 12 : 0)
+            $strength = ($this->isPrimaryProperty(Strength::STRENGTH, $professionCode) ? 7 : 0),
+            $agility = ($this->isPrimaryProperty(Agility::AGILITY, $professionCode) ? 8 : 0),
+            $knack = ($this->isPrimaryProperty(Knack::KNACK, $professionCode) ? 9 : 0),
+            $will = ($this->isPrimaryProperty(Will::WILL, $professionCode) ? 10 : 0),
+            $intelligence = ($this->isPrimaryProperty(Intelligence::INTELLIGENCE, $professionCode) ? 11 : 0),
+            $charisma = ($this->isPrimaryProperty(Charisma::CHARISMA, $professionCode) ? 12 : 0)
         );
-        $this->addPrimaryPropertiesAnswer($thirdLevel, $professionName);
-        foreach ($this->propertyNames as $propertyName) {
+        $this->addPrimaryPropertiesAnswer($thirdLevel, $professionCode);
+        foreach ($this->propertyCodes as $propertyName) {
             $propertiesSummary[$propertyName] += $$propertyName;
+            $nextLevelProperties[$propertyName] += $$propertyName;
         }
         $professionLevels->$addProfessionLevel($thirdLevel);
 
@@ -619,116 +507,127 @@ class ProfessionLevelsTest extends TestWithMockery
         $this->assertSame([$firstLevel, $secondLevel, $thirdLevel], $professionLevels->getLevels());
         $this->assertSame([$secondLevel, $thirdLevel], $professionLevels->getNextLevels());
 
-        foreach ($this->propertyNames as $propertyName) {
-            $getPropertyModifierSummary = 'get' . ucfirst($propertyName) . 'ModifierSummary';
-            $this->assertSame(
-                ($this->isPrimaryProperty($propertyName, $professionName) ? 1 : 0) + $propertiesSummary[$propertyName],
-                $professionLevels->$getPropertyModifierSummary(),
-                "The modifier summary of property $propertyName should be "
-                . (($this->isPrimaryProperty($propertyName, $professionName) ? 1 : 0) + $propertiesSummary[$propertyName])
-                . " for $professionName, got " . $professionLevels->$getPropertyModifierSummary()
-            );
+        $levelsArray = [];
+        foreach ($professionLevels as $professionLevel) {
+            $levelsArray[] = $professionLevel;
         }
+        $this->assertEquals($professionLevels->getLevels(), $levelsArray);
+        $this->assertSame($thirdLevel->getLevelRank(), $professionLevels->getHighestLevelRank());
+        $this->assertEquals(count($levelsArray), $professionLevels->getHighestLevelRank()->getValue());
+
+        $this->assertSame($propertiesSummary[Strength::STRENGTH], $professionLevels->getStrengthModifierSummary());
+        $this->assertSame($propertiesSummary[Agility::AGILITY], $professionLevels->getAgilityModifierSummary());
+        $this->assertSame($propertiesSummary[Knack::KNACK], $professionLevels->getKnackModifierSummary());
+        $this->assertSame($propertiesSummary[Will::WILL], $professionLevels->getWillModifierSummary());
+        $this->assertSame($propertiesSummary[Intelligence::INTELLIGENCE], $professionLevels->getIntelligenceModifierSummary());
+        $this->assertSame($propertiesSummary[Charisma::CHARISMA], $professionLevels->getCharismaModifierSummary());
+
+        $this->assertSame($firstLevelProperties[Strength::STRENGTH], $professionLevels->getStrengthModifierForFirstProfession());
+        $this->assertSame($firstLevelProperties[Agility::AGILITY], $professionLevels->getAgilityModifierForFirstProfession());
+        $this->assertSame($firstLevelProperties[Knack::KNACK], $professionLevels->getKnackModifierForFirstProfession());
+        $this->assertSame($firstLevelProperties[Will::WILL], $professionLevels->getWillModifierForFirstProfession());
+        $this->assertSame($firstLevelProperties[Intelligence::INTELLIGENCE], $professionLevels->getIntelligenceModifierForFirstProfession());
+        $this->assertSame($firstLevelProperties[Charisma::CHARISMA], $professionLevels->getCharismaModifierForFirstProfession());
+
+        $this->assertSame($nextLevelProperties[Strength::STRENGTH], $professionLevels->getNextLevelsStrengthModifier());
+        $this->assertSame($nextLevelProperties[Agility::AGILITY], $professionLevels->getNextLevelsAgilityModifier());
+        $this->assertSame($nextLevelProperties[Knack::KNACK], $professionLevels->getNextLevelsKnackModifier());
+        $this->assertSame($nextLevelProperties[Will::WILL], $professionLevels->getNextLevelsWillModifier());
+        $this->assertSame($nextLevelProperties[Intelligence::INTELLIGENCE], $professionLevels->getNextLevelsIntelligenceModifier());
+        $this->assertSame($nextLevelProperties[Charisma::CHARISMA], $professionLevels->getNextLevelsCharismaModifier());
 
         return $professionLevels;
     }
 
-    private function geProfessionLevelClass($professionName)
+    private function geProfessionLevelClass($professionCode)
     {
         $abstractClass = ProfessionLevel::class;
 
-        return preg_replace('~ProfessionLevel$~', ucfirst($professionName) . 'Level', $abstractClass);
+        return preg_replace('~ProfessionLevel$~', ucfirst($professionCode) . 'Level', $abstractClass);
     }
 
     /**
-     * @param ProfessionLevels $professionLevels
-     *
+     * @param string $professionCode
      * @test
-     * @depends I_can_add_fighter_level
+     * @dataProvider provideProfessionCode
      * @expectedException \LogicException
      */
-    public function fighter_missing_level_value_cause_exception(ProfessionLevels $professionLevels)
+    public function I_am_stopped_if_use_zero_level_rank($professionCode)
     {
-        $this->missingLevelValueCauseException(Fighter::FIGHTER, $professionLevels);
+        $professionLevels = new ProfessionLevels();
+        /** @var \Mockery\MockInterface|ProfessionLevel $professionLevel */
+        $professionLevel = $this->mockery($this->getProfessionLevelClass($professionCode));
+        $professionLevel->shouldReceive('getProfession')
+            ->andReturn($profession = $this->mockery(Profession::class));
+        $profession->shouldReceive('getValue')
+            ->andReturn($professionCode);
+        $professionLevel->shouldReceive('getLevelRank')
+            ->atLeast()->once()
+            ->andReturn($levelRank = $this->mockery(LevelRank::class));
+        $levelRank->shouldReceive('getValue')
+            ->atLeast()->once()
+            ->andReturn(1);
+        $addProfessionLevel = 'add' . ucfirst($professionCode) . 'Level';
+        $professionLevels->$addProfessionLevel($professionLevel);
+
+        $this->missingLevelValueCauseException($professionLevels);
     }
 
     /**
-     * @param ProfessionLevels $professionLevels
-     *
      * @test
-     * @depends I_can_add_more_fighter_levels
+     * @dataProvider provideProfessionCode
      * @expectedException \LogicException
+     * @param $professionCode
      */
-    public function adding_fighter_level_with_occupied_sequence_cause_exception(ProfessionLevels $professionLevels)
+    public function I_can_not_add_level_with_occupied_sequence($professionCode)
     {
-        $this->addingLevelWithOccupiedSequenceCauseException(Fighter::FIGHTER, $professionLevels);
-    }
+        $professionLevels = $this->createProfessionLevelsForChangeResistTest($professionCode);
 
-    private function addingLevelWithOccupiedSequenceCauseException(
-        $professionName,
-        ProfessionLevels $professionLevels
-    )
-    {
         $levelsCount = count($professionLevels->getLevels());
         $this->assertGreaterThan(1, $levelsCount /* already occupied level rank to achieve conflict */);
 
-        $anotherLevel = $this->createProfessionLevel($professionName, $levelsCount);
+        $anotherLevel = $this->createProfessionLevel($professionCode, $levelsCount);
 
-        $addProfessionLevel = 'add' . ucfirst($professionName) . 'Level';
+        $addProfessionLevel = 'add' . ucfirst($professionCode) . 'Level';
         $professionLevels->$addProfessionLevel($anotherLevel);
     }
 
     /**
-     * @param ProfessionLevels $professionLevels
-     *
      * @test
-     * @depends I_can_add_more_fighter_levels
      * @expectedException \LogicException
+     * @dataProvider provideProfessionCode
+     * @param $professionCode
      */
-    public function adding_fighter_level_with_too_high_sequence_cause_exception(ProfessionLevels $professionLevels)
+    public function I_can_not_add_level_with_too_high_sequence($professionCode)
     {
-        $this->addingLevelWithTooHighSequenceCauseException(Fighter::FIGHTER, $professionLevels);
-    }
-
-    private function addingLevelWithTooHighSequenceCauseException(
-        $professionName,
-        ProfessionLevels $professionLevels
-    )
-    {
+        $professionLevels = $this->createProfessionLevelsForChangeResistTest($professionCode);
         $levelsCount = count($professionLevels->getLevels());
         $this->assertGreaterThan(1, $levelsCount);
 
-        $anotherLevel = $this->createProfessionLevel($professionName, $levelsCount + 2 /* skipping a rank by one */);
+        $professionCode = $professionLevels->getFirstLevel()->getProfession()->getValue();
+        $anotherLevel = $this->createProfessionLevel($professionCode, $levelsCount + 2 /* skipping a rank by one */);
 
-        $addProfessionLevel = 'add' . ucfirst($professionName) . 'Level';
+        $addProfessionLevel = 'add' . ucfirst($professionCode) . 'Level';
         $professionLevels->$addProfessionLevel($anotherLevel);
     }
 
     /**
-     * @param ProfessionLevels $professionLevels
-     *
      * @test
-     * @depends I_can_add_more_fighter_levels
      * @expectedException \LogicException
+     * @dataProvider provideProfessionCode
+     * @param $professionCode
      */
-    public function changed_fighter_level_during_usage_cause_exception(ProfessionLevels $professionLevels)
+    public function I_can_not_change_level_during_usage($professionCode)
     {
-        $this->changedLevelDuringUsageCauseException(Fighter::FIGHTER, $professionLevels);
-    }
-
-    private function changedLevelDuringUsageCauseException(
-        $professionName,
-        ProfessionLevels $professionLevels
-    )
-    {
+        $professionLevels = $this->createProfessionLevelsForChangeResistTest($professionCode);
         $levelsCount = count($professionLevels->getLevels());
         $this->assertGreaterThan(1, $levelsCount);
 
         /** @var FighterLevel|\Mockery\MockInterface $anotherLevel */
-        $anotherLevel = $this->mockery($this->geProfessionLevelClass($professionName));
+        $anotherLevel = $this->mockery($this->geProfessionLevelClass($professionCode));
         $anotherLevel->shouldReceive('getProfession')
             ->andReturn($profession = $this->mockery(Profession::class));
-        $profession->shouldReceive('getCode')
+        $profession->shouldReceive('getValue')
             ->andReturn(Fighter::FIGHTER);
         $anotherLevel->shouldReceive('getLevelRank')
             ->andReturn($anotherLevelValue = $this->mockery(LevelRank::class));
@@ -738,7 +637,7 @@ class ProfessionLevelsTest extends TestWithMockery
                 return $rank;
             });
 
-        $addProfessionLevel = 'add' . ucfirst($professionName) . 'Level';
+        $addProfessionLevel = 'add' . ucfirst($professionCode) . 'Level';
         $professionLevels->$addProfessionLevel($anotherLevel);
         /** @noinspection PhpUnusedLocalVariableInspection */
         $rank = 1; // changed rank to already occupied value (change propagated by reflection)
@@ -746,239 +645,67 @@ class ProfessionLevelsTest extends TestWithMockery
         $professionLevels->getFirstLevel();
     }
 
-    /**
-     * @return ProfessionLevels
-     *
-     * @test
-     * @depends I_can_add_priest_level
-     */
-    public function I_can_add_more_priest_levels()
+    private function createProfessionLevelsForChangeResistTest($professionCode)
     {
-        return $this->levelsCanBeAdded(Priest::PRIEST);
+        $firstLevel = $this->createFirstLevelProfession($professionCode);
+        $this->addPrimaryPropertiesAnswer($firstLevel, $professionCode);
+        $this->addFirstLevelAnswer($firstLevel, true);
+        $this->addNextLevelAnswer($firstLevel, false);
+        $this->addPropertyIncrementGetters(
+            $firstLevel, $strength = 1, $agility = 2, $knack = 3, $will = 4, $intelligence = 5, $charisma = 6
+        );
+        $professionLevels = $this->createProfessionLevelsWith($professionCode, $firstLevel);
+
+        $this->assertInstanceOf($this->geProfessionLevelClass($professionCode), $firstLevel);
+        $this->assertSame(1, count($professionLevels->getLevels()));
+        $this->assertSame([$firstLevel], $professionLevels->getLevels());
+        $getProfessionLevels = 'get' . ucfirst($professionCode) . 'Levels';
+        $this->assertSame([$firstLevel], $professionLevels->$getProfessionLevels());
+
+        $secondLevel = $this->createProfessionLevel($professionCode, 2);
+        $this->addPropertyIncrementGetters(
+            $secondLevel, $strength = 1, $agility = 2, $knack = 3, $will = 4, $intelligence = 5, $charisma = 6
+        );
+        $this->addPrimaryPropertiesAnswer($secondLevel, $professionCode);
+        $this->addNextLevelAnswer($secondLevel, true);
+
+        $addProfessionLevel = 'add' . ucfirst($professionCode) . 'Level';
+        $professionLevels->$addProfessionLevel($secondLevel);
+
+        $thirdLevel = $this->createProfessionLevel($professionCode, 3);
+        $this->addPropertyIncrementGetters(
+            $thirdLevel,
+            $strength = ($this->isPrimaryProperty(Strength::STRENGTH, $professionCode) ? 7 : 0),
+            $agility = ($this->isPrimaryProperty(Agility::AGILITY, $professionCode) ? 8 : 0),
+            $knack = ($this->isPrimaryProperty(Knack::KNACK, $professionCode) ? 9 : 0),
+            $will = ($this->isPrimaryProperty(Will::WILL, $professionCode) ? 10 : 0),
+            $intelligence = ($this->isPrimaryProperty(Intelligence::INTELLIGENCE, $professionCode) ? 11 : 0),
+            $charisma = ($this->isPrimaryProperty(Charisma::CHARISMA, $professionCode) ? 12 : 0)
+        );
+        $this->addPrimaryPropertiesAnswer($thirdLevel, $professionCode);
+        $professionLevels->$addProfessionLevel($thirdLevel);
+
+        return $professionLevels;
     }
 
     /**
-     * @param ProfessionLevels $professionLevels
-     *
      * @test
-     * @depends I_can_add_more_priest_levels
-     * @expectedException \LogicException
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\UnknownProfession
      */
-    public function adding_priest_level_with_occupied_sequence_cause_exception(ProfessionLevels $professionLevels)
+    public function I_can_not_add_strange_profession()
     {
-        $this->addingLevelWithOccupiedSequenceCauseException(Priest::PRIEST, $professionLevels);
-    }
+        $professionLevels = new ProfessionLevels();
+        $strangeProfessionLevel = $this->mockery(ProfessionLevel::class);
+        $profession = $this->mockery(Profession::class);
+        $profession->shouldReceive('getValue')
+            ->andReturn('Stranger in strange country');
+        $strangeProfessionLevel->shouldReceive('getId')
+            ->andReturn(null);
+        $strangeProfessionLevel->shouldReceive('getProfession')
+            ->andReturn($profession);
 
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_priest_levels
-     * @expectedException \LogicException
-     */
-    public function adding_priest_level_with_too_high_sequence_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->addingLevelWithTooHighSequenceCauseException(Priest::PRIEST, $professionLevels);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_priest_levels
-     * @expectedException \LogicException
-     */
-    public function changed_priest_level_during_usage_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->changedLevelDuringUsageCauseException(Priest::PRIEST, $professionLevels);
-    }
-
-    /**
-     * @return ProfessionLevels
-     *
-     * @test
-     * @depends I_can_add_ranger_level
-     */
-    public function I_can_add_more_ranger_levels()
-    {
-        return $this->levelsCanBeAdded(Ranger::RANGER);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_ranger_levels
-     * @expectedException \LogicException
-     */
-    public function adding_ranger_level_with_occupied_sequence_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->addingLevelWithOccupiedSequenceCauseException(Ranger::RANGER, $professionLevels);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_ranger_levels
-     * @expectedException \LogicException
-     */
-    public function adding_ranger_level_with_too_high_sequence_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->addingLevelWithTooHighSequenceCauseException(Ranger::RANGER, $professionLevels);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_ranger_levels
-     * @expectedException \LogicException
-     */
-    public function changed_ranger_level_during_usage_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->changedLevelDuringUsageCauseException(Ranger::RANGER, $professionLevels);
-    }
-
-    /**
-     * @return ProfessionLevels
-     *
-     * @test
-     * @depends I_can_add_theurgist_level
-     */
-    public function I_can_add_more_theurgist_levels()
-    {
-        return $this->levelsCanBeAdded(Theurgist::THEURGIST);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_theurgist_levels
-     * @expectedException \LogicException
-     */
-    public function adding_theurgist_level_with_occupied_sequence_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->addingLevelWithOccupiedSequenceCauseException(Theurgist::THEURGIST, $professionLevels);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_theurgist_levels
-     * @expectedException \LogicException
-     */
-    public function adding_theurgist_level_with_too_high_sequence_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->addingLevelWithTooHighSequenceCauseException(Theurgist::THEURGIST, $professionLevels);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_theurgist_levels
-     * @expectedException \LogicException
-     */
-    public function changed_theurgist_level_during_usage_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->changedLevelDuringUsageCauseException(Theurgist::THEURGIST, $professionLevels);
-    }
-
-    /**
-     * @return ProfessionLevels
-     *
-     * @test
-     * @depends I_can_add_thief_level
-     */
-    public function I_can_add_more_thief_levels()
-    {
-        return $this->levelsCanBeAdded(Thief::THIEF);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_thief_levels
-     * @expectedException \LogicException
-     */
-    public function adding_thief_level_with_occupied_sequence_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->addingLevelWithOccupiedSequenceCauseException(Thief::THIEF, $professionLevels);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_thief_levels
-     * @expectedException \LogicException
-     */
-    public function adding_thief_level_with_too_high_sequence_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->addingLevelWithTooHighSequenceCauseException(Thief::THIEF, $professionLevels);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_thief_levels
-     * @expectedException \LogicException
-     */
-    public function changed_thief_level_during_usage_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->changedLevelDuringUsageCauseException(Thief::THIEF, $professionLevels);
-    }
-
-    /**
-     * @return ProfessionLevels
-     *
-     * @test
-     * @depends I_can_add_wizard_level
-     */
-    public function I_can_add_more_wizard_levels()
-    {
-        return $this->levelsCanBeAdded(Wizard::WIZARD);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_wizard_levels
-     * @expectedException \LogicException
-     */
-    public function adding_wizard_level_with_occupied_sequence_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->addingLevelWithOccupiedSequenceCauseException(Wizard::WIZARD, $professionLevels);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_wizard_levels
-     * @expectedException \LogicException
-     */
-    public function adding_wizard_level_with_too_high_sequence_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->addingLevelWithTooHighSequenceCauseException(Wizard::WIZARD, $professionLevels);
-    }
-
-    /**
-     * @param ProfessionLevels $professionLevels
-     *
-     * @test
-     * @depends I_can_add_more_wizard_levels
-     * @expectedException \LogicException
-     */
-    public function changed_wizard_level_during_usage_cause_exception(ProfessionLevels $professionLevels)
-    {
-        $this->changedLevelDuringUsageCauseException(Wizard::WIZARD, $professionLevels);
+        /** @var ProfessionLevel $strangeProfessionLevel */
+        $professionLevels->addLevel($strangeProfessionLevel);
     }
 
     /*
@@ -986,16 +713,13 @@ class ProfessionLevelsTest extends TestWithMockery
      */
 
     /**
+     * @param string $mainProfessionCode
      * @test
+     * @dataProvider provideProfessionCode
      */
-    public function I_can_not_mix_other_professions_with_fighter()
+    public function I_can_not_mix_professions($mainProfessionCode)
     {
-        $this->otherProfessionsCauseException(Fighter::FIGHTER);
-    }
-
-    private function otherProfessionsCauseException($mainProfessionCode)
-    {
-        $professionLevels = $this->levelCanBeAdded($mainProfessionCode);
+        $professionLevels = $this->createProfessionLevelsForMixTest($mainProfessionCode);
         /** @var FighterLevel|\Mockery\MockInterface $firstLevel */
         $firstLevel = $professionLevels->getFirstLevel();
         $this->assertInstanceOf($this->getMultiProfessionTestLevelClass($mainProfessionCode), $firstLevel);
@@ -1008,12 +732,43 @@ class ProfessionLevelsTest extends TestWithMockery
             try {
                 $professionLevels->$adder($otherProfessionLevel);
                 $this->fail(
-                    "Adding $professionCode to levels already set to {$firstLevel->getProfession()->getCode()} should throw exception."
+                    "Adding $professionCode to levels already set to {$firstLevel->getProfession()->getValue()} should throw exception."
                 );
             } catch (MultiProfessionsAreProhibited $exception) {
                 $this->assertNotNull($exception);
             }
         }
+    }
+
+    private function createProfessionLevelsForMixTest($professionCode)
+    {
+        $professionLevels = new ProfessionLevels();
+        /** @var \Mockery\MockInterface|ProfessionLevel $professionLevel */
+        $professionLevel = $this->mockery($this->getProfessionLevelClass($professionCode));
+        $professionLevel->shouldReceive('getProfession')
+            ->andReturn($profession = $this->mockery(Profession::class));
+        $profession->shouldReceive('getValue')
+            ->andReturn($professionCode);
+        $professionLevel->shouldReceive('getLevelRank')
+            ->atLeast()->once()
+            ->andReturn($levelRank = $this->mockery(LevelRank::class));
+        $levelRank->shouldReceive('getValue')
+            ->atLeast()->once()
+            ->andReturn(1);
+        $this->addPropertyIncrementGetters(
+            $professionLevel,
+            $strength = $this->isPrimaryProperty(Strength::STRENGTH, $professionCode) ? 1 : 0,
+            $agility = $this->isPrimaryProperty(Agility::AGILITY, $professionCode) ? 1 : 0,
+            $knack = $this->isPrimaryProperty(Knack::KNACK, $professionCode) ? 1 : 0,
+            $will = $this->isPrimaryProperty(Will::WILL, $professionCode) ? 1 : 0,
+            $intelligence = $this->isPrimaryProperty(Intelligence::INTELLIGENCE, $professionCode) ? 1 : 0,
+            $charisma = $this->isPrimaryProperty(Charisma::CHARISMA, $professionCode) ? 1 : 0
+        );
+        $this->addPrimaryPropertiesAnswer($professionLevel, $professionCode);
+        $addProfessionLevel = 'add' . ucfirst($professionCode) . 'Level';
+        $professionLevels->$addProfessionLevel($professionLevel);
+
+        return $professionLevels;
     }
 
     private function getMultiProfessionTestLevelClass($professionCode)
@@ -1033,7 +788,7 @@ class ProfessionLevelsTest extends TestWithMockery
         return array_filter(
             $professionLevels,
             function (ProfessionLevel $level) use ($excludedProfession) {
-                return $level->getProfession()->getCode() !== $excludedProfession->getProfession()->getCode();
+                return $level->getProfession()->getValue() !== $excludedProfession->getProfession()->getValue();
             }
         );
     }
@@ -1042,91 +797,46 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         $professionLevels[$professionCode = Fighter::FIGHTER] = $level = $this->mockery(FighterLevel::class);
         $profession = $this->mockery(Fighter::class);
-        $profession->shouldReceive('getCode') // mock of static method
+        $profession->shouldReceive('getValue')
             ->andReturn($professionCode);
         $level->shouldReceive('getProfession')
             ->andReturn($profession);
 
         $professionLevels[$professionCode = Priest::PRIEST] = $level = $this->mockery(PriestLevel::class);
         $profession = $this->mockery(Priest::class);
-        $profession->shouldReceive('getCode') // mock of static method
+        $profession->shouldReceive('getValue')
             ->andReturn($professionCode);
         $level->shouldReceive('getProfession')
             ->andReturn($profession);
 
         $professionLevels[$professionCode = Ranger::RANGER] = $level = $this->mockery(RangerLevel::class);
         $profession = $this->mockery(Ranger::class);
-        $profession->shouldReceive('getCode') // mock of static method
+        $profession->shouldReceive('getValue')
             ->andReturn($professionCode);
         $level->shouldReceive('getProfession')
             ->andReturn($profession);
 
         $professionLevels[$professionCode = Theurgist::THEURGIST] = $level = $this->mockery(TheurgistLevel::class);
         $profession = $this->mockery(Theurgist::class);
-        $profession->shouldReceive('getCode') // mock of static method
+        $profession->shouldReceive('getValue')
             ->andReturn($professionCode);
         $level->shouldReceive('getProfession')
             ->andReturn($profession);
 
         $professionLevels[$professionCode = Thief::THIEF] = $level = $this->mockery(ThiefLevel::class);
         $profession = $this->mockery(Thief::class);
-        $profession->shouldReceive('getCode') // mock of static method
+        $profession->shouldReceive('getValue')
             ->andReturn($professionCode);
         $level->shouldReceive('getProfession')
             ->andReturn($profession);
 
         $professionLevels[$professionCode = Wizard::WIZARD] = $level = $this->mockery(WizardLevel::class);
         $profession = $this->mockery(Wizard::class);
-        $profession->shouldReceive('getCode') // mock of static method
+        $profession->shouldReceive('getValue')
             ->andReturn($professionCode);
         $level->shouldReceive('getProfession')
             ->andReturn($profession);
 
         return $professionLevels;
-    }
-
-    /**
-     * @test
-     * @depends I_can_add_priest_level
-     */
-    public function I_can_not_mix_other_professions_with_priest()
-    {
-        $this->otherProfessionsCauseException(Priest::PRIEST);
-    }
-
-    /**
-     * @test
-     * @depends I_can_add_ranger_level
-     */
-    public function I_can_not_mix_other_professions_with_ranger()
-    {
-        $this->otherProfessionsCauseException(Ranger::RANGER);
-    }
-
-    /**
-     * @test
-     * @depends I_can_add_theurgist_level
-     */
-    public function I_can_not_mix_other_professions_with_theurgist()
-    {
-        $this->otherProfessionsCauseException(Theurgist::THEURGIST);
-    }
-
-    /**
-     * @test
-     * @depends I_can_add_thief_level
-     */
-    public function I_can_not_mix_other_professions_with_thief()
-    {
-        $this->otherProfessionsCauseException(Thief::THIEF);
-    }
-
-    /**
-     * @test
-     * @depends I_can_add_wizard_level
-     */
-    public function I_can_not_mix_other_professions_with_wizard()
-    {
-        $this->otherProfessionsCauseException(Wizard::WIZARD);
     }
 }

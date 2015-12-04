@@ -94,7 +94,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     /**
      * @return int
      */
-    protected function getId()
+    public function getId()
     {
         return $this->id;
     }
@@ -148,9 +148,9 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     }
 
     /**
-     * All levels, achieved at any profession
+     * All levels, achieved at any profession, sorted ascending by level rank
      *
-     * @return ProfessionLevel[]
+     * @return array|ProfessionLevel[]
      */
     public function getLevels()
     {
@@ -194,13 +194,6 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     {
         usort($professionLevels, function (ProfessionLevel $aLevel, ProfessionLevel $anotherLevel) {
             $difference = $aLevel->getLevelRank()->getValue() - $anotherLevel->getLevelRank()->getValue();
-            if ($difference === 0) {
-                throw new \LogicException(
-                    'Two profession levels of IDs' .
-                    ' ' . ValueDescriber::describe($aLevel->getId()) . ', ' . ValueDescriber::describe($anotherLevel->getId())
-                    . ' have the same level rank.'
-                );
-            }
 
             return $difference > 0
                 ? 1 // firstly given level is higher than second one
@@ -218,11 +211,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     public function getNextLevels()
     {
         $levels = $this->getLevels();
-        $firstLevel = array_shift($levels); // remote the fist level
-        /** @var ProfessionLevel $firstLevel */
-        if ($firstLevel && !$firstLevel->isFirstLevel()) {
-            throw new \LogicException("The removed level should be the first one, removed {$firstLevel->getLevelRank()->getValue()}");
-        }
+        array_shift($levels); // remote the fist level
 
         return $levels;
     }
@@ -256,7 +245,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      */
     private function getPreviousProfessionLevels(ProfessionLevel $professionLevel)
     {
-        switch ($professionLevel->getProfession()->getCode()) {
+        switch ($professionLevel->getProfession()->getValue()) {
             case Fighter::FIGHTER :
                 return $this->fighterLevels;
             case Thief::THIEF :
@@ -270,7 +259,10 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
             case Priest::PRIEST :
                 return $this->priestLevels;
             default :
-                throw new \LogicException;
+                throw new Exceptions\UnknownProfession(
+                    "Profession level of ID {$professionLevel->getId()} is of unknown profession "
+                    . $professionLevel->getProfession()->getValue()
+                );
         }
     }
 
@@ -278,9 +270,9 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     {
         if (count($previousLevels) !== count($this->getLevels())) {
             throw new Exceptions\MultiProfessionsAreProhibited(
-                'Profession levels of ID ' . ValueDescriber::describe($this->id) . ' are already set for profession' .
-                ' ' . $this->getAlreadySetProfessionCode() . ', given  ' . $newLevel->getProfession()->getCode()
-                . ' . Multi-profession is not allowed.'
+                'Profession levels of ID ' . ValueDescriber::describe($this->id)
+                . " are already set for profession {$this->getAlreadySetProfessionCode()}"
+                . ', given  ' . $newLevel->getProfession()->getValue()
             );
         }
     }
@@ -290,7 +282,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     {
         return array_map(
             function (ProfessionLevel $level) {
-                return $level->getProfession()->getCode();
+                return $level->getProfession()->getValue();
             },
             $this->getLevels()
         )[0];
@@ -300,7 +292,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     {
         if (!$newLevel->getLevelRank()->getValue()) {
             throw new \LogicException(
-                'Missing level value of given level of profession ' . $newLevel->getProfession()->getCode()
+                'Missing level value of given level of profession ' . $newLevel->getProfession()->getValue()
                 . ' with ID ' . ValueDescriber::describe($newLevel->getId())
             );
         }
@@ -359,11 +351,13 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
         if (!$this->hasIncrementSameProperty($previousNextLevels->last(), $propertyIncrement)) {
             return true;
         }
-        $lastButOne = $previousNextLevels[$previousNextLevels->count() - 2];
+        $lastButOne = $previousNextLevels->get($previousNextLevels->count() - 2);
         if (!$this->hasIncrementSameProperty($lastButOne, $propertyIncrement)) {
             return true;
         }
-        throw new \LogicException("Primary property can not be increased more then twice in a row, got {$propertyIncrement->getCode()} to increase.");
+        throw new \LogicException(
+            "Primary property can not be increased more then twice in a row, got {$propertyIncrement->getCode()} to increase."
+        );
     }
 
     private function hasIncrementSameProperty(ProfessionLevel $testedProfessionLevel, BaseProperty $patternPropertyIncrement)
@@ -522,23 +516,38 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     }
 
     /**
-     * @param string $propertyName
+     * @param string $propertyCode
      *
      * @return int
      */
-    public function getPropertyModifierSummary($propertyName)
+    public function getPropertyModifierSummary($propertyCode)
     {
-        return $this->getPropertyModifierForFirstProfession($propertyName) + $this->sumNextLevelsProperty($propertyName);
+        return array_sum($this->getLevelsPropertyModifiers($propertyCode));
     }
 
     /**
-     * @param string $propertyName
+     * @param $propertyCode
+     *
+     * @return int[]
+     */
+    private function getLevelsPropertyModifiers($propertyCode)
+    {
+        return array_map(
+            function (ProfessionLevel $professionLevel) use ($propertyCode) {
+                return $professionLevel->getBasePropertyIncrement($propertyCode)->getValue();
+            },
+            $this->getLevels()
+        );
+    }
+
+    /**
+     * @param string $propertyCode
      *
      * @return int
      */
-    private function sumNextLevelsProperty($propertyName)
+    private function sumNextLevelsProperty($propertyCode)
     {
-        return array_sum($this->getNextLevelsPropertyModifiers($propertyName));
+        return array_sum($this->getNextLevelsPropertyModifiers($propertyCode));
     }
 
     /**
@@ -674,7 +683,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
             function (ProfessionLevel $professionLevel) {
                 return $professionLevel->getLevelRank();
             },
-            $this->getLevels()
+            $this->getLevels() // already sorted by level
         );
     }
 }
