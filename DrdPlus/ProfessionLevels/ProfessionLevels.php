@@ -290,13 +290,6 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
 
     private function checkNewLevelSequence(ArrayCollection $previousProfessionLevels, ProfessionLevel $newLevel)
     {
-        if (!$newLevel->getLevelRank()->getValue()) {
-            throw new \LogicException(
-                'Missing level value of given level of profession ' . $newLevel->getProfession()->getValue()
-                . ' with ID ' . ValueDescriber::describe($newLevel->getId())
-            );
-        }
-
         if ($newLevel->getLevelRank()->getValue() !== ($previousProfessionLevels->count() + 1)) {
             throw new \LogicException(
                 'Unexpected level of given profession level. Expected ' . ($previousProfessionLevels->count() + 1)
