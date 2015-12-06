@@ -380,7 +380,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
         if (!$this->hasIncrementSameProperty($previousNextLevels->last(), $propertyIncrement)) {
             return true;
         }
-        throw new \LogicException(
+        throw new Exceptions\TooHighSecondaryPropertyIncrease(
             "Secondary property increase has to be at least alternately, got {$propertyIncrement->getCode()} again to increase."
         );
     }

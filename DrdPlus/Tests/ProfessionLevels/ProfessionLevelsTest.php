@@ -845,10 +845,10 @@ class ProfessionLevelsTest extends TestWithMockery
     /**
      * @param string $professionCode
      * @test
-     * dataProvider provideProfessionCode
+     * @dataProvider provideProfessionCode
      * @expectedException \DrdPlus\ProfessionLevels\Exceptions\TooHighPrimaryPropertyIncrease
      */
-    public function I_can_not_increase_primary_property_three_times_in_a_row($professionCode = 'fighter')
+    public function I_can_not_increase_primary_property_three_times_in_a_row($professionCode)
     {
         $professionLevels = new ProfessionLevels();
         try {
@@ -860,23 +860,21 @@ class ProfessionLevelsTest extends TestWithMockery
             $professionLevels->addLevel($firstLevel);
 
             // the second level will be taken into account on check of fourth level
-            $secondLevel =
-                $this->createProfessionLevelWithPrimaryPropertiesIncreased(
-                    $professionCode,
-                    $professionLevels->getHighestLevelRank()->getValue() + 1,
-                    true, // only first primary property increment
-                    false
-                );
+            $secondLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
+                $professionCode,
+                $professionLevels->getHighestLevelRank()->getValue() + 1,
+                true, // only first primary property increment
+                false
+            );
             $professionLevels->addLevel($secondLevel);
 
             // with both primary properties increased
-            $thirdLevel =
-                $this->createProfessionLevelWithPrimaryPropertiesIncreased(
-                    $professionCode,
-                    $professionLevels->getHighestLevelRank()->getValue() + 1,
-                    false,
-                    true // only second primary property increment
-                );
+            $thirdLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
+                $professionCode,
+                $professionLevels->getHighestLevelRank()->getValue() + 1,
+                false,
+                true // only second primary property increment
+            );
             $professionLevels->addLevel($thirdLevel);
 
             // again with both primary properties increased
@@ -931,6 +929,72 @@ class ProfessionLevelsTest extends TestWithMockery
         $this->addPrimaryPropertiesAnswer($professionLevel, $professionCode);
 
         return $professionLevel;
+    }
 
+    /**
+     * @param string $professionCode
+     * @test
+     * dataProvider provideProfessionCode
+     * @expectedException \DrdPlus\ProfessionLevels\Exceptions\TooHighSecondaryPropertyIncrease
+     */
+    public function I_can_not_increase_secondary_property_two_times_in_a_row($professionCode = 'fighter')
+    {
+        $professionLevels = new ProfessionLevels();
+        try {
+            // the first level does not come to property increment check
+            $firstLevel = $this->createProfessionLevelWithSecondaryPropertiesIncreased(
+                $professionCode,
+                1
+            );
+            $professionLevels->addLevel($firstLevel);
+
+            // the second level will be taken into account on check of third level
+            $secondLevel = $this->createProfessionLevelWithSecondaryPropertiesIncreased(
+                $professionCode,
+                $professionLevels->getHighestLevelRank()->getValue() + 1,
+                false // without increment
+            );
+            $professionLevels->addLevel($secondLevel);
+
+            $thirdLevel = $this->createProfessionLevelWithSecondaryPropertiesIncreased(
+                $professionCode,
+                $professionLevels->getHighestLevelRank()->getValue() + 1
+            );
+            $professionLevels->addLevel($thirdLevel); // should pass
+        } catch (\Exception $exception) {
+            $this->fail('No exception should happen this far: ' . $exception->getMessage());
+        }
+        $fourthLevel = $this->createProfessionLevelWithSecondaryPropertiesIncreased(
+            $professionCode,
+            $professionLevels->getHighestLevelRank()->getValue() + 1
+        );
+        $professionLevels->addLevel($fourthLevel); // should fail
+    }
+
+    private function createProfessionLevelWithSecondaryPropertiesIncreased(
+        $professionCode,
+        $levelValue,
+        $increaseSecondaryProperties = true
+    )
+    {
+        $professionLevel = $this->createProfessionLevel($professionCode, $levelValue);
+        $propertyIncrements = [];
+        foreach ($this->propertyCodes as $propertyCode) {
+            $increment = $increaseSecondaryProperties
+            && !$this->isPrimaryProperty($propertyCode, $professionCode) ? 1 : 0;
+            $propertyIncrements[$propertyCode] = $increment;
+        }
+        $this->addPropertyIncrementGetters(
+            $professionLevel,
+            $propertyIncrements[Strength::STRENGTH],
+            $propertyIncrements[Agility::AGILITY],
+            $propertyIncrements[Knack::KNACK],
+            $propertyIncrements[Will::WILL],
+            $propertyIncrements[Intelligence::INTELLIGENCE],
+            $propertyIncrements[Charisma::CHARISMA]
+        );
+        $this->addPrimaryPropertiesAnswer($professionLevel, $professionCode);
+
+        return $professionLevel;
     }
 }
