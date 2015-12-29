@@ -430,16 +430,16 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      *
      * @return int
      */
-    public function getStrengthModifierForFirstProfession()
+    public function getFirstLevelStrengthModifier()
     {
-        return $this->getPropertyModifierForFirstProfession(Strength::STRENGTH);
+        return $this->getFirstLevelPropertyModifier(Strength::STRENGTH);
     }
 
     /**
      * @param $propertyCode
      * @return int
      */
-    public function getPropertyModifierForFirstProfession($propertyCode)
+    public function getFirstLevelPropertyModifier($propertyCode)
     {
         if (!$this->hasFirstLevel()) {
             return 0;
@@ -461,9 +461,9 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      *
      * @return int
      */
-    public function getAgilityModifierForFirstProfession()
+    public function getFirstLevelAgilityModifier()
     {
-        return $this->getPropertyModifierForFirstProfession(Agility::AGILITY);
+        return $this->getFirstLevelPropertyModifier(Agility::AGILITY);
     }
 
     /**
@@ -471,9 +471,9 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      *
      * @return int
      */
-    public function getKnackModifierForFirstProfession()
+    public function getFirstLevelKnackModifier()
     {
-        return $this->getPropertyModifierForFirstProfession(Knack::KNACK);
+        return $this->getFirstLevelPropertyModifier(Knack::KNACK);
     }
 
     /**
@@ -481,9 +481,9 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      *
      * @return int
      */
-    public function getWillModifierForFirstProfession()
+    public function getFirstLevelWillModifier()
     {
-        return $this->getPropertyModifierForFirstProfession(Will::WILL);
+        return $this->getFirstLevelPropertyModifier(Will::WILL);
     }
 
     /**
@@ -491,9 +491,9 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      *
      * @return int
      */
-    public function getIntelligenceModifierForFirstProfession()
+    public function getFirstLevelIntelligenceModifier()
     {
-        return $this->getPropertyModifierForFirstProfession(Intelligence::INTELLIGENCE);
+        return $this->getFirstLevelPropertyModifier(Intelligence::INTELLIGENCE);
     }
 
     /**
@@ -501,9 +501,9 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      *
      * @return int
      */
-    public function getCharismaModifierForFirstProfession()
+    public function getFirstLevelCharismaModifier()
     {
-        return $this->getPropertyModifierForFirstProfession(Charisma::CHARISMA);
+        return $this->getFirstLevelPropertyModifier(Charisma::CHARISMA);
     }
 
     /**
