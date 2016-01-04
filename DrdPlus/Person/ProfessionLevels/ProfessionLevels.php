@@ -179,7 +179,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     {
         $levels = $this->getLevels();
         if (count($levels) === 0) {
-            return false;
+            throw new Exceptions\NoFirstLevelYet("The first level is not known.");
         }
 
         return $levels[0];

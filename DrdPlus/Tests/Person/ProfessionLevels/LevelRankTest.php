@@ -2,7 +2,7 @@
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use DrdPlus\Person\ProfessionLevels\LevelRank;
-use DrdPlus\Tools\Tests\TestWithMockery;
+use DrdPlus\Tests\Tools\TestWithMockery;
 
 class LevelRankTest extends TestWithMockery
 {

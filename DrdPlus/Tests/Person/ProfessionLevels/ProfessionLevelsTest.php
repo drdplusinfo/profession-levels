@@ -24,7 +24,7 @@ use \DrdPlus\Professions\Ranger;
 use \DrdPlus\Professions\Theurgist;
 use \DrdPlus\Professions\Thief;
 use \DrdPlus\Professions\Wizard;
-use DrdPlus\Tools\Tests\TestWithMockery;
+use DrdPlus\Tests\Tools\TestWithMockery;
 use Mockery\MockInterface;
 
 class ProfessionLevelsTest extends TestWithMockery
@@ -86,8 +86,6 @@ class ProfessionLevelsTest extends TestWithMockery
 
         $this->assertSame([], $professionLevels->getLevels());
 
-        $this->assertFalse($professionLevels->getFirstLevel());
-
         $this->assertNull($professionLevels->getId());
 
         $this->assertEquals([], $professionLevels->getFighterLevels());
@@ -144,6 +142,17 @@ class ProfessionLevelsTest extends TestWithMockery
             [Thief::THIEF],
             [Ranger::RANGER]
         ];
+    }
+
+    /**
+     * @test
+     * @depends I_can_create_it
+     * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\NoFirstLevelYet
+     * @param ProfessionLevels $professionLevels
+     */
+    public function I_am_stopped_by_exception_if_requested_non_existing_first_level(ProfessionLevels $professionLevels)
+    {
+        $this->assertFalse($professionLevels->getFirstLevel());
     }
 
     /**

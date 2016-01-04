@@ -3,7 +3,7 @@ namespace DrdPlus\Tests\ProfessionLevels\EnumTypes;
 
 use Doctrine\DBAL\Types\Type;
 use DrdPlus\Person\ProfessionLevels\EnumTypes\LevelRankType;
-use DrdPlus\Tools\Tests\TestWithMockery;
+use DrdPlus\Tests\Tools\TestWithMockery;
 
 class LevelRankTypeTest extends TestWithMockery
 {

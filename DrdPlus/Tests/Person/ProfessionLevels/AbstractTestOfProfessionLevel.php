@@ -24,7 +24,7 @@ use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
 use \DrdPlus\Professions\Profession;
 use DrdPlus\Properties\PropertyInterface;
-use DrdPlus\Tools\Tests\TestWithMockery;
+use DrdPlus\Tests\Tools\TestWithMockery;
 use Mockery\MockInterface;
 
 abstract class AbstractTestOfProfessionLevel extends TestWithMockery

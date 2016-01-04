@@ -28,7 +28,7 @@ abstract class ProfessionLevel extends StrictObject
     const SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
 
     /**
-     * Have to be protected to allow Doctrine to access it on children
+     * Has to be protected to allow Doctrine to access it on children
      * @var integer
      *
      * @ORM\Column(type="integer")
