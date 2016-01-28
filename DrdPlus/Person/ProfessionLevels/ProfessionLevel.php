@@ -13,9 +13,6 @@ use DrdPlus\Professions\Profession;
 use Granam\Scalar\Tools\ValueDescriber;
 use Granam\Strict\Object\StrictObject;
 
-/**
- * TODO what about classes ProfessionFirstLevel and ProfessionNextLevel ?
- */
 abstract class ProfessionLevel extends StrictObject
 {
 
