@@ -173,7 +173,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     }
 
     /**
-     * @return ProfessionLevel|false
+     * @return ProfessionLevel
      */
     public function getFirstLevel()
     {
