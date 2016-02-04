@@ -2,7 +2,7 @@
 namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrineum\Integer\IntegerEnum;
-use Granam\Scalar\Tools\ValueDescriber;
+use Granam\Tools\ValueDescriber;
 
 /**
  * @method static LevelRank getEnum($value)
@@ -24,7 +24,7 @@ class LevelRank extends IntegerEnum
     public function __construct($value)
     {
         if ($value < 1) {
-            throw new Exceptions\MinimumLevelExceeded(
+            throw new Exceptions\InvalidFirstLevelRank(
                 'Level can not be lesser than 1, got ' . ValueDescriber::describe($value)
             );
         }

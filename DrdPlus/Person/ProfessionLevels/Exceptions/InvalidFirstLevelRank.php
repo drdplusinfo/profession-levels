@@ -1,7 +1,7 @@
 <?php
 namespace DrdPlus\Person\ProfessionLevels\Exceptions;
 
-class UnknownProfession extends \LogicException implements Logic
+class InvalidFirstLevelRank extends InvalidLevelRank
 {
 
 }

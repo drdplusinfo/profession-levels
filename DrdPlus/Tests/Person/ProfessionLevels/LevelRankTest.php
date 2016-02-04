@@ -53,7 +53,7 @@ class LevelRankTest extends TestWithMockery
      * @param int $prohibitedValue
      * @test
      * @dataProvider provideProhibitedLevelValue
-     * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\MinimumLevelExceeded
+     * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelRank
      */
     public function I_can_not_create_zero_or_lesser_level($prohibitedValue)
     {
