@@ -20,7 +20,7 @@ use \DrdPlus\Professions\Ranger;
 use \DrdPlus\Professions\Theurgist;
 use \DrdPlus\Professions\Thief;
 use \DrdPlus\Professions\Wizard;
-use DrdPlus\Tests\Tools\TestWithMockery;
+use Granam\Tests\Tools\TestWithMockery;
 use Mockery\MockInterface;
 
 class ProfessionLevelsTest extends TestWithMockery

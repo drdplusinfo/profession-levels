@@ -15,7 +15,7 @@ use DrdPlus\Properties\Base\Knack;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
 use \DrdPlus\Professions\Profession;
-use DrdPlus\Tests\Tools\TestWithMockery;
+use Granam\Tests\Tools\TestWithMockery;
 use Mockery\MockInterface;
 
 abstract class AbstractTestOfProfessionLevel extends TestWithMockery
