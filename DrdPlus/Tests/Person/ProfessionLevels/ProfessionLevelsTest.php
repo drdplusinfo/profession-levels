@@ -34,7 +34,7 @@ class ProfessionLevelsTest extends TestWithMockery
         /** @var $firstLevel ProfessionFirstLevel */
         $firstLevel = $this->mockery(ProfessionFirstLevel::class);
         $instance = new ProfessionLevels($firstLevel);
-        $this->assertNotNull($instance);
+        self::assertNotNull($instance);
     }
 
     /**
@@ -78,27 +78,27 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         $professionLevels = new ProfessionLevels($firstLevel = $this->createFirstLevel(Fighter::FIGHTER));
 
-        $this->assertSame(0, $professionLevels->getNextLevelsStrengthModifier());
-        $this->assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Strength::STRENGTH));
-        $this->assertSame(0, $professionLevels->getNextLevelsAgilityModifier());
-        $this->assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Agility::AGILITY));
-        $this->assertSame(0, $professionLevels->getNextLevelsKnackModifier());
-        $this->assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Knack::KNACK));
-        $this->assertSame(0, $professionLevels->getNextLevelsWillModifier());
-        $this->assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Will::WILL));
-        $this->assertSame(0, $professionLevels->getNextLevelsIntelligenceModifier());
-        $this->assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Intelligence::INTELLIGENCE));
-        $this->assertSame(0, $professionLevels->getNextLevelsCharismaModifier());
-        $this->assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Charisma::CHARISMA));
+        self::assertSame(0, $professionLevels->getNextLevelsStrengthModifier());
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Strength::STRENGTH));
+        self::assertSame(0, $professionLevels->getNextLevelsAgilityModifier());
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Agility::AGILITY));
+        self::assertSame(0, $professionLevels->getNextLevelsKnackModifier());
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Knack::KNACK));
+        self::assertSame(0, $professionLevels->getNextLevelsWillModifier());
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Will::WILL));
+        self::assertSame(0, $professionLevels->getNextLevelsIntelligenceModifier());
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Intelligence::INTELLIGENCE));
+        self::assertSame(0, $professionLevels->getNextLevelsCharismaModifier());
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Charisma::CHARISMA));
 
-        $this->assertEquals([], $professionLevels->getNextLevels());
-        $this->assertEquals([$firstLevel], $professionLevels->getLevels());
+        self::assertEquals([], $professionLevels->getNextLevels());
+        self::assertEquals([$firstLevel], $professionLevels->getLevels());
         $levelsFromIteration = [];
         foreach ($professionLevels as $professionLevel) {
             $levelsFromIteration[] = $professionLevel;
         }
-        $this->assertEquals($levelsFromIteration, $professionLevels->getLevels());
-        $this->assertNull($professionLevels->getId());
+        self::assertEquals($levelsFromIteration, $professionLevels->getLevels());
+        self::assertNull($professionLevels->getId());
     }
 
     /*
@@ -114,27 +114,27 @@ class ProfessionLevelsTest extends TestWithMockery
         $this->addFirstLevelPropertyIncrementGetters($firstLevel, Fighter::FIGHTER);
         $this->addPrimaryPropertiesAnswer($firstLevel, Fighter::FIGHTER);
         $professionLevels = $this->createProfessionLevelsWith($firstLevel);
-        $this->assertSame(
+        self::assertSame(
             $this->isPrimaryProperty(Strength::STRENGTH, Fighter::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelStrengthModifier()
         );
-        $this->assertSame(
+        self::assertSame(
             $this->isPrimaryProperty(Agility::AGILITY, Fighter::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelAgilityModifier()
         );
-        $this->assertSame(
+        self::assertSame(
             $this->isPrimaryProperty(Knack::KNACK, Fighter::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelKnackModifier()
         );
-        $this->assertSame(
+        self::assertSame(
             $this->isPrimaryProperty(Will::WILL, Fighter::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelWillModifier()
         );
-        $this->assertSame(
+        self::assertSame(
             $this->isPrimaryProperty(Intelligence::INTELLIGENCE, Fighter::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelIntelligenceModifier()
         );
-        $this->assertSame(
+        self::assertSame(
             $this->isPrimaryProperty(Charisma::CHARISMA, Fighter::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelCharismaModifier()
         );
@@ -330,8 +330,8 @@ class ProfessionLevelsTest extends TestWithMockery
     private function createProfessionLevelsWith(ProfessionFirstLevel $firstLevel)
     {
         $professionLevels = new ProfessionLevels($firstLevel);
-        $this->assertSame($firstLevel, $professionLevels->getFirstLevel());
-        $this->assertEquals([$firstLevel], $professionLevels->getLevels());
+        self::assertSame($firstLevel, $professionLevels->getFirstLevel());
+        self::assertEquals([$firstLevel], $professionLevels->getLevels());
 
         return $professionLevels;
     }
@@ -362,36 +362,36 @@ class ProfessionLevelsTest extends TestWithMockery
         $intelligence += $firstLevel->getIntelligenceIncrement()->getValue();
         $charisma += $firstLevel->getCharismaIncrement()->getValue();
 
-        $this->assertSame($firstLevel, $professionLevels->getFirstLevel());
-        $this->assertEquals([$firstLevel, $nextLevel], $professionLevels->getLevels());
-        $this->assertEquals($nextLevel->getLevelRank(), $professionLevels->getHighestLevelRank());
+        self::assertSame($firstLevel, $professionLevels->getFirstLevel());
+        self::assertEquals([$firstLevel, $nextLevel], $professionLevels->getLevels());
+        self::assertEquals($nextLevel->getLevelRank(), $professionLevels->getHighestLevelRank());
 
-        $this->assertSame($strength, $professionLevels->getStrengthModifierSummary());
-        $this->assertSame($strength, $professionLevels->getPropertyModifierSummary(Strength::STRENGTH));
-        $this->assertSame($agility, $professionLevels->getAgilityModifierSummary());
-        $this->assertSame($agility, $professionLevels->getPropertyModifierSummary(Agility::AGILITY));
-        $this->assertSame($knack, $professionLevels->getKnackModifierSummary());
-        $this->assertSame($knack, $professionLevels->getPropertyModifierSummary(Knack::KNACK));
-        $this->assertSame($will, $professionLevels->getWillModifierSummary());
-        $this->assertSame($will, $professionLevels->getPropertyModifierSummary(Will::WILL));
-        $this->assertSame($intelligence, $professionLevels->getIntelligenceModifierSummary());
-        $this->assertSame($intelligence, $professionLevels->getPropertyModifierSummary(Intelligence::INTELLIGENCE));
-        $this->assertSame($charisma, $professionLevels->getCharismaModifierSummary());
-        $this->assertSame($charisma, $professionLevels->getPropertyModifierSummary(Charisma::CHARISMA));
+        self::assertSame($strength, $professionLevels->getStrengthModifierSummary());
+        self::assertSame($strength, $professionLevels->getPropertyModifierSummary(Strength::STRENGTH));
+        self::assertSame($agility, $professionLevels->getAgilityModifierSummary());
+        self::assertSame($agility, $professionLevels->getPropertyModifierSummary(Agility::AGILITY));
+        self::assertSame($knack, $professionLevels->getKnackModifierSummary());
+        self::assertSame($knack, $professionLevels->getPropertyModifierSummary(Knack::KNACK));
+        self::assertSame($will, $professionLevels->getWillModifierSummary());
+        self::assertSame($will, $professionLevels->getPropertyModifierSummary(Will::WILL));
+        self::assertSame($intelligence, $professionLevels->getIntelligenceModifierSummary());
+        self::assertSame($intelligence, $professionLevels->getPropertyModifierSummary(Intelligence::INTELLIGENCE));
+        self::assertSame($charisma, $professionLevels->getCharismaModifierSummary());
+        self::assertSame($charisma, $professionLevels->getPropertyModifierSummary(Charisma::CHARISMA));
 
-        $this->assertSame($firstLevel->getStrengthIncrement()->getValue(), $professionLevels->getFirstLevelStrengthModifier());
-        $this->assertSame($firstLevel->getAgilityIncrement()->getValue(), $professionLevels->getFirstLevelAgilityModifier());
-        $this->assertSame($firstLevel->getKnackIncrement()->getValue(), $professionLevels->getFirstLevelKnackModifier());
-        $this->assertSame($firstLevel->getWillIncrement()->getValue(), $professionLevels->getFirstLevelWillModifier());
-        $this->assertSame($firstLevel->getIntelligenceIncrement()->getValue(), $professionLevels->getFirstLevelIntelligenceModifier());
-        $this->assertSame($firstLevel->getCharismaIncrement()->getValue(), $professionLevels->getFirstLevelCharismaModifier());
+        self::assertSame($firstLevel->getStrengthIncrement()->getValue(), $professionLevels->getFirstLevelStrengthModifier());
+        self::assertSame($firstLevel->getAgilityIncrement()->getValue(), $professionLevels->getFirstLevelAgilityModifier());
+        self::assertSame($firstLevel->getKnackIncrement()->getValue(), $professionLevels->getFirstLevelKnackModifier());
+        self::assertSame($firstLevel->getWillIncrement()->getValue(), $professionLevels->getFirstLevelWillModifier());
+        self::assertSame($firstLevel->getIntelligenceIncrement()->getValue(), $professionLevels->getFirstLevelIntelligenceModifier());
+        self::assertSame($firstLevel->getCharismaIncrement()->getValue(), $professionLevels->getFirstLevelCharismaModifier());
 
-        $this->assertSame($nextLevel->getStrengthIncrement()->getValue(), $professionLevels->getNextLevelsStrengthModifier());
-        $this->assertSame($nextLevel->getAgilityIncrement()->getValue(), $professionLevels->getNextLevelsAgilityModifier());
-        $this->assertSame($nextLevel->getKnackIncrement()->getValue(), $professionLevels->getNextLevelsKnackModifier());
-        $this->assertSame($nextLevel->getWillIncrement()->getValue(), $professionLevels->getNextLevelsWillModifier());
-        $this->assertSame($nextLevel->getIntelligenceIncrement()->getValue(), $professionLevels->getNextLevelsIntelligenceModifier());
-        $this->assertSame($nextLevel->getCharismaIncrement()->getValue(), $professionLevels->getNextLevelsCharismaModifier());
+        self::assertSame($nextLevel->getStrengthIncrement()->getValue(), $professionLevels->getNextLevelsStrengthModifier());
+        self::assertSame($nextLevel->getAgilityIncrement()->getValue(), $professionLevels->getNextLevelsAgilityModifier());
+        self::assertSame($nextLevel->getKnackIncrement()->getValue(), $professionLevels->getNextLevelsKnackModifier());
+        self::assertSame($nextLevel->getWillIncrement()->getValue(), $professionLevels->getNextLevelsWillModifier());
+        self::assertSame($nextLevel->getIntelligenceIncrement()->getValue(), $professionLevels->getNextLevelsIntelligenceModifier());
+        self::assertSame($nextLevel->getCharismaIncrement()->getValue(), $professionLevels->getNextLevelsCharismaModifier());
     }
 
     /**
@@ -423,9 +423,9 @@ class ProfessionLevelsTest extends TestWithMockery
         );
         $professionLevels = $this->createProfessionLevelsWith($firstLevel);
 
-        $this->assertSame(1, count($professionLevels->getLevels()));
-        $this->assertSame($firstLevel, $professionLevels->getFirstLevel());
-        $this->assertSame([$firstLevel], $professionLevels->getLevels());
+        self::assertSame(1, count($professionLevels->getLevels()));
+        self::assertSame($firstLevel, $professionLevels->getFirstLevel());
+        self::assertSame([$firstLevel], $professionLevels->getLevels());
 
         $propertiesSummary = $firstLevelProperties = [];
         foreach ($this->getPropertyCodes() as $propertyName) {
@@ -461,38 +461,38 @@ class ProfessionLevelsTest extends TestWithMockery
         }
         $professionLevels->addLevel($thirdLevel);
 
-        $this->assertSame($firstLevel, $professionLevels->getFirstLevel(), 'After adding a new level the old one is no more the first.');
-        $this->assertSame([$firstLevel, $secondLevel, $thirdLevel], $professionLevels->getLevels());
-        $this->assertSame([$secondLevel, $thirdLevel], $professionLevels->getNextLevels());
+        self::assertSame($firstLevel, $professionLevels->getFirstLevel(), 'After adding a new level the old one is no more the first.');
+        self::assertSame([$firstLevel, $secondLevel, $thirdLevel], $professionLevels->getLevels());
+        self::assertSame([$secondLevel, $thirdLevel], $professionLevels->getNextLevels());
 
         $levelsArray = [];
         foreach ($professionLevels as $professionLevel) {
             $levelsArray[] = $professionLevel;
         }
-        $this->assertEquals($professionLevels->getLevels(), $levelsArray);
-        $this->assertSame($thirdLevel->getLevelRank(), $professionLevels->getHighestLevelRank());
-        $this->assertEquals(count($levelsArray), $professionLevels->getHighestLevelRank()->getValue());
+        self::assertEquals($professionLevels->getLevels(), $levelsArray);
+        self::assertSame($thirdLevel->getLevelRank(), $professionLevels->getHighestLevelRank());
+        self::assertEquals(count($levelsArray), $professionLevels->getHighestLevelRank()->getValue());
 
-        $this->assertSame($propertiesSummary[Strength::STRENGTH], $professionLevels->getStrengthModifierSummary());
-        $this->assertSame($propertiesSummary[Agility::AGILITY], $professionLevels->getAgilityModifierSummary());
-        $this->assertSame($propertiesSummary[Knack::KNACK], $professionLevels->getKnackModifierSummary());
-        $this->assertSame($propertiesSummary[Will::WILL], $professionLevels->getWillModifierSummary());
-        $this->assertSame($propertiesSummary[Intelligence::INTELLIGENCE], $professionLevels->getIntelligenceModifierSummary());
-        $this->assertSame($propertiesSummary[Charisma::CHARISMA], $professionLevels->getCharismaModifierSummary());
+        self::assertSame($propertiesSummary[Strength::STRENGTH], $professionLevels->getStrengthModifierSummary());
+        self::assertSame($propertiesSummary[Agility::AGILITY], $professionLevels->getAgilityModifierSummary());
+        self::assertSame($propertiesSummary[Knack::KNACK], $professionLevels->getKnackModifierSummary());
+        self::assertSame($propertiesSummary[Will::WILL], $professionLevels->getWillModifierSummary());
+        self::assertSame($propertiesSummary[Intelligence::INTELLIGENCE], $professionLevels->getIntelligenceModifierSummary());
+        self::assertSame($propertiesSummary[Charisma::CHARISMA], $professionLevels->getCharismaModifierSummary());
 
-        $this->assertSame($firstLevelProperties[Strength::STRENGTH], $professionLevels->getFirstLevelStrengthModifier());
-        $this->assertSame($firstLevelProperties[Agility::AGILITY], $professionLevels->getFirstLevelAgilityModifier());
-        $this->assertSame($firstLevelProperties[Knack::KNACK], $professionLevels->getFirstLevelKnackModifier());
-        $this->assertSame($firstLevelProperties[Will::WILL], $professionLevels->getFirstLevelWillModifier());
-        $this->assertSame($firstLevelProperties[Intelligence::INTELLIGENCE], $professionLevels->getFirstLevelIntelligenceModifier());
-        $this->assertSame($firstLevelProperties[Charisma::CHARISMA], $professionLevels->getFirstLevelCharismaModifier());
+        self::assertSame($firstLevelProperties[Strength::STRENGTH], $professionLevels->getFirstLevelStrengthModifier());
+        self::assertSame($firstLevelProperties[Agility::AGILITY], $professionLevels->getFirstLevelAgilityModifier());
+        self::assertSame($firstLevelProperties[Knack::KNACK], $professionLevels->getFirstLevelKnackModifier());
+        self::assertSame($firstLevelProperties[Will::WILL], $professionLevels->getFirstLevelWillModifier());
+        self::assertSame($firstLevelProperties[Intelligence::INTELLIGENCE], $professionLevels->getFirstLevelIntelligenceModifier());
+        self::assertSame($firstLevelProperties[Charisma::CHARISMA], $professionLevels->getFirstLevelCharismaModifier());
 
-        $this->assertSame($nextLevelProperties[Strength::STRENGTH], $professionLevels->getNextLevelsStrengthModifier());
-        $this->assertSame($nextLevelProperties[Agility::AGILITY], $professionLevels->getNextLevelsAgilityModifier());
-        $this->assertSame($nextLevelProperties[Knack::KNACK], $professionLevels->getNextLevelsKnackModifier());
-        $this->assertSame($nextLevelProperties[Will::WILL], $professionLevels->getNextLevelsWillModifier());
-        $this->assertSame($nextLevelProperties[Intelligence::INTELLIGENCE], $professionLevels->getNextLevelsIntelligenceModifier());
-        $this->assertSame($nextLevelProperties[Charisma::CHARISMA], $professionLevels->getNextLevelsCharismaModifier());
+        self::assertSame($nextLevelProperties[Strength::STRENGTH], $professionLevels->getNextLevelsStrengthModifier());
+        self::assertSame($nextLevelProperties[Agility::AGILITY], $professionLevels->getNextLevelsAgilityModifier());
+        self::assertSame($nextLevelProperties[Knack::KNACK], $professionLevels->getNextLevelsKnackModifier());
+        self::assertSame($nextLevelProperties[Will::WILL], $professionLevels->getNextLevelsWillModifier());
+        self::assertSame($nextLevelProperties[Intelligence::INTELLIGENCE], $professionLevels->getNextLevelsIntelligenceModifier());
+        self::assertSame($nextLevelProperties[Charisma::CHARISMA], $professionLevels->getNextLevelsCharismaModifier());
     }
 
     /**
@@ -504,7 +504,7 @@ class ProfessionLevelsTest extends TestWithMockery
         $professionLevels = $this->createProfessionLevelsForChangeResistTest(Fighter::FIGHTER);
 
         $levelsCount = count($professionLevels->getLevels());
-        $this->assertGreaterThan(1, $levelsCount /* already occupied level rank to achieve conflict */);
+        self::assertGreaterThan(1, $levelsCount /* already occupied level rank to achieve conflict */);
 
         $anotherLevel = $this->createProfessionLevel(Fighter::FIGHTER, $levelsCount);
 
@@ -519,7 +519,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         $professionLevels = $this->createProfessionLevelsForChangeResistTest(Fighter::FIGHTER);
         $levelsCount = count($professionLevels->getLevels());
-        $this->assertGreaterThan(1, $levelsCount);
+        self::assertGreaterThan(1, $levelsCount);
 
         $anotherLevel = $this->createProfessionLevel(Fighter::FIGHTER, $levelsCount + 2 /* skipping a rank by one */);
 
@@ -537,9 +537,9 @@ class ProfessionLevelsTest extends TestWithMockery
         );
         $professionLevels = $this->createProfessionLevelsWith($firstLevel);
 
-        $this->assertSame(1, count($professionLevels->getLevels()));
-        $this->assertSame($firstLevel, $professionLevels->getFirstLevel());
-        $this->assertEquals([$firstLevel], $professionLevels->getLevels());
+        self::assertSame(1, count($professionLevels->getLevels()));
+        self::assertSame($firstLevel, $professionLevels->getFirstLevel());
+        self::assertEquals([$firstLevel], $professionLevels->getLevels());
 
         $secondLevel = $this->createProfessionLevel($professionCode, 2);
         $this->addPropertyIncrementGetters(
@@ -578,19 +578,19 @@ class ProfessionLevelsTest extends TestWithMockery
         $professionLevels = $this->createProfessionLevelsForMixTest(Fighter::FIGHTER);
         /** @var ProfessionFirstLevel|\Mockery\MockInterface $firstLevel */
         $firstLevel = $professionLevels->getFirstLevel();
-        $this->assertInstanceOf(ProfessionFirstLevel::class, $firstLevel);
+        self::assertInstanceOf(ProfessionFirstLevel::class, $firstLevel);
 
         $otherLevels = $this->getLevelsExcept($firstLevel);
-        $this->assertNotEmpty($otherLevels);
+        self::assertNotEmpty($otherLevels);
 
         foreach ($otherLevels as $professionCode => $otherProfessionLevel) {
             try {
                 $professionLevels->addLevel($otherProfessionLevel);
-                $this->fail(
+                self::fail(
                     "Adding $professionCode to levels already set to {$firstLevel->getProfession()->getValue()} should throw exception."
                 );
             } catch (MultiProfessionsAreProhibited $exception) {
-                $this->assertNotNull($exception);
+                self::assertNotNull($exception);
             }
         }
     }
@@ -709,7 +709,7 @@ class ProfessionLevelsTest extends TestWithMockery
             );
             $professionLevels->addLevel($fourthLevel); //should pass
         } catch (\Exception $exception) {
-            $this->fail(
+            self::fail(
                 'No exception should happen this far: ' . $exception->getMessage()
                 . ' (' . $exception->getTraceAsString() . ')'
             );

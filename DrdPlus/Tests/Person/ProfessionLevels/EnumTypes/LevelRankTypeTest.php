@@ -12,8 +12,8 @@ class LevelRankTypeTest extends TestWithMockery
      */
     public function I_can_get_type_name()
     {
-        $this->assertSame('level_rank', LevelRankType::LEVEL_RANK);
-        $this->assertSame('level_rank', LevelRankType::getTypeName());
+        self::assertSame('level_rank', LevelRankType::LEVEL_RANK);
+        self::assertSame('level_rank', LevelRankType::getTypeName());
     }
 
     /**
@@ -22,6 +22,6 @@ class LevelRankTypeTest extends TestWithMockery
     public function I_can_registered_it()
     {
         LevelRankType::registerSelf();
-        $this->assertTrue(Type::hasType(LevelRankType::getTypeName()));
+        self::assertTrue(Type::hasType(LevelRankType::getTypeName()));
     }
 }

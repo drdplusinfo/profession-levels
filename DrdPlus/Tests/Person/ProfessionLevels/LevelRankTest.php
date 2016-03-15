@@ -11,7 +11,7 @@ class LevelRankTest extends TestWithMockery
      */
     public function I_can_get_its_name_from_as_constant()
     {
-        $this->assertSame('level_rank', LevelRank::LEVEL_RANK);
+        self::assertSame('level_rank', LevelRank::LEVEL_RANK);
     }
 
     /**
@@ -22,7 +22,7 @@ class LevelRankTest extends TestWithMockery
     public function I_can_create_it()
     {
         $instance = LevelRank::getIt($value = 12345);
-        $this->assertInstanceOf(LevelRank::class, $instance);
+        self::assertInstanceOf(LevelRank::class, $instance);
     }
 
     /**
@@ -31,8 +31,8 @@ class LevelRankTest extends TestWithMockery
     public function I_can_get_its_value()
     {
         $levelRank = LevelRank::getIt($value = 12345);
-        $this->assertSame($value, $levelRank->getValue());
-        $this->assertSame("$value", "$levelRank");
+        self::assertSame($value, $levelRank->getValue());
+        self::assertSame("$value", "$levelRank");
     }
 
     /**
@@ -41,12 +41,12 @@ class LevelRankTest extends TestWithMockery
     public function I_can_easily_find_out_if_is_first_or_next_level()
     {
         $firstLevelRank = LevelRank::getIt(1);
-        $this->assertTrue($firstLevelRank->isFirstLevel());
-        $this->assertFalse($firstLevelRank->isNextLevel());
+        self::assertTrue($firstLevelRank->isFirstLevel());
+        self::assertFalse($firstLevelRank->isNextLevel());
 
         $nextLevelRank = LevelRank::getIt(123);
-        $this->assertFalse($nextLevelRank->isFirstLevel());
-        $this->assertTrue($nextLevelRank->isNextLevel());
+        self::assertFalse($nextLevelRank->isFirstLevel());
+        self::assertTrue($nextLevelRank->isNextLevel());
     }
 
     /**

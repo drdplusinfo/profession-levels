@@ -36,25 +36,25 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             $charismaIncrement = $this->createCharisma($professionCode),
             $levelUpAt = new \DateTimeImmutable()
         );
-        $this->assertInstanceOf(ProfessionNextLevel::class, $professionNextLevel);
+        self::assertInstanceOf(ProfessionNextLevel::class, $professionNextLevel);
         /** @var ProfessionLevel $professionNextLevel */
-        $this->assertNull($professionNextLevel->getId());
-        $this->assertSame($professionCode, $professionNextLevel->getProfession()->getValue());
-        $this->assertFalse($professionNextLevel->isFirstLevel());
-        $this->assertTrue($professionNextLevel->isNextLevel());
-        $this->assertSame($levelRank, $professionNextLevel->getLevelRank());
+        self::assertNull($professionNextLevel->getId());
+        self::assertSame($professionCode, $professionNextLevel->getProfession()->getValue());
+        self::assertFalse($professionNextLevel->isFirstLevel());
+        self::assertTrue($professionNextLevel->isNextLevel());
+        self::assertSame($levelRank, $professionNextLevel->getLevelRank());
         foreach ([Strength::STRENGTH, Agility::AGILITY, Knack::KNACK, Will::WILL, Intelligence::INTELLIGENCE, Charisma::CHARISMA] as $propertyCode) {
-            $this->assertSame($this->isPrimaryProperty($propertyCode, $professionCode), $professionNextLevel->isPrimaryProperty($propertyCode));
-            $this->assertInstanceOf(
+            self::assertSame($this->isPrimaryProperty($propertyCode, $professionCode), $professionNextLevel->isPrimaryProperty($propertyCode));
+            self::assertInstanceOf(
                 $this->getPropertyClassByCode($propertyCode),
                 $propertyIncrement = $professionNextLevel->getBasePropertyIncrement($propertyCode)
             );
-            $this->assertSame(
+            self::assertSame(
                 $this->isPrimaryProperty($propertyCode, $professionCode) ? 1 : 0,
                 $propertyIncrement->getValue()
             );
         }
-        $this->assertSame($levelUpAt, $professionNextLevel->getLevelUpAt());
+        self::assertSame($levelUpAt, $professionNextLevel->getLevelUpAt());
     }
 
     public function provideProfessionCode()
@@ -88,15 +88,15 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             $charismaIncrement = $this->createCharisma($professionCode),
             $levelUpAt = new \DateTimeImmutable()
         );
-        $this->assertSame($profession, $professionNextLevel->getProfession());
-        $this->assertSame($levelRank, $professionNextLevel->getLevelRank());
-        $this->assertSame($strengthIncrement, $professionNextLevel->getStrengthIncrement());
-        $this->assertSame($agilityIncrement, $professionNextLevel->getAgilityIncrement());
-        $this->assertSame($knackIncrement, $professionNextLevel->getKnackIncrement());
-        $this->assertSame($intelligenceIncrement, $professionNextLevel->getIntelligenceIncrement());
-        $this->assertSame($charismaIncrement, $professionNextLevel->getCharismaIncrement());
-        $this->assertSame($willIncrement, $professionNextLevel->getWillIncrement());
-        $this->assertSame($levelUpAt, $professionNextLevel->getLevelUpAt());
+        self::assertSame($profession, $professionNextLevel->getProfession());
+        self::assertSame($levelRank, $professionNextLevel->getLevelRank());
+        self::assertSame($strengthIncrement, $professionNextLevel->getStrengthIncrement());
+        self::assertSame($agilityIncrement, $professionNextLevel->getAgilityIncrement());
+        self::assertSame($knackIncrement, $professionNextLevel->getKnackIncrement());
+        self::assertSame($intelligenceIncrement, $professionNextLevel->getIntelligenceIncrement());
+        self::assertSame($charismaIncrement, $professionNextLevel->getCharismaIncrement());
+        self::assertSame($willIncrement, $professionNextLevel->getWillIncrement());
+        self::assertSame($levelUpAt, $professionNextLevel->getLevelUpAt());
     }
 
     /**
@@ -247,8 +247,8 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             $charismaIncrement = $this->createCharisma(ProfessionCodes::FIGHTER)
         );
         $levelUpAt = $ProfessionNextLevel->getLevelUpAt();
-        $this->assertInstanceOf(\DateTimeImmutable::class, $levelUpAt);
-        $this->assertSame(time(), $levelUpAt->getTimestamp());
+        self::assertInstanceOf(\DateTimeImmutable::class, $levelUpAt);
+        self::assertSame(time(), $levelUpAt->getTimestamp());
     }
 
     /**

@@ -29,24 +29,24 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
             $this->createProfession($professionCode),
             $levelUpAt = new \DateTimeImmutable('2004-01-01')
         );
-        $this->assertInstanceOf(ProfessionFirstLevel::class, $professionFirstLevel);
+        self::assertInstanceOf(ProfessionFirstLevel::class, $professionFirstLevel);
         /** @var ProfessionLevel $professionFirstLevel */
-        $this->assertNull($professionFirstLevel->getId());
-        $this->assertSame($professionCode, $professionFirstLevel->getProfession()->getValue());
-        $this->assertTrue($professionFirstLevel->isFirstLevel());
-        $this->assertFalse($professionFirstLevel->isNextLevel());
+        self::assertNull($professionFirstLevel->getId());
+        self::assertSame($professionCode, $professionFirstLevel->getProfession()->getValue());
+        self::assertTrue($professionFirstLevel->isFirstLevel());
+        self::assertFalse($professionFirstLevel->isNextLevel());
         foreach ([Strength::STRENGTH, Agility::AGILITY, Knack::KNACK, Will::WILL, Intelligence::INTELLIGENCE, Charisma::CHARISMA] as $propertyCode) {
-            $this->assertSame($this->isPrimaryProperty($propertyCode, $professionCode), $professionFirstLevel->isPrimaryProperty($propertyCode));
-            $this->assertInstanceOf(
+            self::assertSame($this->isPrimaryProperty($propertyCode, $professionCode), $professionFirstLevel->isPrimaryProperty($propertyCode));
+            self::assertInstanceOf(
                 $this->getPropertyClassByCode($propertyCode),
                 $propertyIncrement = $professionFirstLevel->getBasePropertyIncrement($propertyCode)
             );
-            $this->assertSame(
+            self::assertSame(
                 $this->isPrimaryProperty($propertyCode, $professionCode) ? 1 : 0,
                 $propertyIncrement->getValue()
             );
         }
-        $this->assertSame($levelUpAt, $professionFirstLevel->getLevelUpAt());
+        self::assertSame($levelUpAt, $professionFirstLevel->getLevelUpAt());
     }
 
     public function provideProfessionCode()
@@ -80,15 +80,15 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
             $charismaIncrement = $this->createCharisma($professionCode),
             $levelUpAt = new \DateTimeImmutable()
         );
-        $this->assertSame($profession, $professionLevel->getProfession());
-        $this->assertSame($levelRank, $professionLevel->getLevelRank());
-        $this->assertSame($strengthIncrement, $professionLevel->getStrengthIncrement());
-        $this->assertSame($agilityIncrement, $professionLevel->getAgilityIncrement());
-        $this->assertSame($knackIncrement, $professionLevel->getKnackIncrement());
-        $this->assertSame($intelligenceIncrement, $professionLevel->getIntelligenceIncrement());
-        $this->assertSame($charismaIncrement, $professionLevel->getCharismaIncrement());
-        $this->assertSame($willIncrement, $professionLevel->getWillIncrement());
-        $this->assertSame($levelUpAt, $professionLevel->getLevelUpAt());
+        self::assertSame($profession, $professionLevel->getProfession());
+        self::assertSame($levelRank, $professionLevel->getLevelRank());
+        self::assertSame($strengthIncrement, $professionLevel->getStrengthIncrement());
+        self::assertSame($agilityIncrement, $professionLevel->getAgilityIncrement());
+        self::assertSame($knackIncrement, $professionLevel->getKnackIncrement());
+        self::assertSame($intelligenceIncrement, $professionLevel->getIntelligenceIncrement());
+        self::assertSame($charismaIncrement, $professionLevel->getCharismaIncrement());
+        self::assertSame($willIncrement, $professionLevel->getWillIncrement());
+        self::assertSame($levelUpAt, $professionLevel->getLevelUpAt());
     }
 
     /**
@@ -232,8 +232,8 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
             $this->createProfession(ProfessionCodes::FIGHTER)
         );
         $levelUpAt = $professionFirstLevel->getLevelUpAt();
-        $this->assertInstanceOf(\DateTimeImmutable::class, $levelUpAt);
-        $this->assertSame(time(), $levelUpAt->getTimestamp());
+        self::assertInstanceOf(\DateTimeImmutable::class, $levelUpAt);
+        self::assertSame(time(), $levelUpAt->getTimestamp());
     }
 
     /**
