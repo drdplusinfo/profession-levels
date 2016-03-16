@@ -31,10 +31,24 @@ class ProfessionLevelsTest extends TestWithMockery
      */
     public function I_can_create_it()
     {
-        /** @var $firstLevel ProfessionFirstLevel */
-        $firstLevel = $this->mockery(ProfessionFirstLevel::class);
-        $instance = new ProfessionLevels($firstLevel);
-        self::assertNotNull($instance);
+        $firstLevel = $this->createFirstLevel('fighter');
+        $withFirstLevelOnly = new ProfessionLevels($firstLevel);
+        self::assertNotNull($withFirstLevelOnly);
+
+        $anotherInstance = ProfessionLevels::createIt($firstLevel);
+        self::assertEquals($withFirstLevelOnly, $anotherInstance);
+
+        $yetAnotherInstance = ProfessionLevels::createIt($firstLevel);
+        self::assertNotSame($anotherInstance, $yetAnotherInstance);
+
+        $withExplicitlyEmptyNextLevels = ProfessionLevels::createIt($firstLevel, []);
+        self::assertEquals($withFirstLevelOnly, $withExplicitlyEmptyNextLevels);
+
+        $withNextLevels = ProfessionLevels::createIt(
+            $firstLevel,
+            [$this->createNextLevel('fighter', 2 /* level */)]
+        );
+        self::assertNotEquals($withFirstLevelOnly, $withNextLevels);
     }
 
     /**
@@ -44,10 +58,7 @@ class ProfessionLevelsTest extends TestWithMockery
     private function createFirstLevel($professionCode)
     {
         $firstLevel = $this->mockery(ProfessionFirstLevel::class);
-        $firstLevel->shouldReceive('getProfession')
-            ->andReturn($profession = $this->mockery(Profession::class));
-        $profession->shouldReceive('getValue')
-            ->andReturn($professionCode);
+        $this->addProfessionGetter($firstLevel, $professionCode);
         $firstLevel->shouldReceive('getLevelRank')
             ->andReturn($levelRank = $this->mockery(LevelRank::class));
         $levelRank->shouldReceive('getValue')
@@ -64,6 +75,32 @@ class ProfessionLevelsTest extends TestWithMockery
         $this->addPrimaryPropertiesAnswer($firstLevel, $professionCode);
 
         return $firstLevel;
+    }
+
+    private function addProfessionGetter(MockInterface $professionLevel, $professionCode)
+    {
+        $professionLevel->shouldReceive('getProfession')
+            ->andReturn($profession = $this->mockery(Profession::class));
+        $profession->shouldReceive('getValue')
+            ->andReturn($professionCode);
+    }
+
+    private function createNextLevel($professionCode, $levelValue)
+    {
+        $professionNextLevel = $this->mockery(ProfessionNextLevel::class);
+        $this->addProfessionGetter($professionNextLevel, $professionCode);
+        $this->addLevelRankGetter($professionNextLevel, $levelValue);
+        $this->addPropertyIncrementGetters($professionNextLevel);
+
+        return $professionNextLevel;
+    }
+
+    private function addLevelRankGetter(MockInterface $professionLevel, $levelValue)
+    {
+        $professionLevel->shouldReceive('getLevelRank')
+            ->andReturn($levelRank = $this->mockery(LevelRank::class));
+        $levelRank->shouldReceive('getValue')
+            ->andReturn($levelValue);
     }
 
     /*
@@ -234,7 +271,7 @@ class ProfessionLevelsTest extends TestWithMockery
         foreach ($this->getPropertyCodes() as $propertyName) {
             $professionLevel->shouldReceive('isPrimaryProperty')
                 ->with($propertyName)
-                ->andReturn(in_array($propertyName, $primaryProperties));
+                ->andReturn(in_array($propertyName, $primaryProperties, true));
         }
     }
 
@@ -299,7 +336,7 @@ class ProfessionLevelsTest extends TestWithMockery
      */
     private function isPrimaryProperty($propertyName, $professionCode)
     {
-        return in_array($propertyName, $this->getPrimaryProperties($professionCode));
+        return in_array($propertyName, $this->getPrimaryProperties($professionCode), true);
     }
 
     private function getPrimaryProperties($professionCode)
@@ -791,7 +828,7 @@ class ProfessionLevelsTest extends TestWithMockery
             );
             $professionLevels->addLevel($thirdLevel); // should pass
         } catch (\Exception $exception) {
-            $this->fail('No exception should happen this far: ' . $exception->getMessage()
+            self::fail('No exception should happen this far: ' . $exception->getMessage()
                 . '( ' . $exception->getTraceAsString() . ')');
 
             return;

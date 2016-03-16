@@ -43,6 +43,16 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
      */
     private $professionNextLevels;
 
+    public static function createIt(ProfessionFirstLevel $professionFirstLevel, array $professionNextLevels = [])
+    {
+        $professionLevels = new static($professionFirstLevel);
+        foreach ($professionNextLevels as $professionNextLevel) {
+            $professionLevels->addLevel($professionNextLevel);
+        }
+
+        return $professionLevels;
+    }
+
     public function __construct(ProfessionFirstLevel $professionFirstLevel)
     {
         $this->professionFirstLevel = $professionFirstLevel;
