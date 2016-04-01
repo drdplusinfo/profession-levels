@@ -401,7 +401,7 @@ class ProfessionLevelsTest extends TestWithMockery
 
         self::assertSame($firstLevel, $professionLevels->getFirstLevel());
         self::assertEquals([$firstLevel, $nextLevel], $professionLevels->getLevels());
-        self::assertEquals($nextLevel->getLevelRank(), $professionLevels->getHighestLevelRank());
+        self::assertEquals($nextLevel, $professionLevels->getCurrentLevel());
 
         self::assertSame($strength, $professionLevels->getStrengthModifierSummary());
         self::assertSame($strength, $professionLevels->getPropertyModifierSummary(Strength::STRENGTH));
@@ -507,8 +507,8 @@ class ProfessionLevelsTest extends TestWithMockery
             $levelsArray[] = $professionLevel;
         }
         self::assertEquals($professionLevels->getLevels(), $levelsArray);
-        self::assertSame($thirdLevel->getLevelRank(), $professionLevels->getHighestLevelRank());
-        self::assertEquals(count($levelsArray), $professionLevels->getHighestLevelRank()->getValue());
+        self::assertSame($thirdLevel, $professionLevels->getCurrentLevel());
+        self::assertEquals(count($levelsArray), $professionLevels->getCurrentLevel()->getLevelRank()->getValue());
 
         self::assertSame($propertiesSummary[Strength::STRENGTH], $professionLevels->getStrengthModifierSummary());
         self::assertSame($propertiesSummary[Agility::AGILITY], $professionLevels->getAgilityModifierSummary());
@@ -724,7 +724,7 @@ class ProfessionLevelsTest extends TestWithMockery
             // the second level will be taken into account on check of fourth level
             $secondLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
                 Fighter::FIGHTER,
-                $professionLevels->getHighestLevelRank()->getValue() + 1,
+                $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1,
                 true, // only first primary property increment
                 false
             );
@@ -733,7 +733,7 @@ class ProfessionLevelsTest extends TestWithMockery
             // with both primary properties increased
             $thirdLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
                 Fighter::FIGHTER,
-                $professionLevels->getHighestLevelRank()->getValue() + 1,
+                $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1,
                 false,
                 true // only second primary property increment
             );
@@ -742,7 +742,7 @@ class ProfessionLevelsTest extends TestWithMockery
             // again with both primary properties increased
             $fourthLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
                 Fighter::FIGHTER,
-                $professionLevels->getHighestLevelRank()->getValue() + 1
+                $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1
             );
             $professionLevels->addLevel($fourthLevel); //should pass
         } catch (\Exception $exception) {
@@ -757,7 +757,7 @@ class ProfessionLevelsTest extends TestWithMockery
         // and again with both primary properties increased
         $fifthLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
             Fighter::FIGHTER,
-            $professionLevels->getHighestLevelRank()->getValue() + 1
+            $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1
         );
         $professionLevels->addLevel($fifthLevel); // should fail
     }
@@ -817,14 +817,14 @@ class ProfessionLevelsTest extends TestWithMockery
             // the second level will be taken into account on check of third level
             $secondLevel = $this->createProfessionLevelWithSecondaryPropertiesIncreased(
                 $professionCode,
-                $professionLevels->getHighestLevelRank()->getValue() + 1,
+                $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1,
                 false // without increment
             );
             $professionLevels->addLevel($secondLevel);
 
             $thirdLevel = $this->createProfessionLevelWithSecondaryPropertiesIncreased(
                 $professionCode,
-                $professionLevels->getHighestLevelRank()->getValue() + 1
+                $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1
             );
             $professionLevels->addLevel($thirdLevel); // should pass
         } catch (\Exception $exception) {
@@ -835,7 +835,7 @@ class ProfessionLevelsTest extends TestWithMockery
         }
         $fourthLevel = $this->createProfessionLevelWithSecondaryPropertiesIncreased(
             $professionCode,
-            $professionLevels->getHighestLevelRank()->getValue() + 1
+            $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1
         );
         $professionLevels->addLevel($fourthLevel); // should fail
     }

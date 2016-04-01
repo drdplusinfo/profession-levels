@@ -147,10 +147,10 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
 
     private function checkNewLevelSequence(ProfessionLevel $newLevel)
     {
-        if ($newLevel->getLevelRank()->getValue() !== $this->getHighestLevelRank()->getValue() + 1) {
+        if ($newLevel->getLevelRank()->getValue() !== $this->getCurrentLevel()->getLevelRank()->getValue() + 1) {
             throw new Exceptions\InvalidLevelRank(
                 'Unexpected rank of given profession level.'
-                . ' Expected ' . ($this->getHighestLevelRank()->getValue() + 1)
+                . ' Expected ' . ($this->getCurrentLevel()->getLevelRank()->getValue() + 1)
                 . ', got ' . $newLevel->getLevelRank()->getValue()
             );
         }
@@ -459,14 +459,13 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     }
 
     /**
-     * @return LevelRank
+     * @return ProfessionLevel
      */
-    public function getHighestLevelRank()
+    public function getCurrentLevel()
     {
         $sortedLevels = $this->getLevels();
-        /** @var ProfessionLevel $highestLevel */
-        $highestLevel = end($sortedLevels);
 
-        return $highestLevel->getLevelRank();
+        return end($sortedLevels);
     }
+
 }
