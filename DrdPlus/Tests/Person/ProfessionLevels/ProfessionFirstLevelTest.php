@@ -11,7 +11,7 @@ use DrdPlus\Properties\Base\Intelligence;
 use DrdPlus\Properties\Base\Knack;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
-use DrdPlus\Properties\PropertyInterface;
+use DrdPlus\Properties\Property;
 use Mockery\MockInterface;
 
 class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
@@ -124,7 +124,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param string $propertyClass
      * @param string $propertyCode
      * @param string|null $propertyValue = null
-     * @return MockInterface|PropertyInterface
+     * @return MockInterface|Property
      */
     private function createProperty($professionCode, $propertyClass, $propertyCode, $propertyValue = null)
     {

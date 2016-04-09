@@ -1,6 +1,7 @@
 <?php
 namespace DrdPlus\Person\ProfessionLevels;
 
+use Doctrine\ORM\Mapping as ORM;
 use DrdPlus\Professions\Profession;
 use DrdPlus\Properties\Base\Agility;
 use DrdPlus\Properties\Base\BaseProperty;
@@ -10,6 +11,9 @@ use DrdPlus\Properties\Base\Knack;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
 
+/**
+ * @ORM\Entity()
+ */
 class ProfessionFirstLevel extends ProfessionLevel
 {
 

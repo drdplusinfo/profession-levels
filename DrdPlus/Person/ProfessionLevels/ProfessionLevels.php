@@ -3,6 +3,7 @@ namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrineum\Entity\Entity;
 use DrdPlus\Properties\Base\Agility;
 use DrdPlus\Properties\Base\BaseProperty;
 use DrdPlus\Properties\Base\Charisma;
@@ -13,12 +14,9 @@ use DrdPlus\Properties\Base\Will;
 use Granam\Strict\Object\StrictObject;
 
 /**
- * ProfessionLevels
- *
- * @ORM\Table()
  * @ORM\Entity()
  */
-class ProfessionLevels extends StrictObject implements \IteratorAggregate
+class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregate
 {
     const PROPERTY_FIRST_LEVEL_MODIFIER = +1;
 

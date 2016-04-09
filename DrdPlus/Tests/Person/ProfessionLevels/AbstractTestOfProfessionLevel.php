@@ -35,7 +35,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
      */
     protected function isPrimaryProperty($propertyCode, $professionCode)
     {
-        return in_array($propertyCode, $this->getPrimaryProperties($professionCode));
+        return in_array($propertyCode, $this->getPrimaryProperties($professionCode), true);
     }
 
     /**
@@ -71,7 +71,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
         $profession->shouldReceive('isPrimaryProperty')
             ->andReturnUsing(
                 function ($propertyCode) use ($professionCode) {
-                    return in_array($propertyCode, $this->getPrimaryProperties($professionCode));
+                    return in_array($propertyCode, $this->getPrimaryProperties($professionCode), true);
                 }
             );
         $profession->shouldReceive('getPrimaryProperties')

@@ -9,7 +9,11 @@ use DrdPlus\Properties\Base\Intelligence;
 use DrdPlus\Properties\Base\Knack;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Entity()
+ */
 class ProfessionNextLevel extends ProfessionLevel
 {
 

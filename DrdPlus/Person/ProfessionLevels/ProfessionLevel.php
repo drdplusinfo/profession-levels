@@ -2,6 +2,7 @@
 namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrineum\Entity\Entity;
 use DrdPlus\Properties\Base\Agility;
 use DrdPlus\Properties\Base\BaseProperty;
 use DrdPlus\Properties\Base\Charisma;
@@ -13,7 +14,10 @@ use DrdPlus\Professions\Profession;
 use Granam\Strict\Object\StrictObject;
 use Granam\Tools\ValueDescriber;
 
-abstract class ProfessionLevel extends StrictObject
+/**
+ * @ORM\MappedSuperclass()
+ */
+abstract class ProfessionLevel extends StrictObject implements Entity
 {
 
     const PRIMARY_PROPERTY_FIRST_LEVEL_MODIFIER = 1;
@@ -44,14 +48,14 @@ abstract class ProfessionLevel extends StrictObject
     /**
      * @var LevelRank
      *
-     * @ORM\Column(type="levelValue")
+     * @ORM\Column(type="level_rank")
      */
     private $levelRank;
 
     /**
      * @var \DateTimeImmutable
      *
-     * @ORM\Column(type="datetimeImmutable")
+     * @ORM\Column(type="datetime")
      */
     private $levelUpAt;
 
@@ -72,7 +76,7 @@ abstract class ProfessionLevel extends StrictObject
     /**
      * @var Knack
      *
-     * @ORM\Columns(type="knack")
+     * @ORM\Column(type="knack")
      */
     private $knackIncrement;
 
