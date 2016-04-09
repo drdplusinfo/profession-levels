@@ -13,12 +13,12 @@
     "drd-plus/codes": "dev-master",
     "drd-plus/properties": "dev-master",
     "drd-plus/professions": "dev-master",
-    "doctrine/orm": "~2.0"
+    "doctrine/orm": "~2.0",
+    "doctrineum/entity": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.4",
-    "mockery/mockery": "dev-master",
-    "doctrineum/entity": "dev-master"
+    "mockery/mockery": "dev-master"
   },
   "minimum-stability": "dev",
   "prefer-stable": true
