@@ -29,74 +29,63 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     const SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
 
     /**
-     * Has to be protected to allow Doctrine to access it on children
      * @var integer
-     *
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    private $id;
 
     /**
      * @var Profession
-     *
      * @ORM\Column(type="profession")
      */
     private $profession;
 
     /**
      * @var LevelRank
-     *
      * @ORM\Column(type="level_rank")
      */
     private $levelRank;
 
     /**
      * @var \DateTimeImmutable
-     *
      * @ORM\Column(type="datetime")
      */
     private $levelUpAt;
 
     /**
      * @var Strength
-     *
      * @ORM\Column(type="strength")
      */
     private $strengthIncrement;
 
     /**
      * @var Agility
-     *
      * @ORM\Column(type="agility")
      */
     private $agilityIncrement;
 
     /**
      * @var Knack
-     *
      * @ORM\Column(type="knack")
      */
     private $knackIncrement;
 
     /**
      * @var Will
-     *
      * @ORM\Column(type="will")
      */
     private $willIncrement;
 
     /**
      * @var Intelligence
-     *
      * @ORM\Column(type="intelligence")
      */
     private $intelligenceIncrement;
 
     /**
      * @var Charisma
-     *
      * @ORM\Column(type="charisma")
      */
     private $charismaIncrement;
