@@ -2,7 +2,7 @@
 namespace DrdPlus\Person\ProfessionLevels\EnumTypes;
 
 use DrdPlus\Professions\EnumTypes\ProfessionType;
-use DrdPlus\Properties\EnumTypes\PropertiesRegistrar;
+use DrdPlus\Properties\EnumTypes\PropertiesEnumRegistrar;
 
 class ProfessionLevelsRegistrar
 {
@@ -10,6 +10,6 @@ class ProfessionLevelsRegistrar
     {
         LevelRankType::registerSelf();
         ProfessionType::registerSelf();
-        PropertiesRegistrar::registerAll();
+        PropertiesEnumRegistrar::registerAll();
     }
 }
