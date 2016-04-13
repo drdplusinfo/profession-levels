@@ -18,8 +18,6 @@ use Granam\Strict\Object\StrictObject;
  */
 class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregate
 {
-    const PROPERTY_FIRST_LEVEL_MODIFIER = +1;
-
     /**
      * @var integer
      *
