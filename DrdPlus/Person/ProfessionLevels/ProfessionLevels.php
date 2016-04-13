@@ -29,13 +29,13 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @var ProfessionFirstLevel
-     * @ORM\OneToOne(targetEntity="ProfessionFirstLevel")
+     * @ORM\OneToOne(targetEntity="ProfessionFirstLevel", cascade={"persist"})
      */
     private $professionFirstLevel;
 
     /**
      * @var ProfessionLevel[]
-     * @ORM\OneToMany(targetEntity="ProfessionLevel", mappedBy="professionLevels")
+     * @ORM\OneToMany(targetEntity="ProfessionLevel", cascade={"persist"}, mappedBy="professionLevels")
      */
     private $professionNextLevels;
 
