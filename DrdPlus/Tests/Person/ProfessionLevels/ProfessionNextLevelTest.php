@@ -11,7 +11,7 @@ use DrdPlus\Properties\Base\Intelligence;
 use DrdPlus\Properties\Base\Knack;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
-use DrdPlus\Properties\PropertyInterface;
+use DrdPlus\Properties\Property;
 use Mockery\MockInterface;
 
 class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
@@ -132,7 +132,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      * @param string $propertyClass
      * @param string $propertyCode
      * @param string|null $propertyValue = null
-     * @return MockInterface|PropertyInterface
+     * @return MockInterface|Property
      */
     private function createProperty($professionCode, $propertyClass, $propertyCode, $propertyValue = null)
     {
@@ -150,13 +150,15 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
     )
     {
         $property->shouldReceive('getValue')
-            ->andReturn((is_null($propertyValue)
-                ? ($this->isPrimaryProperty($propertyName, $professionCode)
+            ->andReturnUsing(function () use ($propertyValue, $propertyName, $professionCode) {
+                if ($propertyValue !== null) {
+                    return $propertyValue;
+                }
+
+                return $this->isPrimaryProperty($propertyName, $professionCode)
                     ? 1
-                    : 0
-                )
-                : $propertyValue
-            ));
+                    : 0;
+            });
         $property->shouldReceive('getCode')
             ->andReturn($propertyName);
     }
@@ -334,9 +336,9 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      *
      * @test
      * @dataProvider providePropertyCodeOneByOne
-     * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidNextLevelPropertyValue
+     * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\NegativeNextLevelProperty
      */
-    public function I_can_not_create_next_level_with_negative_properties_sum($propertyCodeToNegative)
+    public function I_can_not_create_next_level_with_negative_property($propertyCodeToNegative)
     {
         new ProfessionNextLevel(
             $this->createProfession(ProfessionCodes::FIGHTER),
@@ -360,5 +362,26 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             [Intelligence::INTELLIGENCE],
             [Charisma::CHARISMA],
         ];
+    }
+
+    /**
+     * @param string $propertyCodeTooHigh
+     *
+     * @test
+     * @dataProvider providePropertyCodeOneByOne
+     * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighNextLevelPropertyIncrement
+     */
+    public function I_can_not_create_next_level_with_too_high_property_increment($propertyCodeTooHigh)
+    {
+        new ProfessionNextLevel(
+            $this->createProfession(ProfessionCodes::FIGHTER),
+            $levelRank = LevelRank::getIt(2),
+            Strength::getIt($propertyCodeTooHigh === Strength::STRENGTH ? 2 : 0),
+            Agility::getIt($propertyCodeTooHigh === Agility::AGILITY ? 2 : 0),
+            Knack::getIt($propertyCodeTooHigh === Knack::KNACK ? 2 : 0),
+            Will::getIt($propertyCodeTooHigh === Will::WILL ? 2 : 0),
+            Intelligence::getIt($propertyCodeTooHigh === Intelligence::INTELLIGENCE ? 2 : 0),
+            Charisma::getIt($propertyCodeTooHigh === Charisma::CHARISMA ? 2 : 0)
+        );
     }
 }

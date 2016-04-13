@@ -40,6 +40,8 @@ class ProfessionFirstLevel extends ProfessionLevel
         );
     }
 
+    const PRIMARY_PROPERTY_FIRST_LEVEL_MODIFIER = 1;
+
     /**
      * @param string $propertyCode
      * @param Profession $profession

@@ -20,14 +20,6 @@ use Granam\Tools\ValueDescriber;
 abstract class ProfessionLevel extends StrictObject implements Entity
 {
 
-    const PRIMARY_PROPERTY_FIRST_LEVEL_MODIFIER = 1;
-    const MINIMUM_LEVEL = 1;
-    const MAXIMUM_LEVEL = 20;
-    const MIN_NEXT_LEVEL_PROPERTY_MODIFIER = 0;
-    const MAX_NEXT_LEVEL_PROPERTY_MODIFIER = 1;
-    const PRIMARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
-    const SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
-
     /**
      * @var integer
      * @ORM\Column(type="integer")
@@ -154,6 +146,9 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         }
     }
 
+    const PRIMARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
+    const SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
+
     private function getExpectedSumOfNextLevelProperties()
     {
         return static::PRIMARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM + static::SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM;
@@ -199,7 +194,6 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     {
         return $this->levelRank;
     }
-
 
     /** @return bool */
     public function isFirstLevel()
