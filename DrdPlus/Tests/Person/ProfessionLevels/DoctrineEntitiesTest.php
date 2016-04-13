@@ -2,7 +2,7 @@
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use Doctrineum\Tests\Entity\AbstractDoctrineEntitiesTest;
-use DrdPlus\Person\ProfessionLevels\EnumTypes\ProfessionLevelsRegistrar;
+use DrdPlus\Person\ProfessionLevels\EnumTypes\ProfessionLevelsEnumsRegistrar;
 use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionFirstLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
@@ -22,7 +22,7 @@ class DoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
 {
     protected function setUp()
     {
-        ProfessionLevelsRegistrar::registerAll();
+        ProfessionLevelsEnumsRegistrar::registerAll();
 
         parent::setUp();
     }

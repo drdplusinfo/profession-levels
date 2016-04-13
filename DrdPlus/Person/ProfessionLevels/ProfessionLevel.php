@@ -42,7 +42,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
 
     /**
      * @var \DateTimeImmutable
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime_immutable")
      */
     private $levelUpAt;
 
