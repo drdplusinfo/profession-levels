@@ -19,12 +19,12 @@ class ProfessionFirstLevel extends ProfessionLevel
 
     /**
      * @param Profession $profession
-     * @param \DateTime|null $levelUpAt
+     * @param \DateTimeImmutable|null $levelUpAt
      * @return ProfessionFirstLevel
      */
     public static function createFirstLevel(
         Profession $profession,
-        \DateTime $levelUpAt = null
+        \DateTimeImmutable $levelUpAt = null
     )
     {
         return new static(

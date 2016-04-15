@@ -28,7 +28,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     {
         $professionFirstLevel = ProfessionFirstLevel::createFirstLevel(
             $this->createProfession($professionCode),
-            $levelUpAt = new \DateTime('2004-01-01')
+            $levelUpAt = new \DateTimeImmutable('2004-01-01')
         );
         self::assertInstanceOf(ProfessionFirstLevel::class, $professionFirstLevel);
         /** @var ProfessionLevel $professionFirstLevel */
@@ -79,7 +79,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
             $willIncrement = $this->createWill($professionCode),
             $intelligenceIncrement = $this->createIntelligence($professionCode),
             $charismaIncrement = $this->createCharisma($professionCode),
-            $levelUpAt = new \DateTime()
+            $levelUpAt = new \DateTimeImmutable()
         );
         self::assertSame($profession, $professionLevel->getProfession());
         self::assertSame($levelRank, $professionLevel->getLevelRank());
@@ -235,7 +235,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
             $this->createProfession(ProfessionCodes::FIGHTER)
         );
         $levelUpAt = $professionFirstLevel->getLevelUpAt();
-        self::assertInstanceOf(\DateTime::class, $levelUpAt);
+        self::assertInstanceOf(\DateTimeImmutable::class, $levelUpAt);
         self::assertSame(time(), $levelUpAt->getTimestamp());
     }
 
@@ -416,7 +416,7 @@ class PublicConstructorProfessionFistLevel extends ProfessionFirstLevel
         Will $willIncrement,
         Intelligence $intelligenceIncrement,
         Charisma $charismaIncrement,
-        \DateTime $levelUpAt = null
+        \DateTimeImmutable $levelUpAt = null
     )
     {
         parent::__construct(

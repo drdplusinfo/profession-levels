@@ -32,7 +32,7 @@ class ProfessionNextLevel extends ProfessionLevel
      * @param Will $willIncrement
      * @param Intelligence $intelligenceIncrement
      * @param Charisma $charismaIncrement
-     * @param \DateTime|null $levelUpAt
+     * @param \DateTimeImmutable|null $levelUpAt
      * @return ProfessionNextLevel
      */
     public static function createNextLevel(
@@ -44,7 +44,7 @@ class ProfessionNextLevel extends ProfessionLevel
         Will $willIncrement,
         Intelligence $intelligenceIncrement,
         Charisma $charismaIncrement,
-        \DateTime $levelUpAt = null
+        \DateTimeImmutable $levelUpAt = null
     )
     {
         return new static(

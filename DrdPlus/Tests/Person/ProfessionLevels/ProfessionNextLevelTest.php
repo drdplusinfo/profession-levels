@@ -34,7 +34,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             $willIncrement = $this->createWill($professionCode),
             $intelligenceIncrement = $this->createIntelligence($professionCode),
             $charismaIncrement = $this->createCharisma($professionCode),
-            $levelUpAt = new \DateTime()
+            $levelUpAt = new \DateTimeImmutable()
         );
         self::assertInstanceOf(ProfessionNextLevel::class, $professionNextLevel);
         /** @var ProfessionLevel $professionNextLevel */
@@ -86,7 +86,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             $willIncrement = $this->createWill($professionCode),
             $intelligenceIncrement = $this->createIntelligence($professionCode),
             $charismaIncrement = $this->createCharisma($professionCode),
-            $levelUpAt = new \DateTime()
+            $levelUpAt = new \DateTimeImmutable()
         );
         self::assertSame($profession, $professionNextLevel->getProfession());
         self::assertSame($levelRank, $professionNextLevel->getLevelRank());
@@ -249,7 +249,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             $charismaIncrement = $this->createCharisma(ProfessionCodes::FIGHTER)
         );
         $levelUpAt = $ProfessionNextLevel->getLevelUpAt();
-        self::assertInstanceOf(\DateTime::class, $levelUpAt);
+        self::assertInstanceOf(\DateTimeImmutable::class, $levelUpAt);
         self::assertSame(time(), $levelUpAt->getTimestamp());
     }
 
