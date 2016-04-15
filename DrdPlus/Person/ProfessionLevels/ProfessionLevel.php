@@ -41,8 +41,8 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     private $levelRank;
 
     /**
-     * @var \DateTimeImmutable
-     * @ORM\Column(type="datetime_immutable")
+     * @var \DateTime
+     * @ORM\Column(type="datetime")
      */
     private $levelUpAt;
 
@@ -82,7 +82,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
      */
     private $charismaIncrement;
 
-    public function __construct(
+    protected function __construct(
         Profession $profession,
         LevelRank $levelRank,
         Strength $strengthIncrement,
@@ -91,7 +91,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         Will $willIncrement,
         Intelligence $intelligenceIncrement,
         Charisma $charismaIncrement,
-        \DateTimeImmutable $levelUpAt = null
+        \DateTime $levelUpAt = null
     )
     {
         $this->checkLevelRank($levelRank);
@@ -119,7 +119,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         $this->willIncrement = $willIncrement;
         $this->intelligenceIncrement = $intelligenceIncrement;
         $this->charismaIncrement = $charismaIncrement;
-        $this->levelUpAt = $levelUpAt ?: new \DateTimeImmutable();
+        $this->levelUpAt = $levelUpAt ?: new \DateTime();
     }
 
     abstract protected function checkLevelRank(LevelRank $levelRank);
@@ -180,7 +180,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     }
 
     /**
-     * @return \DateTimeImmutable
+     * @return \DateTime
      */
     public function getLevelUpAt()
     {

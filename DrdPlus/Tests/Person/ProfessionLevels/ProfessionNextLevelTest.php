@@ -34,7 +34,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             $willIncrement = $this->createWill($professionCode),
             $intelligenceIncrement = $this->createIntelligence($professionCode),
             $charismaIncrement = $this->createCharisma($professionCode),
-            $levelUpAt = new \DateTimeImmutable()
+            $levelUpAt = new \DateTime()
         );
         self::assertInstanceOf(ProfessionNextLevel::class, $professionNextLevel);
         /** @var ProfessionLevel $professionNextLevel */
@@ -77,7 +77,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
     public function I_can_get_level_details($professionCode)
     {
         /** @var ProfessionLevel $professionNextLevel */
-        $professionNextLevel = new ProfessionNextLevel(
+        $professionNextLevel = ProfessionNextLevel::createNextLevel(
             $profession = $this->createProfession($professionCode),
             $levelRank = $this->createLevelRank(2),
             $strengthIncrement = $this->createStrength($professionCode),
@@ -86,7 +86,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             $willIncrement = $this->createWill($professionCode),
             $intelligenceIncrement = $this->createIntelligence($professionCode),
             $charismaIncrement = $this->createCharisma($professionCode),
-            $levelUpAt = new \DateTimeImmutable()
+            $levelUpAt = new \DateTime()
         );
         self::assertSame($profession, $professionNextLevel->getProfession());
         self::assertSame($levelRank, $professionNextLevel->getLevelRank());
@@ -249,7 +249,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             $charismaIncrement = $this->createCharisma(ProfessionCodes::FIGHTER)
         );
         $levelUpAt = $ProfessionNextLevel->getLevelUpAt();
-        self::assertInstanceOf(\DateTimeImmutable::class, $levelUpAt);
+        self::assertInstanceOf(\DateTime::class, $levelUpAt);
         self::assertSame(time(), $levelUpAt->getTimestamp());
     }
 
@@ -259,7 +259,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     public function I_can_not_create_higher_next_level_than_twenty()
     {
-        new ProfessionNextLevel(
+        ProfessionNextLevel::createNextLevel(
             $this->createProfession(ProfessionCodes::FIGHTER),
             $this->createLevelRank(21),
             $this->createStrength(ProfessionCodes::FIGHTER),
@@ -277,7 +277,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     public function I_can_not_create_lesser_next_level_than_two()
     {
-        new ProfessionNextLevel(
+        ProfessionNextLevel::createNextLevel(
             $this->createProfession(ProfessionCodes::FIGHTER),
             $this->createLevelRank(1),
             $this->createStrength(ProfessionCodes::FIGHTER),
@@ -298,7 +298,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     public function I_can_not_create_next_level_with_too_high_properties_sum($professionCode)
     {
-        new ProfessionNextLevel(
+        ProfessionNextLevel::createNextLevel(
             $this->createProfession($professionCode),
             $levelRank = LevelRank::getIt(2),
             Strength::getIt(1),
@@ -319,7 +319,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     public function I_can_not_create_next_level_with_too_low_properties_sum($professionCode)
     {
-        new ProfessionNextLevel(
+        ProfessionNextLevel::createNextLevel(
             $this->createProfession($professionCode),
             $levelRank = LevelRank::getIt(2),
             Strength::getIt(0),
@@ -340,7 +340,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     public function I_can_not_create_next_level_with_negative_property($propertyCodeToNegative)
     {
-        new ProfessionNextLevel(
+        ProfessionNextLevel::createNextLevel(
             $this->createProfession(ProfessionCodes::FIGHTER),
             $levelRank = LevelRank::getIt(2),
             Strength::getIt($propertyCodeToNegative === Strength::STRENGTH ? -1 : 0),
@@ -373,7 +373,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     public function I_can_not_create_next_level_with_too_high_property_increment($propertyCodeTooHigh)
     {
-        new ProfessionNextLevel(
+        ProfessionNextLevel::createNextLevel(
             $this->createProfession(ProfessionCodes::FIGHTER),
             $levelRank = LevelRank::getIt(2),
             Strength::getIt($propertyCodeTooHigh === Strength::STRENGTH ? 2 : 0),

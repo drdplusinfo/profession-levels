@@ -5,6 +5,7 @@ use DrdPlus\Codes\ProfessionCodes;
 use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionFirstLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
+use DrdPlus\Professions\Profession;
 use DrdPlus\Properties\Base\Agility;
 use DrdPlus\Properties\Base\Charisma;
 use DrdPlus\Properties\Base\Intelligence;
@@ -27,7 +28,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     {
         $professionFirstLevel = ProfessionFirstLevel::createFirstLevel(
             $this->createProfession($professionCode),
-            $levelUpAt = new \DateTimeImmutable('2004-01-01')
+            $levelUpAt = new \DateTime('2004-01-01')
         );
         self::assertInstanceOf(ProfessionFirstLevel::class, $professionFirstLevel);
         /** @var ProfessionLevel $professionFirstLevel */
@@ -69,7 +70,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     public function I_can_get_level_details($professionCode)
     {
         /** @var ProfessionLevel $professionLevel */
-        $professionLevel = new ProfessionFirstLevel(
+        $professionLevel = new PublicConstructorProfessionFistLevel(
             $profession = $this->createProfession($professionCode),
             $levelRank = $this->createLevelRank(),
             $strengthIncrement = $this->createStrength($professionCode),
@@ -78,7 +79,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
             $willIncrement = $this->createWill($professionCode),
             $intelligenceIncrement = $this->createIntelligence($professionCode),
             $charismaIncrement = $this->createCharisma($professionCode),
-            $levelUpAt = new \DateTimeImmutable()
+            $levelUpAt = new \DateTime()
         );
         self::assertSame($profession, $professionLevel->getProfession());
         self::assertSame($levelRank, $professionLevel->getLevelRank());
@@ -142,13 +143,15 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     )
     {
         $property->shouldReceive('getValue')
-            ->andReturn((is_null($propertyValue)
-                ? ($this->isPrimaryProperty($propertyCode, $professionCode)
-                    ? 1
-                    : 0
-                )
-                : $propertyValue
-            ));
+            ->andReturnUsing(function () use ($propertyValue, $propertyCode, $professionCode) {
+                if ($propertyValue === null) {
+                    return $this->isPrimaryProperty($propertyCode, $professionCode)
+                        ? 1
+                        : 0;
+                }
+
+                return $propertyValue;
+            });
         $property->shouldReceive('getCode')
             ->andReturn($propertyCode);
     }
@@ -232,7 +235,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
             $this->createProfession(ProfessionCodes::FIGHTER)
         );
         $levelUpAt = $professionFirstLevel->getLevelUpAt();
-        self::assertInstanceOf(\DateTimeImmutable::class, $levelUpAt);
+        self::assertInstanceOf(\DateTime::class, $levelUpAt);
         self::assertSame(time(), $levelUpAt->getTimestamp());
     }
 
@@ -242,7 +245,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      */
     public function I_can_not_create_higher_first_level_than_one()
     {
-        new ProfessionFirstLevel(
+        new PublicConstructorProfessionFistLevel(
             $this->createProfession(ProfessionCodes::FIGHTER),
             $this->createLevelRank(2),
             $this->createStrength(ProfessionCodes::FIGHTER),
@@ -260,7 +263,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      */
     public function I_can_not_create_lesser_first_level_than_one()
     {
-        new ProfessionFirstLevel(
+        new PublicConstructorProfessionFistLevel(
             $this->createProfession(ProfessionCodes::FIGHTER),
             $this->createLevelRank(0),
             $this->createStrength(ProfessionCodes::FIGHTER),
@@ -289,7 +292,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         $professionCode, $strength, $agility, $knack, $will, $intelligence, $charisma
     )
     {
-        new ProfessionFirstLevel(
+        new PublicConstructorProfessionFistLevel(
             $this->createProfession($professionCode),
             $this->createLevelRank(),
             $this->createStrength($professionCode, $strength),
@@ -353,7 +356,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         $professionCode, $strength, $agility, $knack, $will, $intelligence, $charisma
     )
     {
-        new ProfessionFirstLevel(
+        new PublicConstructorProfessionFistLevel(
             $this->createProfession($professionCode),
             $this->createLevelRank(),
             $this->createStrength($professionCode, $strength),
@@ -399,4 +402,33 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         )->getBasePropertyIncrement('invalid');
     }
 
+}
+
+/** inner */
+class PublicConstructorProfessionFistLevel extends ProfessionFirstLevel
+{
+    public function __construct(
+        Profession $profession,
+        LevelRank $levelRank,
+        Strength $strengthIncrement,
+        Agility $agilityIncrement,
+        Knack $knackIncrement,
+        Will $willIncrement,
+        Intelligence $intelligenceIncrement,
+        Charisma $charismaIncrement,
+        \DateTime $levelUpAt = null
+    )
+    {
+        parent::__construct(
+            $profession,
+            $levelRank,
+            $strengthIncrement,
+            $agilityIncrement,
+            $knackIncrement,
+            $willIncrement,
+            $intelligenceIncrement,
+            $charismaIncrement,
+            $levelUpAt
+        );
+    }
 }
