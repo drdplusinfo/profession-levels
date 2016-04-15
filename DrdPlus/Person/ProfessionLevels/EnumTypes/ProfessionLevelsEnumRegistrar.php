@@ -2,15 +2,15 @@
 namespace DrdPlus\Person\ProfessionLevels\EnumTypes;
 
 use Doctrineum\DateTimeImmutable\DateTimeImmutableType;
-use DrdPlus\Professions\EnumTypes\ProfessionsEnumsRegistrar;
+use DrdPlus\Professions\EnumTypes\ProfessionsEnumRegistrar;
 use DrdPlus\Properties\EnumTypes\PropertiesEnumRegistrar;
 
-class ProfessionLevelsEnumsRegistrar
+class ProfessionLevelsEnumRegistrar
 {
     public static function registerAll()
     {
         LevelRankType::registerSelf();
-        ProfessionsEnumsRegistrar::registerAll();
+        ProfessionsEnumRegistrar::registerAll();
         PropertiesEnumRegistrar::registerAll();
         DateTimeImmutableType::registerSelf();
     }

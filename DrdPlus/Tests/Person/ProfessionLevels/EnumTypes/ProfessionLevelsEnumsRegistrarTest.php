@@ -18,7 +18,7 @@ class ProfessionLevelsEnumsRegistrarTest extends \PHPUnit_Framework_TestCase
      */
     public function I_can_register_all_needed_enums_at_once()
     {
-        ProfessionLevelsEnumsRegistrar::registerAll();
+        ProfessionLevelsEnumRegistrar::registerAll();
 
         self::assertTrue(Type::hasType(LevelRankType::getTypeName()));
         self::assertTrue(Type::hasType(LevelRankType::getTypeName()));
