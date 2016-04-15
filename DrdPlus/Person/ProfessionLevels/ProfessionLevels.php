@@ -2,6 +2,7 @@
 namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrineum\Entity\Entity;
 use DrdPlus\Properties\Base\Agility;
@@ -34,8 +35,8 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     private $professionFirstLevel;
 
     /**
-     * @var ProfessionLevel[]
-     * @ORM\OneToMany(targetEntity="ProfessionLevel", cascade={"persist"}, mappedBy="professionLevels")
+     * @var ProfessionNextLevel[]
+     * @ORM\OneToMany(targetEntity="ProfessionNextLevel", cascade={"persist"}, mappedBy="professionLevels", fetch="EAGER")
      */
     private $professionNextLevels;
 
@@ -64,13 +65,13 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     }
 
     /**
-     * All levels, achieved at any profession, sorted ascending by level rank
+     * All levels, achieved at any profession, unsorted
      *
-     * @return array|ProfessionLevel[]
+     * @return Collection|ProfessionLevel[]
      */
-    public function getNextLevels()
+    public function getProfessionNextLevels()
     {
-        return $this->sortByLevelRank($this->professionNextLevels->toArray());
+        return $this->professionNextLevels;
     }
 
     /**
@@ -78,26 +79,19 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
      */
     public function getIterator()
     {
-        return new \ArrayObject($this->getLevels());
+        return new \ArrayObject($this->getSortedProfessionLevels());
     }
 
     /**
      * @return array|ProfessionLevel[]
      */
-    public function getLevels()
+    public function getSortedProfessionLevels()
     {
-        $levels = $this->getNextLevels(); // sorted by rank
+        $levels = $this->getProfessionNextLevels()->toArray();
+        $levels = $this->sortByLevelRank($levels);
         array_unshift($levels, $this->getFirstLevel());
 
         return $levels;
-    }
-
-    /**
-     * @return ProfessionFirstLevel
-     */
-    public function getFirstLevel()
-    {
-        return $this->professionFirstLevel;
     }
 
     /**
@@ -119,6 +113,14 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     }
 
     /**
+     * @return ProfessionFirstLevel
+     */
+    public function getFirstLevel()
+    {
+        return $this->professionFirstLevel;
+    }
+
+    /**
      * @param ProfessionNextLevel $newLevel
      */
     public function addLevel(ProfessionNextLevel $newLevel)
@@ -127,7 +129,8 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         $this->checkNewLevelSequence($newLevel);
         $this->checkPropertiesIncrementSequence($newLevel);
 
-        $this->professionNextLevels->add($newLevel);
+        $this->getProfessionNextLevels()->add($newLevel);
+        $newLevel->setProfessionLevels($this);
     }
 
     private function checkProhibitedMultiProfession(ProfessionLevel $newLevel)
@@ -176,22 +179,23 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     /**
      * @param BaseProperty $propertyIncrement
      * @return bool
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighPrimaryPropertyIncrease
      */
     private function checkPrimaryPropertyIncrementInARow(BaseProperty $propertyIncrement)
     {
-        $previousLevels = $this->getNextLevels();
+        $previousLevels = $this->getProfessionNextLevels();
         $previousNextLevelsCount = count($previousLevels);
         // main property can be increased twice in a row
         if ($previousNextLevelsCount < 2) {
             return true;
         }
-        $lastPrevious = end($previousLevels);
+        $lastPrevious = $previousLevels->last();
         if (!$this->hasIncrementSameProperty($lastPrevious, $propertyIncrement)) {
             return true;
         }
-        $lastButOnePreviousKey = array_keys($previousLevels)[$previousNextLevelsCount - 2];
+        $lastButOnePreviousKey = $previousLevels->getKeys()[$previousNextLevelsCount - 2];
         /** @var ProfessionLevel $lastPrevious */
-        $lastButOnePrevious = $previousLevels[$lastButOnePreviousKey];
+        $lastButOnePrevious = $previousLevels->get($lastButOnePreviousKey);
         if (!$this->hasIncrementSameProperty($lastButOnePrevious, $propertyIncrement)) {
             return true;
         }
@@ -213,12 +217,12 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     private function checkSecondaryPropertyIncrementInARow(BaseProperty $propertyIncrement)
     {
-        $nextLevels = $this->getNextLevels();
+        $nextLevels = $this->getProfessionNextLevels();
         // secondary property has to be increased at least alternately
         if (count($nextLevels) === 0) {
             return true;
         }
-        if (!$this->hasIncrementSameProperty(end($nextLevels), $propertyIncrement)) {
+        if (!$this->hasIncrementSameProperty($nextLevels->last(), $propertyIncrement)) {
             return true;
         }
         throw new Exceptions\TooHighSecondaryPropertyIncrease(
@@ -327,7 +331,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
             function (ProfessionLevel $professionLevel) use ($propertyCode) {
                 return $professionLevel->getBasePropertyIncrement($propertyCode)->getValue();
             },
-            $this->getLevels()
+            $this->getSortedProfessionLevels()
         );
     }
 
@@ -352,7 +356,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
             function (ProfessionLevel $professionLevel) use ($propertyCode) {
                 return $professionLevel->getBasePropertyIncrement($propertyCode)->getValue();
             },
-            $this->getNextLevels()
+            $this->getProfessionNextLevels()->toArray()
         );
     }
 
@@ -459,7 +463,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
      */
     public function getCurrentLevel()
     {
-        $sortedLevels = $this->getLevels();
+        $sortedLevels = $this->getSortedProfessionLevels();
 
         return end($sortedLevels);
     }

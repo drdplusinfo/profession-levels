@@ -13,9 +13,15 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
+ * @ORM\Table(uniqueConstraints={})
  */
 class ProfessionNextLevel extends ProfessionLevel
 {
+    /**
+     * @var ProfessionLevels
+     * @ORM\ManyToOne(targetEntity="ProfessionLevels", inversedBy="professionNextLevels", cascade={"persist"})
+     */
+    private $professionLevels;
 
     /**
      * @param Profession $profession
@@ -79,5 +85,21 @@ class ProfessionNextLevel extends ProfessionLevel
                 . self::MAX_NEXT_LEVEL_PROPERTY_MODIFIER . ", got {$property->getValue()}"
             );
         }
+    }
+
+    /**
+     * @return ProfessionLevels|null
+     */
+    public function getProfessionLevels()
+    {
+        return $this->professionLevels;
+    }
+
+    /**+
+     * @param ProfessionLevels $professionLevels
+     */
+    public function setProfessionLevels(ProfessionLevels $professionLevels)
+    {
+        $this->professionLevels = $professionLevels;
     }
 }

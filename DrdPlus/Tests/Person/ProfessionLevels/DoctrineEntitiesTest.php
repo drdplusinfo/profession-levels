@@ -27,6 +27,12 @@ class DoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
         parent::setUp();
     }
 
+    protected function tearDown()
+    {
+        file_put_contents('/home/jaroslav/Desktop/queries.php', var_export($this->getQueries(), true));
+        parent::tearDown();
+    }
+
     protected function getDirsWithEntities()
     {
         $reflection = new \ReflectionClass(ProfessionLevel::class);
@@ -55,7 +61,7 @@ class DoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
         );
 
         return [
-            $firstLevel = ProfessionFirstLevel::createFirstLevel(Fighter::getIt()),
+            ProfessionFirstLevel::createFirstLevel(Fighter::getIt()),
             ProfessionNextLevel::createNextLevel(
                 Wizard::getIt(),
                 LevelRank::getIt(2),
