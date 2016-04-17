@@ -27,12 +27,6 @@ class DoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
         parent::setUp();
     }
 
-    protected function tearDown()
-    {
-        file_put_contents('/home/jaroslav/Desktop/queries.php', var_export($this->getQueries(), true));
-        parent::tearDown();
-    }
-
     protected function getDirsWithEntities()
     {
         $reflection = new \ReflectionClass(ProfessionLevel::class);
