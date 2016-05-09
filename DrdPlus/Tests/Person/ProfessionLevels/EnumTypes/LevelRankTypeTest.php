@@ -1,27 +1,9 @@
 <?php
-namespace DrdPlus\Tests\ProfessionLevels\EnumTypes;
+namespace DrdPlus\Tests\Person\ProfessionLevels\EnumTypes;
 
-use Doctrine\DBAL\Types\Type;
-use DrdPlus\Person\ProfessionLevels\EnumTypes\LevelRankType;
-use Granam\Tests\Tools\TestWithMockery;
+use Doctrineum\Tests\SelfRegisteringType\AbstractSelfRegisteringTypeTest;
 
-class LevelRankTypeTest extends TestWithMockery
+class LevelRankTypeTest extends AbstractSelfRegisteringTypeTest
 {
-    /**
-     * @test
-     */
-    public function I_can_get_type_name()
-    {
-        self::assertSame('level_rank', LevelRankType::LEVEL_RANK);
-        self::assertSame('level_rank', LevelRankType::getTypeName());
-    }
 
-    /**
-     * @test
-     */
-    public function I_can_registered_it()
-    {
-        LevelRankType::registerSelf();
-        self::assertTrue(Type::hasType(LevelRankType::getTypeName()));
-    }
 }

@@ -7,14 +7,6 @@ use Granam\Tests\Tools\TestWithMockery;
 class LevelRankTest extends TestWithMockery
 {
     /**
-     * @test
-     */
-    public function I_can_get_its_name_from_as_constant()
-    {
-        self::assertSame('level_rank', LevelRank::LEVEL_RANK);
-    }
-
-    /**
      * @return LevelRank
      *
      * @test
@@ -33,6 +25,17 @@ class LevelRankTest extends TestWithMockery
         $levelRank = LevelRank::getIt($value = 12345);
         self::assertSame($value, $levelRank->getValue());
         self::assertSame("$value", "$levelRank");
+    }
+
+    /**
+     * @test
+     */
+    public function I_can_create_it_from_to_string_object()
+    {
+        /** @noinspection PhpParamsInspection */
+        $levelRank = LevelRank::getIt($someToStringObject = new SomeToStringObject($value = 12));
+        self::assertSame($value, $levelRank->getValue());
+        self::assertSame((string)$someToStringObject, (string)$levelRank);
     }
 
     /**
@@ -63,5 +66,21 @@ class LevelRankTest extends TestWithMockery
     public function provideProhibitedLevelValue()
     {
         return [[0], [-1], [-12345]];
+    }
+}
+
+/** @inner */
+class SomeToStringObject
+{
+    private $value;
+
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
+
+    public function __toString()
+    {
+        return (string)$this->value;
     }
 }

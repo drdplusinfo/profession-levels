@@ -20,15 +20,14 @@ class ProfessionLevelsEnumsRegistrarTest extends \PHPUnit_Framework_TestCase
     {
         ProfessionLevelsEnumRegistrar::registerAll();
 
-        self::assertTrue(Type::hasType(LevelRankType::getTypeName()));
-        self::assertTrue(Type::hasType(LevelRankType::getTypeName()));
-        self::assertTrue(Type::hasType(ProfessionType::getTypeName()));
-        self::assertTrue(Type::hasType(StrengthType::getTypeName()));
-        self::assertTrue(Type::hasType(AgilityType::getTypeName()));
-        self::assertTrue(Type::hasType(KnackType::getTypeName()));
-        self::assertTrue(Type::hasType(WillType::getTypeName()));
-        self::assertTrue(Type::hasType(IntelligenceType::getTypeName()));
-        self::assertTrue(Type::hasType(CharismaType::getTypeName()));
-        self::assertTrue(Type::hasType(DateTimeImmutableType::getTypeName()));
+        self::assertTrue(Type::hasType(LevelRankType::LEVEL_RANK));
+        self::assertTrue(Type::hasType(ProfessionType::PROFESSION));
+        self::assertTrue(Type::hasType(StrengthType::STRENGTH));
+        self::assertTrue(Type::hasType(AgilityType::AGILITY));
+        self::assertTrue(Type::hasType(KnackType::KNACK));
+        self::assertTrue(Type::hasType(WillType::WILL));
+        self::assertTrue(Type::hasType(IntelligenceType::INTELLIGENCE));
+        self::assertTrue(Type::hasType(CharismaType::CHARISMA));
+        self::assertTrue(Type::hasType(DateTimeImmutableType::DATETIME_IMMUTABLE));
     }
 }

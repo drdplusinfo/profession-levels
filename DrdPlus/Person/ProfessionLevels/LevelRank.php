@@ -9,8 +9,6 @@ use Granam\Tools\ValueDescriber;
  */
 class LevelRank extends IntegerEnum
 {
-    const LEVEL_RANK = 'level_rank';
-
     /**
      * @param int $value
      *
@@ -23,12 +21,12 @@ class LevelRank extends IntegerEnum
 
     public function __construct($value)
     {
-        if ($value < 1) {
+        parent::__construct($value);
+        if ($this->getValue() < 1) {
             throw new Exceptions\InvalidFirstLevelRank(
                 'Level can not be lesser than 1, got ' . ValueDescriber::describe($value)
             );
         }
-        parent::__construct($value);
     }
 
     /**
