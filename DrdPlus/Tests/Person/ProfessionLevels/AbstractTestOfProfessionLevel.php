@@ -1,7 +1,7 @@
 <?php
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
-use DrdPlus\Codes\ProfessionCodes;
+use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Professions\Fighter;
 use DrdPlus\Professions\Priest;
 use DrdPlus\Professions\Ranger;
@@ -45,17 +45,17 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     protected function getPrimaryProperties($professionCode)
     {
         switch ($professionCode) {
-            case ProfessionCodes::FIGHTER :
+            case ProfessionCode::FIGHTER :
                 return [Strength::STRENGTH, Agility::AGILITY];
-            case ProfessionCodes::THIEF :
+            case ProfessionCode::THIEF :
                 return [Agility::AGILITY, Knack::KNACK];
-            case ProfessionCodes::RANGER :
+            case ProfessionCode::RANGER :
                 return [Strength::STRENGTH, Knack::KNACK];
-            case ProfessionCodes::WIZARD :
+            case ProfessionCode::WIZARD :
                 return [Will::WILL, Intelligence::INTELLIGENCE];
-            case ProfessionCodes::THEURGIST :
+            case ProfessionCode::THEURGIST :
                 return [Intelligence::INTELLIGENCE, Charisma::CHARISMA];
-            case ProfessionCodes::PRIEST :
+            case ProfessionCode::PRIEST :
                 return [Will::WILL, Charisma::CHARISMA];
         }
         throw new \LogicException;

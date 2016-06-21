@@ -21,6 +21,7 @@ class ProfessionFirstLevel extends ProfessionLevel
      * @param Profession $profession
      * @param \DateTimeImmutable|null $levelUpAt
      * @return ProfessionFirstLevel
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelPropertyValue
      */
     public static function createFirstLevel(
         Profession $profession,
@@ -68,9 +69,9 @@ class ProfessionFirstLevel extends ProfessionLevel
      * It is only the increment based on first level of specific profession.
      * There are other increments like race, size etc., solved in
      * @see \DrdPlus\Cave\UnitBundle\Person\Attributes\Properties\FirstLevelProperties
-     *
      * @param BaseProperty $property
      * @param Profession $profession
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelPropertyValue
      */
     protected function checkPropertyIncrement(BaseProperty $property, Profession $profession)
     {

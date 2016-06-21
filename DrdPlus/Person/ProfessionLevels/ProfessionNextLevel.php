@@ -34,6 +34,8 @@ class ProfessionNextLevel extends ProfessionLevel
      * @param Charisma $charismaIncrement
      * @param \DateTimeImmutable|null $levelUpAt
      * @return ProfessionNextLevel
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\MinimumLevelExceeded
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\MaximumLevelExceeded
      */
     public static function createNextLevel(
         Profession $profession,
@@ -56,16 +58,21 @@ class ProfessionNextLevel extends ProfessionLevel
     const MINIMUM_NEXT_LEVEL = 2;
     const MAXIMUM_NEXT_LEVEL = 20;
 
+    /**
+     * @param LevelRank $levelRank
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\MinimumLevelExceeded
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\MaximumLevelExceeded
+     */
     protected function checkLevelRank(LevelRank $levelRank)
     {
         if ($levelRank->getValue() < self::MINIMUM_NEXT_LEVEL) {
             throw new Exceptions\MinimumLevelExceeded(
-                "Next level can not be lesser than " . self::MINIMUM_NEXT_LEVEL . ", got {$levelRank->getValue()}"
+                'Next level can not be lesser than ' . self::MINIMUM_NEXT_LEVEL . ", got {$levelRank->getValue()}"
             );
         }
         if ($levelRank->getValue() > self::MAXIMUM_NEXT_LEVEL) {
             throw new Exceptions\MaximumLevelExceeded(
-                "Level can not be greater than " . self::MAXIMUM_NEXT_LEVEL . ", got {$levelRank->getValue()}"
+                'Level can not be greater than ' . self::MAXIMUM_NEXT_LEVEL . ", got {$levelRank->getValue()}"
             );
         }
     }

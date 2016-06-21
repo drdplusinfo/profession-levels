@@ -1,7 +1,7 @@
 <?php
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
-use DrdPlus\Codes\ProfessionCodes;
+use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionFirstLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
@@ -53,12 +53,12 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     public function provideProfessionCode()
     {
         return [
-            [ProfessionCodes::FIGHTER],
-            [ProfessionCodes::THIEF],
-            [ProfessionCodes::RANGER],
-            [ProfessionCodes::WIZARD],
-            [ProfessionCodes::THEURGIST],
-            [ProfessionCodes::PRIEST]
+            [ProfessionCode::FIGHTER],
+            [ProfessionCode::THIEF],
+            [ProfessionCode::RANGER],
+            [ProfessionCode::WIZARD],
+            [ProfessionCode::THEURGIST],
+            [ProfessionCode::PRIEST]
         ];
     }
 
@@ -103,7 +103,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         $levelRank->shouldReceive('getValue')
             ->andReturn($rankValue);
         $levelRank->shouldReceive('isFirstLevel')
-            ->andReturn($rankValue == 1);
+            ->andReturn((int)$rankValue === 1);
         $levelRank->shouldReceive('isNextLevel')
             ->andReturn($rankValue > 1);
 
@@ -232,7 +232,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     public function I_can_create_it_with_default_level_up_at()
     {
         $professionFirstLevel = ProfessionFirstLevel::createFirstLevel(
-            $this->createProfession(ProfessionCodes::FIGHTER)
+            $this->createProfession(ProfessionCode::FIGHTER)
         );
         $levelUpAt = $professionFirstLevel->getLevelUpAt();
         self::assertInstanceOf(\DateTimeImmutable::class, $levelUpAt);
@@ -246,14 +246,14 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     public function I_can_not_create_higher_first_level_than_one()
     {
         new PublicConstructorProfessionFistLevel(
-            $this->createProfession(ProfessionCodes::FIGHTER),
+            $this->createProfession(ProfessionCode::FIGHTER),
             $this->createLevelRank(2),
-            $this->createStrength(ProfessionCodes::FIGHTER),
-            $this->createAgility(ProfessionCodes::FIGHTER),
-            $this->createKnack(ProfessionCodes::FIGHTER),
-            $this->createWill(ProfessionCodes::FIGHTER),
-            $this->createIntelligence(ProfessionCodes::FIGHTER),
-            $this->createCharisma(ProfessionCodes::FIGHTER)
+            $this->createStrength(ProfessionCode::FIGHTER),
+            $this->createAgility(ProfessionCode::FIGHTER),
+            $this->createKnack(ProfessionCode::FIGHTER),
+            $this->createWill(ProfessionCode::FIGHTER),
+            $this->createIntelligence(ProfessionCode::FIGHTER),
+            $this->createCharisma(ProfessionCode::FIGHTER)
         );
     }
 
@@ -264,14 +264,14 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     public function I_can_not_create_lesser_first_level_than_one()
     {
         new PublicConstructorProfessionFistLevel(
-            $this->createProfession(ProfessionCodes::FIGHTER),
+            $this->createProfession(ProfessionCode::FIGHTER),
             $this->createLevelRank(0),
-            $this->createStrength(ProfessionCodes::FIGHTER),
-            $this->createAgility(ProfessionCodes::FIGHTER),
-            $this->createKnack(ProfessionCodes::FIGHTER),
-            $this->createWill(ProfessionCodes::FIGHTER),
-            $this->createIntelligence(ProfessionCodes::FIGHTER),
-            $this->createCharisma(ProfessionCodes::FIGHTER)
+            $this->createStrength(ProfessionCode::FIGHTER),
+            $this->createAgility(ProfessionCode::FIGHTER),
+            $this->createKnack(ProfessionCode::FIGHTER),
+            $this->createWill(ProfessionCode::FIGHTER),
+            $this->createIntelligence(ProfessionCode::FIGHTER),
+            $this->createCharisma(ProfessionCode::FIGHTER)
         );
     }
 
@@ -330,12 +330,12 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     private function getProfessionCodes()
     {
         return [
-            ProfessionCodes::FIGHTER,
-            ProfessionCodes::THIEF,
-            ProfessionCodes::RANGER,
-            ProfessionCodes::WIZARD,
-            ProfessionCodes::THEURGIST,
-            ProfessionCodes::PRIEST,
+            ProfessionCode::FIGHTER,
+            ProfessionCode::THIEF,
+            ProfessionCode::RANGER,
+            ProfessionCode::WIZARD,
+            ProfessionCode::THEURGIST,
+            ProfessionCode::PRIEST,
         ];
     }
 
@@ -398,7 +398,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     public function I_am_stopped_on_use_of_unknown_property_code()
     {
         ProfessionFirstLevel::createFirstLevel(
-            $this->createProfession(ProfessionCodes::FIGHTER)
+            $this->createProfession(ProfessionCode::FIGHTER)
         )->getBasePropertyIncrement('invalid');
     }
 

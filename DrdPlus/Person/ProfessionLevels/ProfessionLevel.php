@@ -14,7 +14,7 @@ use DrdPlus\Professions\Profession;
 use Granam\Strict\Object\StrictObject;
 use Granam\Tools\ValueDescriber;
 
-/**
+/** @noinspection SingletonFactoryPatternViolationInspection
  * @ORM\MappedSuperclass()
  */
 abstract class ProfessionLevel extends StrictObject implements Entity
