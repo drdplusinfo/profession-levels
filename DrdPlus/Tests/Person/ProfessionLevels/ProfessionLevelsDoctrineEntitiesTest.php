@@ -18,7 +18,7 @@ use DrdPlus\Properties\Base\Knack;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
 
-class DoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
+class ProfessionLevelsDoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
 {
     protected function setUp()
     {
