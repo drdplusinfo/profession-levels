@@ -4,6 +4,7 @@ namespace DrdPlus\Tests\Person\ProfessionLevels;
 use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
+use DrdPlus\Person\ProfessionLevels\ProfessionLevels;
 use DrdPlus\Person\ProfessionLevels\ProfessionNextLevel;
 use DrdPlus\Properties\Base\Agility;
 use DrdPlus\Properties\Base\Charisma;
@@ -21,7 +22,6 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      * @test
      * @dataProvider provideProfessionCode
      * @param string $professionCode
-     * @return ProfessionLevel
      */
     public function I_can_create_it($professionCode)
     {
@@ -65,7 +65,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             [ProfessionCode::RANGER],
             [ProfessionCode::WIZARD],
             [ProfessionCode::THEURGIST],
-            [ProfessionCode::PRIEST]
+            [ProfessionCode::PRIEST],
         ];
     }
 
@@ -132,7 +132,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      * @param string $propertyClass
      * @param string $propertyCode
      * @param string|null $propertyValue = null
-     * @return MockInterface|Property
+     * @return MockInterface|Property|Strength|Agility|Knack|Will|Intelligence|Charisma
      */
     private function createProperty($professionCode, $propertyClass, $propertyCode, $propertyValue = null)
     {
@@ -383,5 +383,34 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             Intelligence::getIt($propertyCodeTooHigh === Intelligence::INTELLIGENCE ? 2 : 0),
             Charisma::getIt($propertyCodeTooHigh === Charisma::CHARISMA ? 2 : 0)
         );
+    }
+
+    /**
+     * @test
+     */
+    public function I_can_set_and_get_profession_levels()
+    {
+        $professionNextLevel = ProfessionNextLevel::createNextLevel(
+            $this->createProfession(ProfessionCode::FIGHTER),
+            $this->createLevelRank(2),
+            $this->createStrength(ProfessionCode::FIGHTER),
+            $this->createAgility(ProfessionCode::FIGHTER),
+            $this->createKnack(ProfessionCode::FIGHTER),
+            $this->createWill(ProfessionCode::FIGHTER),
+            $this->createIntelligence(ProfessionCode::FIGHTER),
+            $this->createCharisma(ProfessionCode::FIGHTER),
+            new \DateTimeImmutable()
+        );
+        self::assertNull($professionNextLevel->getProfessionLevels());
+        $professionNextLevel->setProfessionLevels($professionLevels = $this->createProfessionLevels());
+        self::assertSame($professionLevels, $professionNextLevel->getProfessionLevels());
+    }
+
+    /**
+     * @return MockInterface|ProfessionLevels
+     */
+    private function createProfessionLevels()
+    {
+        return $this->mockery(ProfessionLevels::class);
     }
 }
