@@ -22,7 +22,6 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @test
      * @dataProvider provideProfessionCode
      * @param string $professionCode
-     * @return ProfessionLevel
      */
     public function I_can_create_it($professionCode)
     {
@@ -125,7 +124,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param string $propertyClass
      * @param string $propertyCode
      * @param string|null $propertyValue = null
-     * @return MockInterface|Property
+     * @return MockInterface|Property|Strength|Agility|Knack|Will|Intelligence|Charisma
      */
     private function createProperty($professionCode, $propertyClass, $propertyCode, $propertyValue = null)
     {

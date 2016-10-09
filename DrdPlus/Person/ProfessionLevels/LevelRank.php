@@ -19,14 +19,27 @@ class LevelRank extends IntegerEnum
         return static::getEnum($value);
     }
 
+    /**
+     * @param bool|float|\Granam\Scalar\ScalarInterface|int|string $value
+     * @throws Exceptions\InvalidLevelRank
+     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     */
     public function __construct($value)
     {
         parent::__construct($value);
-        if ($this->getValue() < 1) {
-            throw new Exceptions\InvalidFirstLevelRank(
-                'Level can not be lesser than 1, got ' . ValueDescriber::describe($value)
+        if ($this->getValue() < 0) {
+            throw new Exceptions\InvalidLevelRank(
+                'Level can not be lesser than 0, got ' . ValueDescriber::describe($value)
             );
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isZeroLevel()
+    {
+        return $this->getValue() === 0;
     }
 
     /**
@@ -37,6 +50,9 @@ class LevelRank extends IntegerEnum
         return $this->getValue() === 1;
     }
 
+    /**
+     * @return bool
+     */
     public function isNextLevel()
     {
         return $this->getValue() > 1;

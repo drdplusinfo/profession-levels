@@ -7,8 +7,6 @@ use Granam\Tests\Tools\TestWithMockery;
 class LevelRankTest extends TestWithMockery
 {
     /**
-     * @return LevelRank
-     *
      * @test
      */
     public function I_can_create_it()
@@ -56,16 +54,16 @@ class LevelRankTest extends TestWithMockery
      * @param int $prohibitedValue
      * @test
      * @dataProvider provideProhibitedLevelValue
-     * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelRank
+     * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidLevelRank
      */
-    public function I_can_not_create_zero_or_lesser_level($prohibitedValue)
+    public function I_can_not_create_negative_level($prohibitedValue)
     {
         LevelRank::getIt($prohibitedValue);
     }
 
     public function provideProhibitedLevelValue()
     {
-        return [[0], [-1], [-12345]];
+        return [[-1], [-12345]];
     }
 }
 

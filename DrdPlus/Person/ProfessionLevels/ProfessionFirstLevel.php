@@ -67,22 +67,22 @@ class ProfessionFirstLevel extends ProfessionLevel
 
     /**
      * It is only the increment based on first level of specific profession.
-     * There are other increments like race, size etc., solved in
-     * @see \DrdPlus\Cave\UnitBundle\Person\Attributes\Properties\FirstLevelProperties
-     * @param BaseProperty $property
+     * There are other increments like race, size etc., solved in different library.
+     *
+     * @param BaseProperty $baseProperty
      * @param Profession $profession
      * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelPropertyValue
      */
-    protected function checkPropertyIncrement(BaseProperty $property, Profession $profession)
+    protected function checkPropertyIncrement(BaseProperty $baseProperty, Profession $profession)
     {
         $propertyFirstLevelModifier = static::getBasePropertyFirstLevelModifier(
-            $property->getCode(),
+            $baseProperty->getCode(),
             $profession
         );
-        if ($property->getValue() !== $propertyFirstLevelModifier) {
+        if ($baseProperty->getValue() !== $propertyFirstLevelModifier) {
             throw new Exceptions\InvalidFirstLevelPropertyValue(
-                "On first level has to be {$property->getCode()} of value {$propertyFirstLevelModifier}"
-                . ", got {$property->getValue()}"
+                "On first level has to be {$baseProperty->getCode()} of value {$propertyFirstLevelModifier}"
+                . ", got {$baseProperty->getValue()}"
             );
         }
     }

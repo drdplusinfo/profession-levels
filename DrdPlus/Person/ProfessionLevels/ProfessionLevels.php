@@ -27,6 +27,12 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     private $id;
 
     /**
+     * @var ProfessionZeroLevel
+     * @ORM\OneToOne(targetEntity="ProfessionZeroLevel", cascade={"persist"})
+     */
+    private $professionZeroLevel;
+
+    /**
      * @var ProfessionFirstLevel
      * @ORM\OneToOne(targetEntity="ProfessionFirstLevel", cascade={"persist"})
      */
@@ -34,22 +40,40 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @var ProfessionNextLevel[]
-     * @ORM\OneToMany(targetEntity="ProfessionNextLevel", cascade={"persist"}, mappedBy="professionLevels", fetch="EAGER")
+     * @ORM\OneToMany(targetEntity="ProfessionNextLevel", cascade={"persist"}, mappedBy="professionLevels",
+     *     fetch="EAGER")
      */
     private $professionNextLevels;
 
-    public static function createIt(ProfessionFirstLevel $professionFirstLevel, array $professionNextLevels = [])
+    /**
+     * @param ProfessionZeroLevel $professionZeroLevel
+     * @param ProfessionFirstLevel $professionFirstLevel
+     * @param array $professionNextLevels
+     * @return static|ProfessionLevels
+     * @throws Exceptions\MultiProfessionsAreProhibited
+     */
+    public static function createIt(
+        ProfessionZeroLevel $professionZeroLevel,
+        ProfessionFirstLevel $professionFirstLevel,
+        array $professionNextLevels = []
+    )
     {
-        $professionLevels = new static($professionFirstLevel);
+        $professionLevels = new static($professionZeroLevel, $professionFirstLevel);
         foreach ($professionNextLevels as $professionNextLevel) {
+            /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
             $professionLevels->addLevel($professionNextLevel);
         }
 
         return $professionLevels;
     }
 
-    public function __construct(ProfessionFirstLevel $professionFirstLevel)
+    /**
+     * @param ProfessionZeroLevel $professionZeroLevel
+     * @param ProfessionFirstLevel $professionFirstLevel
+     */
+    public function __construct(ProfessionZeroLevel $professionZeroLevel, ProfessionFirstLevel $professionFirstLevel)
     {
+        $this->professionZeroLevel = $professionZeroLevel;
         $this->professionFirstLevel = $professionFirstLevel;
         $this->professionNextLevels = new ArrayCollection();
     }
@@ -73,7 +97,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     }
 
     /**
-     * @return \Iterator|ProfessionLevel[]
+     * @return \ArrayObject|ProfessionLevel[]
      */
     public function getIterator()
     {
@@ -88,6 +112,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         $levels = $this->getProfessionNextLevels()->toArray();
         $levels = $this->sortByLevelRank($levels);
         array_unshift($levels, $this->getFirstLevel());
+        array_unshift($levels, $this->getZeroLevel());
 
         return $levels;
     }
@@ -111,6 +136,14 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     }
 
     /**
+     * @return ProfessionZeroLevel
+     */
+    public function getZeroLevel()
+    {
+        return $this->professionZeroLevel;
+    }
+
+    /**
      * @return ProfessionFirstLevel
      */
     public function getFirstLevel()
@@ -120,6 +153,10 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @param ProfessionNextLevel $newLevel
+     * @throws Exceptions\MultiProfessionsAreProhibited
+     * @throws Exceptions\InvalidLevelRank
+     * @throws Exceptions\TooHighPrimaryPropertyIncrease
+     * @throws Exceptions\TooHighSecondaryPropertyIncrease
      */
     public function addLevel(ProfessionNextLevel $newLevel)
     {
@@ -131,8 +168,13 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         $newLevel->setProfessionLevels($this);
     }
 
+    /**
+     * @param ProfessionLevel $newLevel
+     * @throws Exceptions\MultiProfessionsAreProhibited
+     */
     private function checkProhibitedMultiProfession(ProfessionLevel $newLevel)
     {
+        // zero level is not checked - you could be anything before heroic live. cook, bartender, beggar ...
         if ($newLevel->getProfession()->getValue() !== $this->getFirstLevel()->getProfession()->getValue()) {
             throw new Exceptions\MultiProfessionsAreProhibited(
                 'New level has to be of same profession as first level.'
@@ -142,6 +184,10 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         }
     }
 
+    /**
+     * @param ProfessionLevel $newLevel
+     * @throws Exceptions\InvalidLevelRank
+     */
     private function checkNewLevelSequence(ProfessionLevel $newLevel)
     {
         if ($newLevel->getLevelRank()->getValue() !== $this->getCurrentLevel()->getLevelRank()->getValue() + 1) {
@@ -153,6 +199,11 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         }
     }
 
+    /**
+     * @param ProfessionLevel $newLevel
+     * @throws Exceptions\TooHighPrimaryPropertyIncrease
+     * @throws Exceptions\TooHighSecondaryPropertyIncrease
+     */
     private function checkPropertiesIncrementSequence(ProfessionLevel $newLevel)
     {
         $this->checkPropertyIncrementSequence($newLevel, $newLevel->getStrengthIncrement());
@@ -163,6 +214,12 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         $this->checkPropertyIncrementSequence($newLevel, $newLevel->getCharismaIncrement());
     }
 
+    /**
+     * @param ProfessionLevel $newLevel
+     * @param BaseProperty $propertyIncrement
+     * @throws Exceptions\TooHighPrimaryPropertyIncrease
+     * @throws Exceptions\TooHighSecondaryPropertyIncrease
+     */
     private function checkPropertyIncrementSequence(ProfessionLevel $newLevel, BaseProperty $propertyIncrement)
     {
         if ($propertyIncrement->getValue() > 0) {
@@ -177,7 +234,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     /**
      * @param BaseProperty $propertyIncrement
      * @return bool
-     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighPrimaryPropertyIncrease
+     * @throws Exceptions\TooHighPrimaryPropertyIncrease
      */
     private function checkPrimaryPropertyIncrementInARow(BaseProperty $propertyIncrement)
     {
@@ -203,16 +260,31 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         );
     }
 
+    /**
+     * @param ProfessionLevel $testedProfessionLevel
+     * @param BaseProperty $patternPropertyIncrement
+     * @return bool
+     */
     private function hasIncrementSameProperty(ProfessionLevel $testedProfessionLevel, BaseProperty $patternPropertyIncrement)
     {
         return $this->getSamePropertyIncrement($testedProfessionLevel, $patternPropertyIncrement)->getValue() > 0;
     }
 
+    /**
+     * @param ProfessionLevel $searchedThroughProfessionLevel
+     * @param BaseProperty $patternPropertyIncrement
+     * @return Charisma|Intelligence|Knack|Will
+     */
     private function getSamePropertyIncrement(ProfessionLevel $searchedThroughProfessionLevel, BaseProperty $patternPropertyIncrement)
     {
         return $searchedThroughProfessionLevel->getBasePropertyIncrement($patternPropertyIncrement->getCode());
     }
 
+    /**
+     * @param BaseProperty $propertyIncrement
+     * @return bool
+     * @throws Exceptions\TooHighSecondaryPropertyIncrease
+     */
     private function checkSecondaryPropertyIncrementInARow(BaseProperty $propertyIncrement)
     {
         $nextLevels = $this->getProfessionNextLevels();

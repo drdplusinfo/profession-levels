@@ -79,17 +79,17 @@ class ProfessionNextLevel extends ProfessionLevel
 
     const MAX_NEXT_LEVEL_PROPERTY_MODIFIER = 1;
 
-    protected function checkPropertyIncrement(BaseProperty $property, Profession $profession)
+    protected function checkPropertyIncrement(BaseProperty $baseProperty, Profession $profession)
     {
-        if ($property->getValue() < 0) {
+        if ($baseProperty->getValue() < 0) {
             throw new Exceptions\NegativeNextLevelProperty(
-                "Next level property increment can not be negative, got {$property->getValue()}"
+                "Next level property increment can not be negative, got {$baseProperty->getValue()}"
             );
         }
-        if ($property->getValue() > self::MAX_NEXT_LEVEL_PROPERTY_MODIFIER) {
+        if ($baseProperty->getValue() > self::MAX_NEXT_LEVEL_PROPERTY_MODIFIER) {
             throw new Exceptions\TooHighNextLevelPropertyIncrement(
                 'Next level property increment has to be at most '
-                . self::MAX_NEXT_LEVEL_PROPERTY_MODIFIER . ", got {$property->getValue()}"
+                . self::MAX_NEXT_LEVEL_PROPERTY_MODIFIER . ", got {$baseProperty->getValue()}"
             );
         }
     }

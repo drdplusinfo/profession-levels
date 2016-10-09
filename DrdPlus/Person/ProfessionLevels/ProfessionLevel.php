@@ -80,6 +80,18 @@ abstract class ProfessionLevel extends StrictObject implements Entity
      */
     private $charismaIncrement;
 
+    /**
+     * @param Profession $profession
+     * @param LevelRank $levelRank
+     * @param Strength $strengthIncrement
+     * @param Agility $agilityIncrement
+     * @param Knack $knackIncrement
+     * @param Will $willIncrement
+     * @param Intelligence $intelligenceIncrement
+     * @param Charisma $charismaIncrement
+     * @param \DateTimeImmutable|null $levelUpAt
+     * @throws Exceptions\InvalidNextLevelPropertiesSum
+     */
     protected function __construct(
         Profession $profession,
         LevelRank $levelRank,
@@ -122,6 +134,16 @@ abstract class ProfessionLevel extends StrictObject implements Entity
 
     abstract protected function checkLevelRank(LevelRank $levelRank);
 
+    /**
+     * @param LevelRank $levelRank
+     * @param Strength $strength
+     * @param Agility $agility
+     * @param Knack $knack
+     * @param Will $will
+     * @param Intelligence $intelligence
+     * @param Charisma $charisma
+     * @throws Exceptions\InvalidNextLevelPropertiesSum
+     */
     private function checkPropertySumIncrement(
         LevelRank $levelRank,
         Strength $strength,
@@ -165,7 +187,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         + $willIncrement->getValue() + $intelligenceIncrement->getValue() + $charismaIncrement->getValue();
     }
 
-    abstract protected function checkPropertyIncrement(BaseProperty $property, Profession $profession);
+    abstract protected function checkPropertyIncrement(BaseProperty $baseProperty, Profession $profession);
 
     /**
      * Get id

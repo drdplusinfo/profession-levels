@@ -8,6 +8,8 @@ use DrdPlus\Person\ProfessionLevels\ProfessionFirstLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevels;
 use DrdPlus\Person\ProfessionLevels\ProfessionNextLevel;
+use DrdPlus\Person\ProfessionLevels\ProfessionZeroLevel;
+use DrdPlus\Professions\Commoner;
 use DrdPlus\Professions\Fighter;
 use DrdPlus\Professions\Theurgist;
 use DrdPlus\Professions\Wizard;
@@ -39,12 +41,14 @@ class ProfessionLevelsDoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
         return self::createEntities();
     }
 
+    /**
+     * @return array
+     */
     public static function createEntities()
     {
         $professionLevels = new ProfessionLevels(
-            ProfessionFirstLevel::createFirstLevel(
-                $profession = Theurgist::getIt()
-            )
+            ProfessionZeroLevel::createZeroLevel(Commoner::getIt()),
+            ProfessionFirstLevel::createFirstLevel($profession = Theurgist::getIt())
         );
         $professionLevels->addLevel(
             ProfessionNextLevel::createNextLevel(
@@ -60,6 +64,7 @@ class ProfessionLevelsDoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
         );
 
         return [
+            ProfessionZeroLevel::createZeroLevel(Commoner::getIt()),
             ProfessionFirstLevel::createFirstLevel(Fighter::getIt()),
             ProfessionNextLevel::createNextLevel(
                 Wizard::getIt(),
@@ -71,7 +76,7 @@ class ProfessionLevelsDoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
                 Intelligence::getIt(0),
                 Charisma::getIt(0)
             ),
-            $professionLevels
+            $professionLevels,
         ];
     }
 

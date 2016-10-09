@@ -16,6 +16,7 @@ use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
 use \DrdPlus\Professions\Profession;
 use Granam\Tests\Tools\TestWithMockery;
+use Granam\Tools\ValueDescriber;
 use Mockery\MockInterface;
 
 abstract class AbstractTestOfProfessionLevel extends TestWithMockery
@@ -41,6 +42,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     /**
      * @param string $professionCode
      * @return string[]
+     * @throws \LogicException
      */
     protected function getPrimaryProperties($professionCode)
     {
@@ -58,7 +60,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
             case ProfessionCode::PRIEST :
                 return [Will::WILL, Charisma::CHARISMA];
         }
-        throw new \LogicException;
+        throw new \LogicException('Unknown profession code ' . ValueDescriber::describe($professionCode));
     }
 
     /**
