@@ -2,6 +2,7 @@
 namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrine\ORM\Mapping as ORM;
+use DrdPlus\Codes\PropertyCode;
 use DrdPlus\Professions\Profession;
 use DrdPlus\Properties\Base\Agility;
 use DrdPlus\Properties\Base\BaseProperty;
@@ -28,15 +29,16 @@ class ProfessionFirstLevel extends ProfessionLevel
         \DateTimeImmutable $levelUpAt = null
     )
     {
+        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         return new static(
             $profession,
             new LevelRank(1),
-            Strength::getIt(self::getBasePropertyFirstLevelModifier(Strength::STRENGTH, $profession)),
-            Agility::getIt(self::getBasePropertyFirstLevelModifier(Agility::AGILITY, $profession)),
-            Knack::getIt(self::getBasePropertyFirstLevelModifier(Knack::KNACK, $profession)),
-            Will::getIt(self::getBasePropertyFirstLevelModifier(Will::WILL, $profession)),
-            Intelligence::getIt(self::getBasePropertyFirstLevelModifier(Intelligence::INTELLIGENCE, $profession)),
-            Charisma::getIt(self::getBasePropertyFirstLevelModifier(Charisma::CHARISMA, $profession)),
+            Strength::getIt(self::getBasePropertyFirstLevelModifier(PropertyCode::getIt(PropertyCode::STRENGTH), $profession)),
+            Agility::getIt(self::getBasePropertyFirstLevelModifier(PropertyCode::getIt(PropertyCode::AGILITY), $profession)),
+            Knack::getIt(self::getBasePropertyFirstLevelModifier(PropertyCode::getIt(PropertyCode::KNACK), $profession)),
+            Will::getIt(self::getBasePropertyFirstLevelModifier(PropertyCode::getIt(PropertyCode::WILL), $profession)),
+            Intelligence::getIt(self::getBasePropertyFirstLevelModifier(PropertyCode::getIt(PropertyCode::INTELLIGENCE), $profession)),
+            Charisma::getIt(self::getBasePropertyFirstLevelModifier(PropertyCode::getIt(PropertyCode::CHARISMA), $profession)),
             $levelUpAt
         );
     }
@@ -44,12 +46,11 @@ class ProfessionFirstLevel extends ProfessionLevel
     const PRIMARY_PROPERTY_FIRST_LEVEL_MODIFIER = 1;
 
     /**
-     * @param string $propertyCode
+     * @param PropertyCode $propertyCode
      * @param Profession $profession
-     *
      * @return int
      */
-    private static function getBasePropertyFirstLevelModifier($propertyCode, Profession $profession)
+    private static function getBasePropertyFirstLevelModifier(PropertyCode $propertyCode, Profession $profession)
     {
         return static::isProfessionPrimaryProperty($profession, $propertyCode)
             ? self::PRIMARY_PROPERTY_FIRST_LEVEL_MODIFIER
@@ -76,7 +77,7 @@ class ProfessionFirstLevel extends ProfessionLevel
     protected function checkPropertyIncrement(BaseProperty $baseProperty, Profession $profession)
     {
         $propertyFirstLevelModifier = static::getBasePropertyFirstLevelModifier(
-            $baseProperty->getCode(),
+            PropertyCode::getIt($baseProperty->getCode()),
             $profession
         );
         if ($baseProperty->getValue() !== $propertyFirstLevelModifier) {

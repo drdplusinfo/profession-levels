@@ -223,7 +223,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     private function checkPropertyIncrementSequence(ProfessionLevel $newLevel, BaseProperty $propertyIncrement)
     {
         if ($propertyIncrement->getValue() > 0) {
-            if ($newLevel->isPrimaryProperty($propertyIncrement->getCode())) {
+            if ($newLevel->isPrimaryProperty(PropertyCode::getIt($propertyIncrement->getCode()))) {
                 $this->checkPrimaryPropertyIncrementInARow($propertyIncrement);
             } else {
                 $this->checkSecondaryPropertyIncrementInARow($propertyIncrement);

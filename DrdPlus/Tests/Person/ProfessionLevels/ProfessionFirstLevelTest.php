@@ -37,7 +37,10 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         self::assertTrue($professionFirstLevel->isFirstLevel());
         self::assertFalse($professionFirstLevel->isNextLevel());
         foreach (PropertyCode::getBasePropertyPossibleValues() as $propertyValue) {
-            self::assertSame($this->isPrimaryProperty($propertyValue, $professionCode), $professionFirstLevel->isPrimaryProperty($propertyValue));
+            self::assertSame(
+                $this->isPrimaryProperty($propertyValue, $professionCode),
+                $professionFirstLevel->isPrimaryProperty(PropertyCode::getIt($propertyValue))
+            );
             self::assertInstanceOf(
                 $this->getPropertyClassByCode($propertyValue),
                 $propertyIncrement = $professionFirstLevel->getBasePropertyIncrement(PropertyCode::getIt($propertyValue))

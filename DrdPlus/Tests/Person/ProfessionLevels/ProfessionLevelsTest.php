@@ -197,7 +197,7 @@ class ProfessionLevelsTest extends TestWithMockery
     private function addFirstLevelPropertyIncrementGetters(MockInterface $professionLevel, $professionCode)
     {
         $modifiers = [];
-        foreach ($this->getPropertyCodes() as $propertyName) {
+        foreach ($this->getPropertyNames() as $propertyName) {
             $modifiers[$propertyName] = $this->isPrimaryProperty($propertyName, $professionCode) ? 1 : 0;
         }
         $this->addPropertyIncrementGetters(
@@ -280,24 +280,24 @@ class ProfessionLevelsTest extends TestWithMockery
     private function addPrimaryPropertiesAnswer(MockInterface $professionLevel, $professionCode)
     {
         $modifiers = [];
-        foreach ($this->getPropertyCodes() as $propertyName) {
+        foreach ($this->getPropertyNames() as $propertyName) {
             $modifiers[$propertyName] = $this->isPrimaryProperty($propertyName, $professionCode) ? 1 : 0;
         }
         $primaryProperties = array_keys(array_filter($modifiers));
 
-        foreach ($this->getPropertyCodes() as $propertyName) {
+        foreach ($this->getPropertyNames() as $propertyName) {
             $professionLevel->shouldReceive('isPrimaryProperty')
-                ->with($propertyName)
+                ->with(PropertyCode::getIt($propertyName))
                 ->andReturn(in_array($propertyName, $primaryProperties, true));
         }
     }
 
-    private function getPropertyCodes()
+    /**
+     * @return array|string[]
+     */
+    private function getPropertyNames()
     {
-        return [
-            Strength::STRENGTH, Agility::AGILITY, Knack::KNACK,
-            Will::WILL, Intelligence::INTELLIGENCE, Charisma::CHARISMA,
-        ];
+        return PropertyCode::getBasePropertyPossibleValues();
     }
 
     private function addFirstLevelAnswer(MockInterface $professionLevel, $isFirstLevel)
@@ -497,7 +497,7 @@ class ProfessionLevelsTest extends TestWithMockery
         self::assertSame([$zeroLevel, $firstLevel], $professionLevels->getSortedProfessionLevels());
 
         $propertiesSummary = $firstLevelProperties = [];
-        foreach ($this->getPropertyCodes() as $propertyName) {
+        foreach ($this->getPropertyNames() as $propertyName) {
             $firstLevelProperties[$propertyName] = $propertiesSummary[$propertyName] = $$propertyName;
         }
         $secondLevel = $this->createProfessionLevel(Fighter::FIGHTER, 2, $professionLevels);
@@ -507,7 +507,7 @@ class ProfessionLevelsTest extends TestWithMockery
         $this->addPrimaryPropertiesAnswer($secondLevel, Fighter::FIGHTER);
         $this->addNextLevelAnswer($secondLevel, true);
         $nextLevelProperties = [];
-        foreach ($this->getPropertyCodes() as $propertyName) {
+        foreach ($this->getPropertyNames() as $propertyName) {
             $nextLevelProperties[$propertyName] = $$propertyName;
             $propertiesSummary[$propertyName] += $$propertyName;
         }
@@ -524,7 +524,7 @@ class ProfessionLevelsTest extends TestWithMockery
             $charisma = ($this->isPrimaryProperty(Charisma::CHARISMA, Fighter::FIGHTER) ? 12 : 0)
         );
         $this->addPrimaryPropertiesAnswer($thirdLevel, Fighter::FIGHTER);
-        foreach ($this->getPropertyCodes() as $propertyName) {
+        foreach ($this->getPropertyNames() as $propertyName) {
             $propertiesSummary[$propertyName] += $$propertyName;
             $nextLevelProperties[$propertyName] += $$propertyName;
         }
@@ -800,7 +800,7 @@ class ProfessionLevelsTest extends TestWithMockery
         $professionLevel = $this->createProfessionLevel($professionCode, $levelValue, $professionLevels);
         $propertyIncrements = [];
         $isFirst = true;
-        foreach ($this->getPropertyCodes() as $propertyCode) {
+        foreach ($this->getPropertyNames() as $propertyCode) {
             $increment = $this->isPrimaryProperty($propertyCode, $professionCode) ? 1 : 0;
             if ($increment) {
                 if ($isFirst) {
@@ -881,7 +881,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         $professionLevel = $this->createProfessionLevel($professionCode, $levelValue, $professionLevels);
         $propertyIncrements = [];
-        foreach ($this->getPropertyCodes() as $propertyCode) {
+        foreach ($this->getPropertyNames() as $propertyCode) {
             $increment = $increaseSecondaryProperties
             && !$this->isPrimaryProperty($propertyCode, $professionCode) ? 1 : 0;
             $propertyIncrements[$propertyCode] = $increment;
