@@ -1,6 +1,8 @@
 <?php
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
+use DrdPlus\Codes\ProfessionCode;
+use DrdPlus\Codes\PropertyCode;
 use DrdPlus\Person\ProfessionLevels\Exceptions\MultiProfessionsAreProhibited;
 use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionFirstLevel;
@@ -73,6 +75,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         $professionZeroLevel = $this->mockery(ProfessionZeroLevel::class);
         $professionZeroLevel->shouldReceive('getBasePropertyIncrement')
+            ->with($this->type(PropertyCode::class))
             ->andReturn($baseProperty = $this->mockery(BaseProperty::class));
         $baseProperty->shouldReceive('getValue')
             ->andReturn(0);
@@ -82,7 +85,7 @@ class ProfessionLevelsTest extends TestWithMockery
 
     /**
      * @param string $professionCode
-     * @return ProfessionFirstLevel
+     * @return ProfessionFirstLevel|\Mockery\MockInterface
      */
     private function createFirstLevel($professionCode)
     {
@@ -129,17 +132,17 @@ class ProfessionLevelsTest extends TestWithMockery
         );
 
         self::assertSame(0, $professionLevels->getNextLevelsStrengthModifier());
-        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Strength::STRENGTH));
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::STRENGTH)));
         self::assertSame(0, $professionLevels->getNextLevelsAgilityModifier());
-        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Agility::AGILITY));
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::AGILITY)));
         self::assertSame(0, $professionLevels->getNextLevelsKnackModifier());
-        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Knack::KNACK));
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::KNACK)));
         self::assertSame(0, $professionLevels->getNextLevelsWillModifier());
-        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Will::WILL));
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::WILL)));
         self::assertSame(0, $professionLevels->getNextLevelsIntelligenceModifier());
-        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Intelligence::INTELLIGENCE));
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::INTELLIGENCE)));
         self::assertSame(0, $professionLevels->getNextLevelsCharismaModifier());
-        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(Charisma::CHARISMA));
+        self::assertSame(0, $professionLevels->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::CHARISMA)));
 
         self::assertCount(0, $professionLevels->getProfessionNextLevels());
         self::assertEquals([$zeroLevel, $firstLevel], $professionLevels->getSortedProfessionLevels());
@@ -221,42 +224,42 @@ class ProfessionLevelsTest extends TestWithMockery
         $professionLevel->shouldReceive('getStrengthIncrement')
             ->andReturn($strength = $this->mockery(Strength::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
-            ->with(Strength::STRENGTH)
+            ->with(PropertyCode::getIt(PropertyCode::STRENGTH))
             ->andReturn($strength);
         $this->addValueGetter($strength, $strengthValue);
         $this->addCodeGetter($strength, Strength::STRENGTH);
         $professionLevel->shouldReceive('getAgilityIncrement')
             ->andReturn($agility = $this->mockery(Agility::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
-            ->with(Agility::AGILITY)
+            ->with(PropertyCode::getIt(PropertyCode::AGILITY))
             ->andReturn($agility);
         $this->addValueGetter($agility, $agilityValue);
         $this->addCodeGetter($agility, Agility::AGILITY);
         $professionLevel->shouldReceive('getKnackIncrement')
             ->andReturn($knack = $this->mockery(Knack::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
-            ->with(Knack::KNACK)
+            ->with(PropertyCode::getIt(PropertyCode::KNACK))
             ->andReturn($knack);
         $this->addValueGetter($knack, $knackValue);
         $this->addCodeGetter($knack, Knack::KNACK);
         $professionLevel->shouldReceive('getWillIncrement')
             ->andReturn($will = $this->mockery(Will::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
-            ->with(Will::WILL)
+            ->with(PropertyCode::getIt(PropertyCode::WILL))
             ->andReturn($will);
         $this->addValueGetter($will, $willValue);
         $this->addCodeGetter($will, Will::WILL);
         $professionLevel->shouldReceive('getIntelligenceIncrement')
             ->andReturn($intelligence = $this->mockery(Intelligence::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
-            ->with(Intelligence::INTELLIGENCE)
+            ->with(PropertyCode::getIt(PropertyCode::INTELLIGENCE))
             ->andReturn($intelligence);
         $this->addValueGetter($intelligence, $intelligenceValue);
         $this->addCodeGetter($intelligence, Intelligence::INTELLIGENCE);
         $professionLevel->shouldReceive('getCharismaIncrement')
             ->andReturn($charisma = $this->mockery(Charisma::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
-            ->with(Charisma::CHARISMA)
+            ->with(PropertyCode::getIt(PropertyCode::CHARISMA))
             ->andReturn($charisma);
         $this->addValueGetter($charisma, $charismaValue);
         $this->addCodeGetter($charisma, Charisma::CHARISMA);
@@ -320,8 +323,8 @@ class ProfessionLevelsTest extends TestWithMockery
     }
 
     /**
-     * @param $professionCode
-     * @param $levelValue
+     * @param string $professionCode
+     * @param int $levelValue
      * @param ProfessionLevels|null $professionLevels
      * @return ProfessionFirstLevel|ProfessionNextLevel|MockInterface
      */
@@ -431,17 +434,17 @@ class ProfessionLevelsTest extends TestWithMockery
         self::assertEquals($nextLevel, $professionLevels->getCurrentLevel());
 
         self::assertSame($strength, $professionLevels->getStrengthModifierSummary());
-        self::assertSame($strength, $professionLevels->getPropertyModifierSummary(Strength::STRENGTH));
+        self::assertSame($strength, $professionLevels->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::STRENGTH)));
         self::assertSame($agility, $professionLevels->getAgilityModifierSummary());
-        self::assertSame($agility, $professionLevels->getPropertyModifierSummary(Agility::AGILITY));
+        self::assertSame($agility, $professionLevels->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::AGILITY)));
         self::assertSame($knack, $professionLevels->getKnackModifierSummary());
-        self::assertSame($knack, $professionLevels->getPropertyModifierSummary(Knack::KNACK));
+        self::assertSame($knack, $professionLevels->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::KNACK)));
         self::assertSame($will, $professionLevels->getWillModifierSummary());
-        self::assertSame($will, $professionLevels->getPropertyModifierSummary(Will::WILL));
+        self::assertSame($will, $professionLevels->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::WILL)));
         self::assertSame($intelligence, $professionLevels->getIntelligenceModifierSummary());
-        self::assertSame($intelligence, $professionLevels->getPropertyModifierSummary(Intelligence::INTELLIGENCE));
+        self::assertSame($intelligence, $professionLevels->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::INTELLIGENCE)));
         self::assertSame($charisma, $professionLevels->getCharismaModifierSummary());
-        self::assertSame($charisma, $professionLevels->getPropertyModifierSummary(Charisma::CHARISMA));
+        self::assertSame($charisma, $professionLevels->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::CHARISMA)));
 
         self::assertSame($firstLevel->getStrengthIncrement()->getValue(), $professionLevels->getFirstLevelStrengthModifier());
         self::assertSame($firstLevel->getAgilityIncrement()->getValue(), $professionLevels->getFirstLevelAgilityModifier());
@@ -573,7 +576,7 @@ class ProfessionLevelsTest extends TestWithMockery
         $levelsCount = count($professionLevels->getSortedProfessionLevels());
         self::assertGreaterThan(2, $levelsCount /* already occupied level rank to achieve conflict */);
 
-        $anotherLevel = $this->createProfessionLevel(Fighter::FIGHTER, $levelsCount -1 /* zero level */);
+        $anotherLevel = $this->createProfessionLevel(Fighter::FIGHTER, $levelsCount - 1 /* zero level */);
 
         $professionLevels->addLevel($anotherLevel);
     }
@@ -695,49 +698,28 @@ class ProfessionLevelsTest extends TestWithMockery
         );
     }
 
+    /**
+     * @return array|ProfessionNextLevel[]
+     */
     private function buildProfessionLevels()
     {
-        $professionLevels[$professionCode = Fighter::FIGHTER] = $level = $this->mockery(ProfessionNextLevel::class);
-        $profession = $this->mockery(Fighter::class);
-        $profession->shouldReceive('getValue')
-            ->andReturn($professionCode);
-        $level->shouldReceive('getProfession')
-            ->andReturn($profession);
-
-        $professionLevels[$professionCode = Priest::PRIEST] = $level = $this->mockery(ProfessionNextLevel::class);
-        $profession = $this->mockery(Priest::class);
-        $profession->shouldReceive('getValue')
-            ->andReturn($professionCode);
-        $level->shouldReceive('getProfession')
-            ->andReturn($profession);
-
-        $professionLevels[$professionCode = Ranger::RANGER] = $level = $this->mockery(ProfessionNextLevel::class);
-        $profession = $this->mockery(Ranger::class);
-        $profession->shouldReceive('getValue')
-            ->andReturn($professionCode);
-        $level->shouldReceive('getProfession')
-            ->andReturn($profession);
-
-        $professionLevels[$professionCode = Theurgist::THEURGIST] = $level = $this->mockery(ProfessionNextLevel::class);
-        $profession = $this->mockery(Theurgist::class);
-        $profession->shouldReceive('getValue')
-            ->andReturn($professionCode);
-        $level->shouldReceive('getProfession')
-            ->andReturn($profession);
-
-        $professionLevels[$professionCode = Thief::THIEF] = $level = $this->mockery(ProfessionNextLevel::class);
-        $profession = $this->mockery(Thief::class);
-        $profession->shouldReceive('getValue')
-            ->andReturn($professionCode);
-        $level->shouldReceive('getProfession')
-            ->andReturn($profession);
-
-        $professionLevels[$professionCode = Wizard::WIZARD] = $level = $this->mockery(ProfessionNextLevel::class);
-        $profession = $this->mockery(Wizard::class);
-        $profession->shouldReceive('getValue')
-            ->andReturn($professionCode);
-        $level->shouldReceive('getProfession')
-            ->andReturn($profession);
+        $professions = [
+            ProfessionCode::FIGHTER => Fighter::class,
+            ProfessionCode::PRIEST => Priest::class,
+            ProfessionCode::RANGER => Ranger::class,
+            ProfessionCode::THEURGIST => Theurgist::class,
+            ProfessionCode::THIEF => Thief::class,
+            ProfessionCode::WIZARD => Wizard::class,
+        ];
+        $professionLevels = [];
+        foreach ($professions as $professionCode => $professionClass) {
+            $professionLevels[$professionCode] = $level = $this->mockery(ProfessionNextLevel::class);
+            $profession = $this->mockery($professionClass);
+            $profession->shouldReceive('getValue')
+                ->andReturn($professionCode);
+            $level->shouldReceive('getProfession')
+                ->andReturn($profession);
+        }
 
         return $professionLevels;
     }

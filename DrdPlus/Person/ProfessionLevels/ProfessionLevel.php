@@ -3,6 +3,7 @@ namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrineum\Entity\Entity;
+use DrdPlus\Codes\PropertyCode;
 use DrdPlus\Properties\Base\Agility;
 use DrdPlus\Properties\Base\BaseProperty;
 use DrdPlus\Properties\Base\Charisma;
@@ -132,6 +133,9 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         $this->levelUpAt = $levelUpAt ?: new \DateTimeImmutable();
     }
 
+    /**
+     * @param LevelRank $levelRank
+     */
     abstract protected function checkLevelRank(LevelRank $levelRank);
 
     /**
@@ -174,6 +178,15 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         return static::PRIMARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM + static::SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM;
     }
 
+    /**
+     * @param Strength $strengthIncrement
+     * @param Agility $agilityIncrement
+     * @param Knack $knackIncrement
+     * @param Will $willIncrement
+     * @param Intelligence $intelligenceIncrement
+     * @param Charisma $charismaIncrement
+     * @return int
+     */
     private function sumProperties(
         Strength $strengthIncrement,
         Agility $agilityIncrement,
@@ -184,9 +197,13 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     )
     {
         return $strengthIncrement->getValue() + $agilityIncrement->getValue() + $knackIncrement->getValue()
-        + $willIncrement->getValue() + $intelligenceIncrement->getValue() + $charismaIncrement->getValue();
+            + $willIncrement->getValue() + $intelligenceIncrement->getValue() + $charismaIncrement->getValue();
     }
 
+    /**
+     * @param BaseProperty $baseProperty
+     * @param Profession $profession
+     */
     abstract protected function checkPropertyIncrement(BaseProperty $baseProperty, Profession $profession);
 
     /**
@@ -221,6 +238,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         return $this->getLevelRank()->getValue() === 1;
     }
 
+    /** @return bool */
     public function isNextLevel()
     {
         return $this->getLevelRank()->getValue() > 1;
@@ -236,6 +254,11 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         return static::isProfessionPrimaryProperty($this->getProfession(), $propertyCode);
     }
 
+    /**
+     * @param Profession $profession
+     * @param $propertyCode
+     * @return bool
+     */
     protected static function isProfessionPrimaryProperty(Profession $profession, $propertyCode)
     {
         return $profession->isPrimaryProperty($propertyCode);
@@ -289,9 +312,14 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         return $this->charismaIncrement;
     }
 
-    public function getBasePropertyIncrement($propertyCode)
+    /**
+     * @param PropertyCode $propertyCode
+     * @return Agility|Charisma|Intelligence|Knack|Strength|Will
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\UnknownBaseProperty
+     */
+    public function getBasePropertyIncrement(PropertyCode $propertyCode)
     {
-        switch ($propertyCode) {
+        switch ($propertyCode->getValue()) {
             case Strength::STRENGTH :
                 return $this->getStrengthIncrement();
             case Agility::AGILITY :

@@ -2,6 +2,7 @@
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use DrdPlus\Codes\ProfessionCode;
+use DrdPlus\Codes\PropertyCode;
 use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionFirstLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
@@ -35,14 +36,14 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         self::assertSame($professionCode, $professionFirstLevel->getProfession()->getValue());
         self::assertTrue($professionFirstLevel->isFirstLevel());
         self::assertFalse($professionFirstLevel->isNextLevel());
-        foreach ([Strength::STRENGTH, Agility::AGILITY, Knack::KNACK, Will::WILL, Intelligence::INTELLIGENCE, Charisma::CHARISMA] as $propertyCode) {
-            self::assertSame($this->isPrimaryProperty($propertyCode, $professionCode), $professionFirstLevel->isPrimaryProperty($propertyCode));
+        foreach (PropertyCode::getBasePropertyPossibleValues() as $propertyValue) {
+            self::assertSame($this->isPrimaryProperty($propertyValue, $professionCode), $professionFirstLevel->isPrimaryProperty($propertyValue));
             self::assertInstanceOf(
-                $this->getPropertyClassByCode($propertyCode),
-                $propertyIncrement = $professionFirstLevel->getBasePropertyIncrement($propertyCode)
+                $this->getPropertyClassByCode($propertyValue),
+                $propertyIncrement = $professionFirstLevel->getBasePropertyIncrement(PropertyCode::getIt($propertyValue))
             );
             self::assertSame(
-                $this->isPrimaryProperty($propertyCode, $professionCode) ? 1 : 0,
+                $this->isPrimaryProperty($propertyValue, $professionCode) ? 1 : 0,
                 $propertyIncrement->getValue()
             );
         }
@@ -68,8 +69,13 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      */
     public function I_can_get_level_details($professionCode)
     {
+        $reflectionClass = new \ReflectionClass(ProfessionFirstLevel::class);
+        $constructor = $reflectionClass->getMethod('__construct');
+        $constructor->setAccessible(true);
+        $professionLevel = $reflectionClass->newInstanceWithoutConstructor();
         /** @var ProfessionLevel $professionLevel */
-        $professionLevel = new PublicConstructorProfessionFistLevel(
+        $constructor->invoke(
+            $professionLevel,
             $profession = $this->createProfession($professionCode),
             $levelRank = $this->createLevelRank(),
             $strengthIncrement = $this->createStrength($professionCode),
@@ -78,8 +84,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
             $willIncrement = $this->createWill($professionCode),
             $intelligenceIncrement = $this->createIntelligence($professionCode),
             $charismaIncrement = $this->createCharisma($professionCode),
-            $levelUpAt = new \DateTimeImmutable()
-        );
+            $levelUpAt = new \DateTimeImmutable());
         self::assertSame($profession, $professionLevel->getProfession());
         self::assertSame($levelRank, $professionLevel->getLevelRank());
         self::assertSame($strengthIncrement, $professionLevel->getStrengthIncrement());
@@ -398,7 +403,20 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     {
         ProfessionFirstLevel::createFirstLevel(
             $this->createProfession(ProfessionCode::FIGHTER)
-        )->getBasePropertyIncrement('invalid');
+        )->getBasePropertyIncrement($this->createPropetyCode('invalid'));
+    }
+
+    /**
+     * @param $value
+     * @return MockInterface|PropertyCode
+     */
+    private function createPropetyCode($value)
+    {
+        $propertyCode = $this->mockery(PropertyCode::class);
+        $propertyCode->shouldReceive('getValue')
+            ->andReturn($value);
+
+        return $propertyCode;
     }
 
 }

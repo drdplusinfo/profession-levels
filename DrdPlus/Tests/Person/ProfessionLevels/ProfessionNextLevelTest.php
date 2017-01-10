@@ -2,6 +2,7 @@
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use DrdPlus\Codes\ProfessionCode;
+use DrdPlus\Codes\PropertyCode;
 use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevels;
@@ -43,14 +44,14 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
         self::assertFalse($professionNextLevel->isFirstLevel());
         self::assertTrue($professionNextLevel->isNextLevel());
         self::assertSame($levelRank, $professionNextLevel->getLevelRank());
-        foreach ([Strength::STRENGTH, Agility::AGILITY, Knack::KNACK, Will::WILL, Intelligence::INTELLIGENCE, Charisma::CHARISMA] as $propertyCode) {
-            self::assertSame($this->isPrimaryProperty($propertyCode, $professionCode), $professionNextLevel->isPrimaryProperty($propertyCode));
+        foreach (PropertyCode::getBasePropertyPossibleValues() as $propertyValue) {
+            self::assertSame($this->isPrimaryProperty($propertyValue, $professionCode), $professionNextLevel->isPrimaryProperty($propertyValue));
             self::assertInstanceOf(
-                $this->getPropertyClassByCode($propertyCode),
-                $propertyIncrement = $professionNextLevel->getBasePropertyIncrement($propertyCode)
+                $this->getPropertyClassByCode($propertyValue),
+                $propertyIncrement = $professionNextLevel->getBasePropertyIncrement(PropertyCode::getIt($propertyValue))
             );
             self::assertSame(
-                $this->isPrimaryProperty($propertyCode, $professionCode) ? 1 : 0,
+                $this->isPrimaryProperty($propertyValue, $professionCode) ? 1 : 0,
                 $propertyIncrement->getValue()
             );
         }
