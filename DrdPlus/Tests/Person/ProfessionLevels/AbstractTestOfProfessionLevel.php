@@ -9,12 +9,6 @@ use DrdPlus\Professions\Ranger;
 use DrdPlus\Professions\Theurgist;
 use DrdPlus\Professions\Thief;
 use DrdPlus\Professions\Wizard;
-use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Base\Charisma;
-use DrdPlus\Properties\Base\Intelligence;
-use DrdPlus\Properties\Base\Knack;
-use DrdPlus\Properties\Base\Strength;
-use DrdPlus\Properties\Base\Will;
 use \DrdPlus\Professions\Profession;
 use Granam\Tests\Tools\TestWithMockery;
 use Granam\Tools\ValueDescriber;
@@ -49,17 +43,17 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     {
         switch ($professionCode) {
             case ProfessionCode::FIGHTER :
-                return [Strength::STRENGTH, Agility::AGILITY];
+                return [PropertyCode::STRENGTH, PropertyCode::AGILITY];
             case ProfessionCode::THIEF :
-                return [Agility::AGILITY, Knack::KNACK];
+                return [PropertyCode::AGILITY, PropertyCode::KNACK];
             case ProfessionCode::RANGER :
-                return [Strength::STRENGTH, Knack::KNACK];
+                return [PropertyCode::STRENGTH, PropertyCode::KNACK];
             case ProfessionCode::WIZARD :
-                return [Will::WILL, Intelligence::INTELLIGENCE];
+                return [PropertyCode::WILL, PropertyCode::INTELLIGENCE];
             case ProfessionCode::THEURGIST :
-                return [Intelligence::INTELLIGENCE, Charisma::CHARISMA];
+                return [PropertyCode::INTELLIGENCE, PropertyCode::CHARISMA];
             case ProfessionCode::PRIEST :
-                return [Will::WILL, Charisma::CHARISMA];
+                return [PropertyCode::WILL, PropertyCode::CHARISMA];
         }
         throw new \LogicException('Unknown profession code ' . ValueDescriber::describe($professionCode));
     }

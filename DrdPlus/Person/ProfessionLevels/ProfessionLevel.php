@@ -319,17 +319,17 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     public function getBasePropertyIncrement(PropertyCode $propertyCode)
     {
         switch ($propertyCode->getValue()) {
-            case Strength::STRENGTH :
+            case PropertyCode::STRENGTH :
                 return $this->getStrengthIncrement();
-            case Agility::AGILITY :
+            case PropertyCode::AGILITY :
                 return $this->getAgilityIncrement();
-            case Knack::KNACK :
+            case PropertyCode::KNACK :
                 return $this->getKnackIncrement();
-            case Will::WILL :
+            case PropertyCode::WILL :
                 return $this->getWillIncrement();
-            case Intelligence::INTELLIGENCE :
+            case PropertyCode::INTELLIGENCE :
                 return $this->getIntelligenceIncrement();
-            case Charisma::CHARISMA :
+            case PropertyCode::CHARISMA :
                 return $this->getCharismaIncrement();
             default :
                 throw new Exceptions\UnknownBaseProperty(

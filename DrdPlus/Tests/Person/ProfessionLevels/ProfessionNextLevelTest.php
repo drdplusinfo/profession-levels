@@ -128,7 +128,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createStrength($professionCode, $propertyValue = null)
     {
-        return $this->createProperty($professionCode, Strength::class, Strength::STRENGTH, $propertyValue);
+        return $this->createProperty($professionCode, Strength::class, PropertyCode::STRENGTH, $propertyValue);
     }
 
     /**
@@ -174,7 +174,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createAgility($professionCode, $value = null)
     {
-        return $this->createProperty($professionCode, Agility::class, Agility::AGILITY, $value);
+        return $this->createProperty($professionCode, Agility::class, PropertyCode::AGILITY, $value);
     }
 
     /**
@@ -184,7 +184,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createKnack($professionCode, $value = null)
     {
-        return $this->createProperty($professionCode, Knack::class, Knack::KNACK, $value);
+        return $this->createProperty($professionCode, Knack::class, PropertyCode::KNACK, $value);
     }
 
     /**
@@ -194,7 +194,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createWill($professionCode, $value = null)
     {
-        return $this->createProperty($professionCode, Will::class, Will::WILL, $value);
+        return $this->createProperty($professionCode, Will::class, PropertyCode::WILL, $value);
     }
 
     /**
@@ -204,7 +204,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createIntelligence($professionCode, $value = null)
     {
-        return $this->createProperty($professionCode, Intelligence::class, Intelligence::INTELLIGENCE, $value);
+        return $this->createProperty($professionCode, Intelligence::class, PropertyCode::INTELLIGENCE, $value);
     }
 
     /**
@@ -214,23 +214,23 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createCharisma($professionCode, $value = null)
     {
-        return $this->createProperty($professionCode, Charisma::class, Charisma::CHARISMA, $value);
+        return $this->createProperty($professionCode, Charisma::class, PropertyCode::CHARISMA, $value);
     }
 
     private function getPropertyClassByCode($propertyCode)
     {
         switch ($propertyCode) {
-            case Strength::STRENGTH :
+            case PropertyCode::STRENGTH :
                 return Strength::class;
-            case Agility::AGILITY :
+            case PropertyCode::AGILITY :
                 return Agility::class;
-            case Knack::KNACK :
+            case PropertyCode::KNACK :
                 return Knack::class;
-            case Will::WILL :
+            case PropertyCode::WILL :
                 return Will::class;
-            case Intelligence::INTELLIGENCE :
+            case PropertyCode::INTELLIGENCE :
                 return Intelligence::class;
-            case Charisma::CHARISMA :
+            case PropertyCode::CHARISMA :
                 return Charisma::class;
             default :
                 throw new \LogicException('Where did you get that? ' . $propertyCode);
@@ -347,24 +347,24 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
         ProfessionNextLevel::createNextLevel(
             $this->createProfession(ProfessionCode::FIGHTER),
             $levelRank = LevelRank::getIt(2),
-            Strength::getIt($propertyCodeToNegative === Strength::STRENGTH ? -1 : 0),
-            Agility::getIt($propertyCodeToNegative === Agility::AGILITY ? -1 : 0),
-            Knack::getIt($propertyCodeToNegative === Knack::KNACK ? -1 : 0),
-            Will::getIt($propertyCodeToNegative === Will::WILL ? -1 : 0),
-            Intelligence::getIt($propertyCodeToNegative === Intelligence::INTELLIGENCE ? -1 : 0),
-            Charisma::getIt($propertyCodeToNegative === Charisma::CHARISMA ? -1 : 0)
+            Strength::getIt($propertyCodeToNegative === PropertyCode::STRENGTH ? -1 : 0),
+            Agility::getIt($propertyCodeToNegative === PropertyCode::AGILITY ? -1 : 0),
+            Knack::getIt($propertyCodeToNegative === PropertyCode::KNACK ? -1 : 0),
+            Will::getIt($propertyCodeToNegative === PropertyCode::WILL ? -1 : 0),
+            Intelligence::getIt($propertyCodeToNegative === PropertyCode::INTELLIGENCE ? -1 : 0),
+            Charisma::getIt($propertyCodeToNegative === PropertyCode::CHARISMA ? -1 : 0)
         );
     }
 
     public function providePropertyCodeOneByOne()
     {
         return [
-            [Strength::STRENGTH],
-            [Agility::AGILITY],
-            [Knack::KNACK],
-            [Will::WILL],
-            [Intelligence::INTELLIGENCE],
-            [Charisma::CHARISMA],
+            [PropertyCode::STRENGTH],
+            [PropertyCode::AGILITY],
+            [PropertyCode::KNACK],
+            [PropertyCode::WILL],
+            [PropertyCode::INTELLIGENCE],
+            [PropertyCode::CHARISMA],
         ];
     }
 
@@ -380,12 +380,12 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
         ProfessionNextLevel::createNextLevel(
             $this->createProfession(ProfessionCode::FIGHTER),
             $levelRank = LevelRank::getIt(2),
-            Strength::getIt($propertyCodeTooHigh === Strength::STRENGTH ? 2 : 0),
-            Agility::getIt($propertyCodeTooHigh === Agility::AGILITY ? 2 : 0),
-            Knack::getIt($propertyCodeTooHigh === Knack::KNACK ? 2 : 0),
-            Will::getIt($propertyCodeTooHigh === Will::WILL ? 2 : 0),
-            Intelligence::getIt($propertyCodeTooHigh === Intelligence::INTELLIGENCE ? 2 : 0),
-            Charisma::getIt($propertyCodeTooHigh === Charisma::CHARISMA ? 2 : 0)
+            Strength::getIt($propertyCodeTooHigh === PropertyCode::STRENGTH ? 2 : 0),
+            Agility::getIt($propertyCodeTooHigh === PropertyCode::AGILITY ? 2 : 0),
+            Knack::getIt($propertyCodeTooHigh === PropertyCode::KNACK ? 2 : 0),
+            Will::getIt($propertyCodeTooHigh === PropertyCode::WILL ? 2 : 0),
+            Intelligence::getIt($propertyCodeTooHigh === PropertyCode::INTELLIGENCE ? 2 : 0),
+            Charisma::getIt($propertyCodeTooHigh === PropertyCode::CHARISMA ? 2 : 0)
         );
     }
 

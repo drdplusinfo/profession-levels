@@ -125,7 +125,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createStrength($professionCode, $propertyValue = null)
     {
-        return $this->createProperty($professionCode, Strength::class, Strength::STRENGTH, $propertyValue);
+        return $this->createProperty($professionCode, Strength::class, PropertyCode::STRENGTH, $propertyValue);
     }
 
     /**
@@ -171,7 +171,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createAgility($professionCode, $value = null)
     {
-        return $this->createProperty($professionCode, Agility::class, Agility::AGILITY, $value);
+        return $this->createProperty($professionCode, Agility::class, PropertyCode::AGILITY, $value);
     }
 
     /**
@@ -181,7 +181,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createKnack($professionCode, $value = null)
     {
-        return $this->createProperty($professionCode, Knack::class, Knack::KNACK, $value);
+        return $this->createProperty($professionCode, Knack::class, PropertyCode::KNACK, $value);
     }
 
     /**
@@ -191,7 +191,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createWill($professionCode, $value = null)
     {
-        return $this->createProperty($professionCode, Will::class, Will::WILL, $value);
+        return $this->createProperty($professionCode, Will::class, PropertyCode::WILL, $value);
     }
 
     /**
@@ -201,7 +201,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createIntelligence($professionCode, $value = null)
     {
-        return $this->createProperty($professionCode, Intelligence::class, Intelligence::INTELLIGENCE, $value);
+        return $this->createProperty($professionCode, Intelligence::class, PropertyCode::INTELLIGENCE, $value);
     }
 
     /**
@@ -211,23 +211,23 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      */
     private function createCharisma($professionCode, $value = null)
     {
-        return $this->createProperty($professionCode, Charisma::class, Charisma::CHARISMA, $value);
+        return $this->createProperty($professionCode, Charisma::class, PropertyCode::CHARISMA, $value);
     }
 
     private function getPropertyClassByCode($propertyCode)
     {
         switch ($propertyCode) {
-            case Strength::STRENGTH :
+            case PropertyCode::STRENGTH :
                 return Strength::class;
-            case Agility::AGILITY :
+            case PropertyCode::AGILITY :
                 return Agility::class;
-            case Knack::KNACK :
+            case PropertyCode::KNACK :
                 return Knack::class;
-            case Will::WILL :
+            case PropertyCode::WILL :
                 return Will::class;
-            case Intelligence::INTELLIGENCE :
+            case PropertyCode::INTELLIGENCE :
                 return Intelligence::class;
-            case Charisma::CHARISMA :
+            case PropertyCode::CHARISMA :
                 return Charisma::class;
             default :
                 throw new \LogicException('Where did you get that? ' . $propertyCode);

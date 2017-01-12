@@ -97,12 +97,12 @@ class ProfessionLevelsTest extends TestWithMockery
             ->andReturn(1);
         $this->addPropertyIncrementGetters(
             $firstLevel,
-            $strength = $this->isPrimaryProperty(Strength::STRENGTH, $professionCode) ? 1 : 0,
-            $agility = $this->isPrimaryProperty(Agility::AGILITY, $professionCode) ? 1 : 0,
-            $knack = $this->isPrimaryProperty(Knack::KNACK, $professionCode) ? 1 : 0,
-            $will = $this->isPrimaryProperty(Will::WILL, $professionCode) ? 1 : 0,
-            $intelligence = $this->isPrimaryProperty(Intelligence::INTELLIGENCE, $professionCode) ? 1 : 0,
-            $charisma = $this->isPrimaryProperty(Charisma::CHARISMA, $professionCode) ? 1 : 0
+            $strength = $this->isPrimaryProperty(PropertyCode::STRENGTH, $professionCode) ? 1 : 0,
+            $agility = $this->isPrimaryProperty(PropertyCode::AGILITY, $professionCode) ? 1 : 0,
+            $knack = $this->isPrimaryProperty(PropertyCode::KNACK, $professionCode) ? 1 : 0,
+            $will = $this->isPrimaryProperty(PropertyCode::WILL, $professionCode) ? 1 : 0,
+            $intelligence = $this->isPrimaryProperty(PropertyCode::INTELLIGENCE, $professionCode) ? 1 : 0,
+            $charisma = $this->isPrimaryProperty(PropertyCode::CHARISMA, $professionCode) ? 1 : 0
         );
         $this->addPrimaryPropertiesAnswer($firstLevel, $professionCode);
 
@@ -128,7 +128,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         $professionLevels = new ProfessionLevels(
             $zeroLevel = $this->createZeroLevel(),
-            $firstLevel = $this->createFirstLevel(Fighter::FIGHTER)
+            $firstLevel = $this->createFirstLevel(ProfessionCode::FIGHTER)
         );
 
         self::assertSame(0, $professionLevels->getNextLevelsStrengthModifier());
@@ -163,33 +163,33 @@ class ProfessionLevelsTest extends TestWithMockery
      */
     public function I_will_get_proper_value_of_first_level_properties()
     {
-        $firstLevel = $this->createProfessionFirstLevel(Fighter::FIGHTER);
-        $this->addFirstLevelPropertyIncrementGetters($firstLevel, Fighter::FIGHTER);
-        $this->addPrimaryPropertiesAnswer($firstLevel, Fighter::FIGHTER);
+        $firstLevel = $this->createProfessionFirstLevel(ProfessionCode::FIGHTER);
+        $this->addFirstLevelPropertyIncrementGetters($firstLevel, ProfessionCode::FIGHTER);
+        $this->addPrimaryPropertiesAnswer($firstLevel, ProfessionCode::FIGHTER);
         $zeroLevel = $this->createZeroLevel();
         $professionLevels = $this->createProfessionLevelsWith($zeroLevel, $firstLevel);
         self::assertSame(
-            $this->isPrimaryProperty(Strength::STRENGTH, Fighter::FIGHTER) ? 1 : 0,
+            $this->isPrimaryProperty(PropertyCode::STRENGTH, ProfessionCode::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelStrengthModifier()
         );
         self::assertSame(
-            $this->isPrimaryProperty(Agility::AGILITY, Fighter::FIGHTER) ? 1 : 0,
+            $this->isPrimaryProperty(PropertyCode::AGILITY, ProfessionCode::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelAgilityModifier()
         );
         self::assertSame(
-            $this->isPrimaryProperty(Knack::KNACK, Fighter::FIGHTER) ? 1 : 0,
+            $this->isPrimaryProperty(PropertyCode::KNACK, ProfessionCode::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelKnackModifier()
         );
         self::assertSame(
-            $this->isPrimaryProperty(Will::WILL, Fighter::FIGHTER) ? 1 : 0,
+            $this->isPrimaryProperty(PropertyCode::WILL, ProfessionCode::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelWillModifier()
         );
         self::assertSame(
-            $this->isPrimaryProperty(Intelligence::INTELLIGENCE, Fighter::FIGHTER) ? 1 : 0,
+            $this->isPrimaryProperty(PropertyCode::INTELLIGENCE, ProfessionCode::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelIntelligenceModifier()
         );
         self::assertSame(
-            $this->isPrimaryProperty(Charisma::CHARISMA, Fighter::FIGHTER) ? 1 : 0,
+            $this->isPrimaryProperty(PropertyCode::CHARISMA, ProfessionCode::FIGHTER) ? 1 : 0,
             $professionLevels->getFirstLevelCharismaModifier()
         );
     }
@@ -202,12 +202,12 @@ class ProfessionLevelsTest extends TestWithMockery
         }
         $this->addPropertyIncrementGetters(
             $professionLevel,
-            $modifiers[Strength::STRENGTH],
-            $modifiers[Agility::AGILITY],
-            $modifiers[Knack::KNACK],
-            $modifiers[Will::WILL],
-            $modifiers[Intelligence::INTELLIGENCE],
-            $modifiers[Charisma::CHARISMA]
+            $modifiers[PropertyCode::STRENGTH],
+            $modifiers[PropertyCode::AGILITY],
+            $modifiers[PropertyCode::KNACK],
+            $modifiers[PropertyCode::WILL],
+            $modifiers[PropertyCode::INTELLIGENCE],
+            $modifiers[PropertyCode::CHARISMA]
         );
     }
 
@@ -227,42 +227,42 @@ class ProfessionLevelsTest extends TestWithMockery
             ->with(PropertyCode::getIt(PropertyCode::STRENGTH))
             ->andReturn($strength);
         $this->addValueGetter($strength, $strengthValue);
-        $this->addCodeGetter($strength, Strength::STRENGTH);
+        $this->addCodeGetter($strength, PropertyCode::STRENGTH);
         $professionLevel->shouldReceive('getAgilityIncrement')
             ->andReturn($agility = $this->mockery(Agility::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(PropertyCode::getIt(PropertyCode::AGILITY))
             ->andReturn($agility);
         $this->addValueGetter($agility, $agilityValue);
-        $this->addCodeGetter($agility, Agility::AGILITY);
+        $this->addCodeGetter($agility, PropertyCode::AGILITY);
         $professionLevel->shouldReceive('getKnackIncrement')
             ->andReturn($knack = $this->mockery(Knack::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(PropertyCode::getIt(PropertyCode::KNACK))
             ->andReturn($knack);
         $this->addValueGetter($knack, $knackValue);
-        $this->addCodeGetter($knack, Knack::KNACK);
+        $this->addCodeGetter($knack, PropertyCode::KNACK);
         $professionLevel->shouldReceive('getWillIncrement')
             ->andReturn($will = $this->mockery(Will::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(PropertyCode::getIt(PropertyCode::WILL))
             ->andReturn($will);
         $this->addValueGetter($will, $willValue);
-        $this->addCodeGetter($will, Will::WILL);
+        $this->addCodeGetter($will, PropertyCode::WILL);
         $professionLevel->shouldReceive('getIntelligenceIncrement')
             ->andReturn($intelligence = $this->mockery(Intelligence::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(PropertyCode::getIt(PropertyCode::INTELLIGENCE))
             ->andReturn($intelligence);
         $this->addValueGetter($intelligence, $intelligenceValue);
-        $this->addCodeGetter($intelligence, Intelligence::INTELLIGENCE);
+        $this->addCodeGetter($intelligence, PropertyCode::INTELLIGENCE);
         $professionLevel->shouldReceive('getCharismaIncrement')
             ->andReturn($charisma = $this->mockery(Charisma::class));
         $professionLevel->shouldReceive('getBasePropertyIncrement')
             ->with(PropertyCode::getIt(PropertyCode::CHARISMA))
             ->andReturn($charisma);
         $this->addValueGetter($charisma, $charismaValue);
-        $this->addCodeGetter($charisma, Charisma::CHARISMA);
+        $this->addCodeGetter($charisma, PropertyCode::CHARISMA);
     }
 
     private function addValueGetter(MockInterface $property, $value)
@@ -366,18 +366,18 @@ class ProfessionLevelsTest extends TestWithMockery
     private function getPrimaryProperties($professionCode)
     {
         switch ($professionCode) {
-            case Fighter::FIGHTER :
-                return [Strength::STRENGTH, Agility::AGILITY];
-            case Priest::PRIEST :
-                return [Will::WILL, Charisma::CHARISMA];
-            case Ranger::RANGER :
-                return [Strength::STRENGTH, Knack::KNACK];
-            case Theurgist::THEURGIST :
-                return [Intelligence::INTELLIGENCE, Charisma::CHARISMA];
-            case Thief::THIEF :
-                return [Knack::KNACK, Agility::AGILITY];
-            case Wizard::WIZARD :
-                return [Will::WILL, Intelligence::INTELLIGENCE];
+            case ProfessionCode::FIGHTER :
+                return [PropertyCode::STRENGTH, PropertyCode::AGILITY];
+            case ProfessionCode::PRIEST :
+                return [PropertyCode::WILL, PropertyCode::CHARISMA];
+            case ProfessionCode::RANGER :
+                return [PropertyCode::STRENGTH, PropertyCode::KNACK];
+            case ProfessionCode::THEURGIST :
+                return [PropertyCode::INTELLIGENCE, PropertyCode::CHARISMA];
+            case ProfessionCode::THIEF :
+                return [PropertyCode::KNACK, PropertyCode::AGILITY];
+            case ProfessionCode::WIZARD :
+                return [PropertyCode::WILL, PropertyCode::INTELLIGENCE];
             default :
                 throw new \RuntimeException('Unknown profession name ' . var_export($professionCode, true));
         }
@@ -405,19 +405,19 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         $professionLevels = new ProfessionLevels(
             $zeroLevel = $this->createZeroLevel(),
-            $firstLevel = $this->createFirstLevel(Fighter::FIGHTER)
+            $firstLevel = $this->createFirstLevel(ProfessionCode::FIGHTER)
         );
-        $nextLevel = $this->createProfessionLevel(Fighter::FIGHTER, $levelValue = 2, $professionLevels);
+        $nextLevel = $this->createProfessionLevel(ProfessionCode::FIGHTER, $levelValue = 2, $professionLevels);
         $this->addPropertyIncrementGetters(
             $nextLevel,
-            $strength = $this->isPrimaryProperty(Strength::STRENGTH, Fighter::FIGHTER) ? 1 : 0,
-            $agility = $this->isPrimaryProperty(Agility::AGILITY, Fighter::FIGHTER) ? 1 : 0,
-            $knack = $this->isPrimaryProperty(Knack::KNACK, Fighter::FIGHTER) ? 1 : 0,
-            $will = $this->isPrimaryProperty(Will::WILL, Fighter::FIGHTER) ? 1 : 0,
-            $intelligence = $this->isPrimaryProperty(Intelligence::INTELLIGENCE, Fighter::FIGHTER) ? 1 : 0,
-            $charisma = $this->isPrimaryProperty(Charisma::CHARISMA, Fighter::FIGHTER) ? 1 : 0
+            $strength = $this->isPrimaryProperty(PropertyCode::STRENGTH, ProfessionCode::FIGHTER) ? 1 : 0,
+            $agility = $this->isPrimaryProperty(PropertyCode::AGILITY, ProfessionCode::FIGHTER) ? 1 : 0,
+            $knack = $this->isPrimaryProperty(PropertyCode::KNACK, ProfessionCode::FIGHTER) ? 1 : 0,
+            $will = $this->isPrimaryProperty(PropertyCode::WILL, ProfessionCode::FIGHTER) ? 1 : 0,
+            $intelligence = $this->isPrimaryProperty(PropertyCode::INTELLIGENCE, ProfessionCode::FIGHTER) ? 1 : 0,
+            $charisma = $this->isPrimaryProperty(PropertyCode::CHARISMA, ProfessionCode::FIGHTER) ? 1 : 0
         );
-        $this->addPrimaryPropertiesAnswer($nextLevel, Fighter::FIGHTER);
+        $this->addPrimaryPropertiesAnswer($nextLevel, ProfessionCode::FIGHTER);
         $professionLevels->addLevel($nextLevel);
 
         $strength += $firstLevel->getStrengthIncrement()->getValue();
@@ -481,8 +481,8 @@ class ProfessionLevelsTest extends TestWithMockery
      */
     public function I_can_add_more_levels_of_same_profession()
     {
-        $firstLevel = $this->createProfessionFirstLevel(Fighter::FIGHTER);
-        $this->addPrimaryPropertiesAnswer($firstLevel, Fighter::FIGHTER);
+        $firstLevel = $this->createProfessionFirstLevel(ProfessionCode::FIGHTER);
+        $this->addPrimaryPropertiesAnswer($firstLevel, ProfessionCode::FIGHTER);
         $this->addFirstLevelAnswer($firstLevel, true);
         $this->addNextLevelAnswer($firstLevel, false);
         $this->addPropertyIncrementGetters(
@@ -500,11 +500,11 @@ class ProfessionLevelsTest extends TestWithMockery
         foreach ($this->getPropertyNames() as $propertyName) {
             $firstLevelProperties[$propertyName] = $propertiesSummary[$propertyName] = $$propertyName;
         }
-        $secondLevel = $this->createProfessionLevel(Fighter::FIGHTER, 2, $professionLevels);
+        $secondLevel = $this->createProfessionLevel(ProfessionCode::FIGHTER, 2, $professionLevels);
         $this->addPropertyIncrementGetters(
             $secondLevel, $strength = 1, $agility = 2, $knack = 3, $will = 4, $intelligence = 5, $charisma = 6
         );
-        $this->addPrimaryPropertiesAnswer($secondLevel, Fighter::FIGHTER);
+        $this->addPrimaryPropertiesAnswer($secondLevel, ProfessionCode::FIGHTER);
         $this->addNextLevelAnswer($secondLevel, true);
         $nextLevelProperties = [];
         foreach ($this->getPropertyNames() as $propertyName) {
@@ -513,17 +513,17 @@ class ProfessionLevelsTest extends TestWithMockery
         }
         $professionLevels->addLevel($secondLevel);
 
-        $thirdLevel = $this->createProfessionLevel(Fighter::FIGHTER, 3, $professionLevels);
+        $thirdLevel = $this->createProfessionLevel(ProfessionCode::FIGHTER, 3, $professionLevels);
         $this->addPropertyIncrementGetters(
             $thirdLevel,
-            $strength = ($this->isPrimaryProperty(Strength::STRENGTH, Fighter::FIGHTER) ? 7 : 0),
-            $agility = ($this->isPrimaryProperty(Agility::AGILITY, Fighter::FIGHTER) ? 8 : 0),
-            $knack = ($this->isPrimaryProperty(Knack::KNACK, Fighter::FIGHTER) ? 9 : 0),
-            $will = ($this->isPrimaryProperty(Will::WILL, Fighter::FIGHTER) ? 10 : 0),
-            $intelligence = ($this->isPrimaryProperty(Intelligence::INTELLIGENCE, Fighter::FIGHTER) ? 11 : 0),
-            $charisma = ($this->isPrimaryProperty(Charisma::CHARISMA, Fighter::FIGHTER) ? 12 : 0)
+            $strength = ($this->isPrimaryProperty(PropertyCode::STRENGTH, ProfessionCode::FIGHTER) ? 7 : 0),
+            $agility = ($this->isPrimaryProperty(PropertyCode::AGILITY, ProfessionCode::FIGHTER) ? 8 : 0),
+            $knack = ($this->isPrimaryProperty(PropertyCode::KNACK, ProfessionCode::FIGHTER) ? 9 : 0),
+            $will = ($this->isPrimaryProperty(PropertyCode::WILL, ProfessionCode::FIGHTER) ? 10 : 0),
+            $intelligence = ($this->isPrimaryProperty(PropertyCode::INTELLIGENCE, ProfessionCode::FIGHTER) ? 11 : 0),
+            $charisma = ($this->isPrimaryProperty(PropertyCode::CHARISMA, ProfessionCode::FIGHTER) ? 12 : 0)
         );
-        $this->addPrimaryPropertiesAnswer($thirdLevel, Fighter::FIGHTER);
+        $this->addPrimaryPropertiesAnswer($thirdLevel, ProfessionCode::FIGHTER);
         foreach ($this->getPropertyNames() as $propertyName) {
             $propertiesSummary[$propertyName] += $$propertyName;
             $nextLevelProperties[$propertyName] += $$propertyName;
@@ -543,26 +543,26 @@ class ProfessionLevelsTest extends TestWithMockery
         self::assertSame($thirdLevel, $professionLevels->getCurrentLevel());
         self::assertSame(count($levelsArray), $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1 /* zero level */);
 
-        self::assertSame($propertiesSummary[Strength::STRENGTH], $professionLevels->getStrengthModifierSummary());
-        self::assertSame($propertiesSummary[Agility::AGILITY], $professionLevels->getAgilityModifierSummary());
-        self::assertSame($propertiesSummary[Knack::KNACK], $professionLevels->getKnackModifierSummary());
-        self::assertSame($propertiesSummary[Will::WILL], $professionLevels->getWillModifierSummary());
-        self::assertSame($propertiesSummary[Intelligence::INTELLIGENCE], $professionLevels->getIntelligenceModifierSummary());
-        self::assertSame($propertiesSummary[Charisma::CHARISMA], $professionLevels->getCharismaModifierSummary());
+        self::assertSame($propertiesSummary[PropertyCode::STRENGTH], $professionLevels->getStrengthModifierSummary());
+        self::assertSame($propertiesSummary[PropertyCode::AGILITY], $professionLevels->getAgilityModifierSummary());
+        self::assertSame($propertiesSummary[PropertyCode::KNACK], $professionLevels->getKnackModifierSummary());
+        self::assertSame($propertiesSummary[PropertyCode::WILL], $professionLevels->getWillModifierSummary());
+        self::assertSame($propertiesSummary[PropertyCode::INTELLIGENCE], $professionLevels->getIntelligenceModifierSummary());
+        self::assertSame($propertiesSummary[PropertyCode::CHARISMA], $professionLevels->getCharismaModifierSummary());
 
-        self::assertSame($firstLevelProperties[Strength::STRENGTH], $professionLevels->getFirstLevelStrengthModifier());
-        self::assertSame($firstLevelProperties[Agility::AGILITY], $professionLevels->getFirstLevelAgilityModifier());
-        self::assertSame($firstLevelProperties[Knack::KNACK], $professionLevels->getFirstLevelKnackModifier());
-        self::assertSame($firstLevelProperties[Will::WILL], $professionLevels->getFirstLevelWillModifier());
-        self::assertSame($firstLevelProperties[Intelligence::INTELLIGENCE], $professionLevels->getFirstLevelIntelligenceModifier());
-        self::assertSame($firstLevelProperties[Charisma::CHARISMA], $professionLevels->getFirstLevelCharismaModifier());
+        self::assertSame($firstLevelProperties[PropertyCode::STRENGTH], $professionLevels->getFirstLevelStrengthModifier());
+        self::assertSame($firstLevelProperties[PropertyCode::AGILITY], $professionLevels->getFirstLevelAgilityModifier());
+        self::assertSame($firstLevelProperties[PropertyCode::KNACK], $professionLevels->getFirstLevelKnackModifier());
+        self::assertSame($firstLevelProperties[PropertyCode::WILL], $professionLevels->getFirstLevelWillModifier());
+        self::assertSame($firstLevelProperties[PropertyCode::INTELLIGENCE], $professionLevels->getFirstLevelIntelligenceModifier());
+        self::assertSame($firstLevelProperties[PropertyCode::CHARISMA], $professionLevels->getFirstLevelCharismaModifier());
 
-        self::assertSame($nextLevelProperties[Strength::STRENGTH], $professionLevels->getNextLevelsStrengthModifier());
-        self::assertSame($nextLevelProperties[Agility::AGILITY], $professionLevels->getNextLevelsAgilityModifier());
-        self::assertSame($nextLevelProperties[Knack::KNACK], $professionLevels->getNextLevelsKnackModifier());
-        self::assertSame($nextLevelProperties[Will::WILL], $professionLevels->getNextLevelsWillModifier());
-        self::assertSame($nextLevelProperties[Intelligence::INTELLIGENCE], $professionLevels->getNextLevelsIntelligenceModifier());
-        self::assertSame($nextLevelProperties[Charisma::CHARISMA], $professionLevels->getNextLevelsCharismaModifier());
+        self::assertSame($nextLevelProperties[PropertyCode::STRENGTH], $professionLevels->getNextLevelsStrengthModifier());
+        self::assertSame($nextLevelProperties[PropertyCode::AGILITY], $professionLevels->getNextLevelsAgilityModifier());
+        self::assertSame($nextLevelProperties[PropertyCode::KNACK], $professionLevels->getNextLevelsKnackModifier());
+        self::assertSame($nextLevelProperties[PropertyCode::WILL], $professionLevels->getNextLevelsWillModifier());
+        self::assertSame($nextLevelProperties[PropertyCode::INTELLIGENCE], $professionLevels->getNextLevelsIntelligenceModifier());
+        self::assertSame($nextLevelProperties[PropertyCode::CHARISMA], $professionLevels->getNextLevelsCharismaModifier());
     }
 
     /**
@@ -571,12 +571,12 @@ class ProfessionLevelsTest extends TestWithMockery
      */
     public function I_can_not_add_level_with_occupied_sequence()
     {
-        $professionLevels = $this->createProfessionLevelsForChangeResistTest(Fighter::FIGHTER);
+        $professionLevels = $this->createProfessionLevelsForChangeResistTest(ProfessionCode::FIGHTER);
 
         $levelsCount = count($professionLevels->getSortedProfessionLevels());
         self::assertGreaterThan(2, $levelsCount /* already occupied level rank to achieve conflict */);
 
-        $anotherLevel = $this->createProfessionLevel(Fighter::FIGHTER, $levelsCount - 1 /* zero level */);
+        $anotherLevel = $this->createProfessionLevel(ProfessionCode::FIGHTER, $levelsCount - 1 /* zero level */);
 
         $professionLevels->addLevel($anotherLevel);
     }
@@ -587,11 +587,11 @@ class ProfessionLevelsTest extends TestWithMockery
      */
     public function I_can_not_add_level_with_out_of_sequence_rank()
     {
-        $professionLevels = $this->createProfessionLevelsForChangeResistTest(Fighter::FIGHTER);
+        $professionLevels = $this->createProfessionLevelsForChangeResistTest(ProfessionCode::FIGHTER);
         $levelsCount = count($professionLevels->getSortedProfessionLevels());
         self::assertGreaterThan(1, $levelsCount);
 
-        $anotherLevel = $this->createProfessionLevel(Fighter::FIGHTER, $levelsCount + 2 /* skipping a rank by one */, $professionLevels);
+        $anotherLevel = $this->createProfessionLevel(ProfessionCode::FIGHTER, $levelsCount + 2 /* skipping a rank by one */, $professionLevels);
 
         $professionLevels->addLevel($anotherLevel);
     }
@@ -625,12 +625,12 @@ class ProfessionLevelsTest extends TestWithMockery
         $thirdLevel = $this->createProfessionLevel($professionCode, 3, $professionLevels);
         $this->addPropertyIncrementGetters(
             $thirdLevel,
-            $strength = ($this->isPrimaryProperty(Strength::STRENGTH, $professionCode) ? 7 : 0),
-            $agility = ($this->isPrimaryProperty(Agility::AGILITY, $professionCode) ? 8 : 0),
-            $knack = ($this->isPrimaryProperty(Knack::KNACK, $professionCode) ? 9 : 0),
-            $will = ($this->isPrimaryProperty(Will::WILL, $professionCode) ? 10 : 0),
-            $intelligence = ($this->isPrimaryProperty(Intelligence::INTELLIGENCE, $professionCode) ? 11 : 0),
-            $charisma = ($this->isPrimaryProperty(Charisma::CHARISMA, $professionCode) ? 12 : 0)
+            $strength = ($this->isPrimaryProperty(PropertyCode::STRENGTH, $professionCode) ? 7 : 0),
+            $agility = ($this->isPrimaryProperty(PropertyCode::AGILITY, $professionCode) ? 8 : 0),
+            $knack = ($this->isPrimaryProperty(PropertyCode::KNACK, $professionCode) ? 9 : 0),
+            $will = ($this->isPrimaryProperty(PropertyCode::WILL, $professionCode) ? 10 : 0),
+            $intelligence = ($this->isPrimaryProperty(PropertyCode::INTELLIGENCE, $professionCode) ? 11 : 0),
+            $charisma = ($this->isPrimaryProperty(PropertyCode::CHARISMA, $professionCode) ? 12 : 0)
         );
         $this->addPrimaryPropertiesAnswer($thirdLevel, $professionCode);
         $professionLevels->addLevel($thirdLevel);
@@ -647,7 +647,7 @@ class ProfessionLevelsTest extends TestWithMockery
      */
     public function I_can_not_mix_professions()
     {
-        $professionLevels = $this->createProfessionLevelsForMixTest(Fighter::FIGHTER);
+        $professionLevels = $this->createProfessionLevelsForMixTest(ProfessionCode::FIGHTER);
         /** @var ProfessionFirstLevel|\Mockery\MockInterface $firstLevel */
         $firstLevel = $professionLevels->getFirstLevel();
         self::assertInstanceOf(ProfessionFirstLevel::class, $firstLevel);
@@ -736,7 +736,7 @@ class ProfessionLevelsTest extends TestWithMockery
     {
         try {
             $firstLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
-                Fighter::FIGHTER,
+                ProfessionCode::FIGHTER,
                 1
             );
             $zeroLevel = $this->createZeroLevel();
@@ -745,7 +745,7 @@ class ProfessionLevelsTest extends TestWithMockery
 
             // the second level will be taken into account on check of fourth level
             $secondLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
-                Fighter::FIGHTER,
+                ProfessionCode::FIGHTER,
                 $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1,
                 true, // first primary property increment
                 false, // no second primary property increment
@@ -755,7 +755,7 @@ class ProfessionLevelsTest extends TestWithMockery
 
             // with both primary properties increased
             $thirdLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
-                Fighter::FIGHTER,
+                ProfessionCode::FIGHTER,
                 $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1,
                 false, // no first primary property increment
                 true, // second primary property increment
@@ -765,7 +765,7 @@ class ProfessionLevelsTest extends TestWithMockery
 
             // again with both primary properties increased
             $fourthLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
-                Fighter::FIGHTER,
+                ProfessionCode::FIGHTER,
                 $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1,
                 true, // first primary property increment
                 true, // second primary property increment
@@ -783,7 +783,7 @@ class ProfessionLevelsTest extends TestWithMockery
 
         // and again with both primary properties increased
         $fifthLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
-            Fighter::FIGHTER,
+            ProfessionCode::FIGHTER,
             $professionLevels->getCurrentLevel()->getLevelRank()->getValue() + 1
         );
         $professionLevels->addLevel($fifthLevel); // should fail
@@ -814,12 +814,12 @@ class ProfessionLevelsTest extends TestWithMockery
         }
         $this->addPropertyIncrementGetters(
             $professionLevel,
-            $propertyIncrements[Strength::STRENGTH],
-            $propertyIncrements[Agility::AGILITY],
-            $propertyIncrements[Knack::KNACK],
-            $propertyIncrements[Will::WILL],
-            $propertyIncrements[Intelligence::INTELLIGENCE],
-            $propertyIncrements[Charisma::CHARISMA]
+            $propertyIncrements[PropertyCode::STRENGTH],
+            $propertyIncrements[PropertyCode::AGILITY],
+            $propertyIncrements[PropertyCode::KNACK],
+            $propertyIncrements[PropertyCode::WILL],
+            $propertyIncrements[PropertyCode::INTELLIGENCE],
+            $propertyIncrements[PropertyCode::CHARISMA]
         );
         $this->addPrimaryPropertiesAnswer($professionLevel, $professionCode);
 
@@ -888,12 +888,12 @@ class ProfessionLevelsTest extends TestWithMockery
         }
         $this->addPropertyIncrementGetters(
             $professionLevel,
-            $propertyIncrements[Strength::STRENGTH],
-            $propertyIncrements[Agility::AGILITY],
-            $propertyIncrements[Knack::KNACK],
-            $propertyIncrements[Will::WILL],
-            $propertyIncrements[Intelligence::INTELLIGENCE],
-            $propertyIncrements[Charisma::CHARISMA]
+            $propertyIncrements[PropertyCode::STRENGTH],
+            $propertyIncrements[PropertyCode::AGILITY],
+            $propertyIncrements[PropertyCode::KNACK],
+            $propertyIncrements[PropertyCode::WILL],
+            $propertyIncrements[PropertyCode::INTELLIGENCE],
+            $propertyIncrements[PropertyCode::CHARISMA]
         );
         $this->addPrimaryPropertiesAnswer($professionLevel, $professionCode);
 
