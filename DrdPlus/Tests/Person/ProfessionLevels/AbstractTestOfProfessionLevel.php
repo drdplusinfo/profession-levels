@@ -2,6 +2,7 @@
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use DrdPlus\Codes\ProfessionCode;
+use DrdPlus\Codes\PropertyCode;
 use DrdPlus\Professions\Fighter;
 use DrdPlus\Professions\Priest;
 use DrdPlus\Professions\Ranger;
@@ -44,7 +45,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
      * @return string[]
      * @throws \LogicException
      */
-    protected function getPrimaryProperties($professionCode)
+    private function getPrimaryProperties($professionCode)
     {
         switch ($professionCode) {
             case ProfessionCode::FIGHTER :
@@ -71,9 +72,10 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     {
         $profession = \Mockery::mock($this->getProfessionClass($professionCode));
         $profession->shouldReceive('isPrimaryProperty')
+            ->with($this->type(PropertyCode::class))
             ->andReturnUsing(
-                function ($propertyCode) use ($professionCode) {
-                    return in_array($propertyCode, $this->getPrimaryProperties($professionCode), true);
+                function (PropertyCode $propertyCode) use ($professionCode) {
+                    return in_array($propertyCode->getValue(), $this->getPrimaryProperties($professionCode), true);
                 }
             );
         $profession->shouldReceive('getPrimaryProperties')

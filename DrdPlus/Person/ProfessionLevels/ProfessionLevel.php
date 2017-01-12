@@ -260,7 +260,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
      */
     protected static function isProfessionPrimaryProperty(Profession $profession, PropertyCode $propertyCode)
     {
-        return $profession->isPrimaryProperty($propertyCode->getValue());
+        return $profession->isPrimaryProperty($propertyCode);
     }
 
     /**
