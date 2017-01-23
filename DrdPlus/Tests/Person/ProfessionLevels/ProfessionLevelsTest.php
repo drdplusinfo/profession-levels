@@ -2,7 +2,7 @@
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use DrdPlus\Codes\ProfessionCode;
-use DrdPlus\Codes\PropertyCode;
+use DrdPlus\Codes\Properties\PropertyCode;
 use DrdPlus\Person\ProfessionLevels\Exceptions\MultiProfessionsAreProhibited;
 use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionFirstLevel;

@@ -3,7 +3,7 @@ namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrineum\Entity\Entity;
-use DrdPlus\Codes\PropertyCode;
+use DrdPlus\Codes\Properties\PropertyCode;
 use DrdPlus\Properties\Base\Agility;
 use DrdPlus\Properties\Base\BaseProperty;
 use DrdPlus\Properties\Base\Charisma;
@@ -329,7 +329,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
                 return $this->getWillIncrement();
             case PropertyCode::INTELLIGENCE :
                 return $this->getIntelligenceIncrement();
-            case PropertyCode::CHARISMA :
+            case PropertyCode::CHARISMA  :
                 return $this->getCharismaIncrement();
             default :
                 throw new Exceptions\UnknownBaseProperty(

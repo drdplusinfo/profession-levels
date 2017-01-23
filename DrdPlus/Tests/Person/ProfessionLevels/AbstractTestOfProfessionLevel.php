@@ -2,7 +2,7 @@
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use DrdPlus\Codes\ProfessionCode;
-use DrdPlus\Codes\PropertyCode;
+use DrdPlus\Codes\Properties\PropertyCode;
 use DrdPlus\Professions\Fighter;
 use DrdPlus\Professions\Priest;
 use DrdPlus\Professions\Ranger;
