@@ -57,7 +57,7 @@ class ProfessionNextLevel extends ProfessionLevel
     }
 
     const MINIMUM_NEXT_LEVEL = 2;
-    const MAXIMUM_NEXT_LEVEL = 20;
+    const MAXIMUM_NEXT_LEVEL = 21;
 
     /**
      * @param LevelRank $levelRank

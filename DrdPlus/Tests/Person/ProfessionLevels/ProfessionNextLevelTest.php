@@ -265,7 +265,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
     {
         ProfessionNextLevel::createNextLevel(
             $this->createProfession(ProfessionCode::FIGHTER),
-            $this->createLevelRank(21),
+            $this->createLevelRank(22),
             $this->createStrength(ProfessionCode::FIGHTER),
             $this->createAgility(ProfessionCode::FIGHTER),
             $this->createKnack(ProfessionCode::FIGHTER),
