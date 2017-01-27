@@ -91,7 +91,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
      * @param Intelligence $intelligenceIncrement
      * @param Charisma $charismaIncrement
      * @param \DateTimeImmutable|null $levelUpAt
-     * @throws Exceptions\InvalidNextLevelPropertiesSum
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidNextLevelPropertiesSum
      */
     protected function __construct(
         Profession $profession,
@@ -146,7 +146,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
      * @param Will $will
      * @param Intelligence $intelligence
      * @param Charisma $charisma
-     * @throws Exceptions\InvalidNextLevelPropertiesSum
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidNextLevelPropertiesSum
      */
     private function checkPropertySumIncrement(
         LevelRank $levelRank,
@@ -173,6 +173,9 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     const PRIMARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
     const SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
 
+    /**
+     * @return int
+     */
     private function getExpectedSumOfNextLevelProperties()
     {
         return static::PRIMARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM + static::SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM;

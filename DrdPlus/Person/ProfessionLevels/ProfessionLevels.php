@@ -21,7 +21,6 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 {
     /**
      * @var integer
-     *
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
@@ -50,7 +49,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
      * @param ProfessionFirstLevel $professionFirstLevel
      * @param array $professionNextLevels
      * @return static|ProfessionLevels
-     * @throws Exceptions\MultiProfessionsAreProhibited
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\MultiProfessionsAreProhibited
      */
     public static function createIt(
         ProfessionZeroLevel $professionZeroLevel,
@@ -119,7 +118,6 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @param array|ProfessionLevel[] $professionLevels
-     *
      * @return array
      */
     private function sortByLevelRank(array $professionLevels)
@@ -153,10 +151,10 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @param ProfessionNextLevel $newLevel
-     * @throws Exceptions\MultiProfessionsAreProhibited
-     * @throws Exceptions\InvalidLevelRank
-     * @throws Exceptions\TooHighPrimaryPropertyIncrease
-     * @throws Exceptions\TooHighSecondaryPropertyIncrease
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\MultiProfessionsAreProhibited
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidLevelRank
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighPrimaryPropertyIncrease
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighSecondaryPropertyIncrease
      */
     public function addLevel(ProfessionNextLevel $newLevel)
     {
@@ -170,7 +168,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @param ProfessionLevel $newLevel
-     * @throws Exceptions\MultiProfessionsAreProhibited
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\MultiProfessionsAreProhibited
      */
     private function checkProhibitedMultiProfession(ProfessionLevel $newLevel)
     {
@@ -186,7 +184,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @param ProfessionLevel $newLevel
-     * @throws Exceptions\InvalidLevelRank
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidLevelRank
      */
     private function checkNewLevelSequence(ProfessionLevel $newLevel)
     {
@@ -201,8 +199,8 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @param ProfessionLevel $newLevel
-     * @throws Exceptions\TooHighPrimaryPropertyIncrease
-     * @throws Exceptions\TooHighSecondaryPropertyIncrease
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighPrimaryPropertyIncrease
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighSecondaryPropertyIncrease
      */
     private function checkPropertiesIncrementSequence(ProfessionLevel $newLevel)
     {
@@ -217,8 +215,8 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     /**
      * @param ProfessionLevel $newLevel
      * @param BaseProperty $propertyIncrement
-     * @throws Exceptions\TooHighPrimaryPropertyIncrease
-     * @throws Exceptions\TooHighSecondaryPropertyIncrease
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighPrimaryPropertyIncrease
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighSecondaryPropertyIncrease
      */
     private function checkPropertyIncrementSequence(ProfessionLevel $newLevel, BaseProperty $propertyIncrement)
     {
@@ -234,7 +232,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     /**
      * @param BaseProperty $propertyIncrement
      * @return bool
-     * @throws Exceptions\TooHighPrimaryPropertyIncrease
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighPrimaryPropertyIncrease
      */
     private function checkPrimaryPropertyIncrementInARow(BaseProperty $propertyIncrement)
     {
@@ -286,7 +284,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     /**
      * @param BaseProperty $propertyIncrement
      * @return bool
-     * @throws Exceptions\TooHighSecondaryPropertyIncrease
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighSecondaryPropertyIncrease
      */
     private function checkSecondaryPropertyIncrementInARow(BaseProperty $propertyIncrement)
     {
@@ -372,7 +370,6 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @param PropertyCode $propertyCode
-     *
      * @return int
      */
     public function getPropertyModifierSummary(PropertyCode $propertyCode)
@@ -382,7 +379,6 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @param PropertyCode $propertyCode
-     *
      * @return int[]
      */
     private function getLevelsPropertyModifiers(PropertyCode $propertyCode)
@@ -398,7 +394,6 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @param PropertyCode $propertyCode
-     *
      * @return int
      */
     public function getNextLevelsPropertyModifier(PropertyCode $propertyCode)
@@ -408,7 +403,6 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
 
     /**
      * @param PropertyCode $propertyCode
-     *
      * @return int[]
      */
     private function getNextLevelsPropertyModifiers(PropertyCode $propertyCode)

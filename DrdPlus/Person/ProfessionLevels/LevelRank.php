@@ -21,7 +21,7 @@ class LevelRank extends IntegerEnum
 
     /**
      * @param bool|float|\Granam\Scalar\ScalarInterface|int|string $value
-     * @throws Exceptions\InvalidLevelRank
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidLevelRank
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
     public function __construct($value)

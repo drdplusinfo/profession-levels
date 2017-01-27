@@ -36,6 +36,7 @@ class ProfessionNextLevel extends ProfessionLevel
      * @return ProfessionNextLevel
      * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\MinimumLevelExceeded
      * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\MaximumLevelExceeded
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidNextLevelPropertiesSum
      */
     public static function createNextLevel(
         Profession $profession,

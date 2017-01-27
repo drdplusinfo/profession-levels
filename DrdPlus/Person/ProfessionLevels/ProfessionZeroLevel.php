@@ -17,12 +17,11 @@ use DrdPlus\Properties\Base\Will;
  */
 class ProfessionZeroLevel extends ProfessionLevel
 {
-
     /**
      * @param Commoner $commoner
      * @param \DateTimeImmutable|null $levelUpAt
      * @return ProfessionZeroLevel
-     * @throws Exceptions\InvalidZeroLevelRank
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidZeroLevelRank
      */
     public static function createZeroLevel(
         Commoner $commoner,
@@ -43,6 +42,10 @@ class ProfessionZeroLevel extends ProfessionLevel
         );
     }
 
+    /**
+     * @param LevelRank $levelRank
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidZeroLevelRank
+     */
     protected function checkLevelRank(LevelRank $levelRank)
     {
         if ($levelRank->getValue() !== 0) {
@@ -55,7 +58,7 @@ class ProfessionZeroLevel extends ProfessionLevel
     /**
      * @param BaseProperty $baseProperty
      * @param Profession $profession
-     * @throws Exceptions\InvalidZeroLevelPropertyValue
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidZeroLevelPropertyValue
      */
     protected function checkPropertyIncrement(BaseProperty $baseProperty, Profession $profession)
     {
