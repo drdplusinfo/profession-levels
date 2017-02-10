@@ -22,7 +22,6 @@ class ProfessionFirstLevel extends ProfessionLevel
      * @param Profession $profession
      * @param \DateTimeImmutable|null $levelUpAt
      * @return ProfessionFirstLevel
-     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelPropertyValue
      */
     public static function createFirstLevel(
         Profession $profession,
