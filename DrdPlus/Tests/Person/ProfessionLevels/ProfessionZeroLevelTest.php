@@ -8,8 +8,9 @@ use DrdPlus\Properties\Base\Intelligence;
 use DrdPlus\Properties\Base\Knack;
 use DrdPlus\Properties\Base\Strength;
 use DrdPlus\Properties\Base\Will;
+use PHPUnit\Framework\TestCase;
 
-class ProfessionZeroLevelTest extends \PHPUnit_Framework_TestCase
+class ProfessionZeroLevelTest extends TestCase
 {
     /**
      * @test

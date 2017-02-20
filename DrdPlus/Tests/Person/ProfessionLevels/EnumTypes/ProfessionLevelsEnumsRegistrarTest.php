@@ -10,8 +10,9 @@ use DrdPlus\Properties\Base\EnumTypes\IntelligenceType;
 use DrdPlus\Properties\Base\EnumTypes\KnackType;
 use DrdPlus\Properties\Base\EnumTypes\StrengthType;
 use DrdPlus\Properties\Base\EnumTypes\WillType;
+use PHPUnit\Framework\TestCase;
 
-class ProfessionLevelsEnumsRegistrarTest extends \PHPUnit_Framework_TestCase
+class ProfessionLevelsEnumsRegistrarTest extends TestCase
 {
     /**
      * @test
