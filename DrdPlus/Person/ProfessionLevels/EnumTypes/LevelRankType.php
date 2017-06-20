@@ -10,7 +10,7 @@ class LevelRankType extends IntegerEnumType
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return self::LEVEL_RANK;
     }

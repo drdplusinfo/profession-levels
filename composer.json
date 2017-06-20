@@ -9,7 +9,8 @@
     }
   },
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.1",
+    "roave/security-advisories": "dev-master",
     "doctrine/orm": "~2.0",
     "doctrineum/entity": "dev-master",
     "doctrineum/datetime-immutable": "dev-master",

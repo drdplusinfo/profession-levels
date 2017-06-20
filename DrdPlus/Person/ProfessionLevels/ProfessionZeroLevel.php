@@ -23,10 +23,7 @@ class ProfessionZeroLevel extends ProfessionLevel
      * @return ProfessionZeroLevel
      * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidZeroLevelRank
      */
-    public static function createZeroLevel(
-        Commoner $commoner,
-        \DateTimeImmutable $levelUpAt = null
-    )
+    public static function createZeroLevel(Commoner $commoner, \DateTimeImmutable $levelUpAt = null): ProfessionZeroLevel
     {
         /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         return new static(

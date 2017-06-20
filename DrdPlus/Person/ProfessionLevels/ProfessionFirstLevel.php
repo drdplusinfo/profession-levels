@@ -26,7 +26,7 @@ class ProfessionFirstLevel extends ProfessionLevel
     public static function createFirstLevel(
         Profession $profession,
         \DateTimeImmutable $levelUpAt = null
-    )
+    ): ProfessionFirstLevel
     {
         /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         return new static(
@@ -49,13 +49,17 @@ class ProfessionFirstLevel extends ProfessionLevel
      * @param Profession $profession
      * @return int
      */
-    private static function getBasePropertyFirstLevelModifier(PropertyCode $propertyCode, Profession $profession)
+    private static function getBasePropertyFirstLevelModifier(PropertyCode $propertyCode, Profession $profession): int
     {
         return static::isProfessionPrimaryProperty($profession, $propertyCode)
             ? self::PRIMARY_PROPERTY_FIRST_LEVEL_MODIFIER
             : 0;
     }
 
+    /**
+     * @param LevelRank $levelRank
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelRank
+     */
     protected function checkLevelRank(LevelRank $levelRank)
     {
         if ($levelRank->getValue() !== 1) {

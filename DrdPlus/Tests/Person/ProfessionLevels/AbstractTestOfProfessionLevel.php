@@ -17,11 +17,11 @@ use Mockery\MockInterface;
 abstract class AbstractTestOfProfessionLevel extends TestWithMockery
 {
 
-    abstract public function I_can_create_it($professionCode);
+    abstract public function I_can_create_it(string $professionCode);
 
     abstract public function I_can_create_it_with_default_level_up_at();
 
-    abstract public function I_can_get_level_details($professionCode);
+    abstract public function I_can_get_level_details(string $professionCode);
 
     /**
      * @param string $propertyCode

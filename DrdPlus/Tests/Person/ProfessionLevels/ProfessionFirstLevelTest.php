@@ -24,7 +24,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @dataProvider provideProfessionCode
      * @param string $professionCode
      */
-    public function I_can_create_it($professionCode)
+    public function I_can_create_it(string $professionCode)
     {
         $professionFirstLevel = ProfessionFirstLevel::createFirstLevel(
             $this->createProfession($professionCode),
@@ -71,7 +71,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @dataProvider provideProfessionCode
      * @param string $professionCode
      */
-    public function I_can_get_level_details($professionCode)
+    public function I_can_get_level_details(string $professionCode)
     {
         $reflectionClass = new \ReflectionClass(ProfessionFirstLevel::class);
         $constructor = $reflectionClass->getMethod('__construct');
@@ -123,7 +123,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param int|null $propertyValue = null
      * @return Strength
      */
-    private function createStrength($professionCode, $propertyValue = null)
+    private function createStrength(string $professionCode, $propertyValue = null): Strength
     {
         return $this->createProperty($professionCode, Strength::class, PropertyCode::STRENGTH, $propertyValue);
     }
@@ -135,7 +135,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param string|null $propertyValue = null
      * @return MockInterface|Property|Strength|Agility|Knack|Will|Intelligence|Charisma
      */
-    private function createProperty($professionCode, $propertyClass, $propertyCode, $propertyValue = null)
+    private function createProperty(string $professionCode, string $propertyClass, string $propertyCode, $propertyValue = null)
     {
         $property = \Mockery::mock($propertyClass);
         $this->addPropertyExpectation($professionCode, $property, $propertyCode, $propertyValue);
@@ -144,9 +144,9 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     }
 
     private function addPropertyExpectation(
-        $professionCode,
+        string $professionCode,
         MockInterface $property,
-        $propertyCode,
+        string $propertyCode,
         $propertyValue = null
     )
     {
@@ -161,7 +161,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
                 return $propertyValue;
             });
         $property->shouldReceive('getCode')
-            ->andReturn($propertyCode);
+            ->andReturn(PropertyCode::getIt($propertyCode));
     }
 
     /**

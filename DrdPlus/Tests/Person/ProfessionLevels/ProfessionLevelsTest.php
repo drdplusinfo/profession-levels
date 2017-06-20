@@ -46,7 +46,7 @@ class ProfessionLevelsTest extends TestWithMockery
         $yetAnotherInstance = ProfessionLevels::createIt($zeroLevel, $firstLevel);
         self::assertNotSame($anotherInstance, $yetAnotherInstance);
 
-        $withExplicitlyEmptyNextLevels = ProfessionLevels::createIt($zeroLevel, $firstLevel, []);
+        $withExplicitlyEmptyNextLevels = ProfessionLevels::createIt($zeroLevel, $firstLevel);
         self::assertEquals($withFirstLevelOnly, $withExplicitlyEmptyNextLevels);
 
         $withNextLevels = ProfessionLevels::createIt(
@@ -271,13 +271,13 @@ class ProfessionLevelsTest extends TestWithMockery
             ->andReturn($value);
     }
 
-    private function addCodeGetter(MockInterface $property, $code)
+    private function addCodeGetter(MockInterface $property, string $code)
     {
         $property->shouldReceive('getCode')
-            ->andReturn($code);
+            ->andReturn(PropertyCode::getIt($code));
     }
 
-    private function addPrimaryPropertiesAnswer(MockInterface $professionLevel, $professionCode)
+    private function addPrimaryPropertiesAnswer(MockInterface $professionLevel, string $professionCode)
     {
         $modifiers = [];
         foreach ($this->getPropertyNames() as $propertyName) {
@@ -295,7 +295,7 @@ class ProfessionLevelsTest extends TestWithMockery
     /**
      * @return array|string[]
      */
-    private function getPropertyNames()
+    private function getPropertyNames(): array
     {
         return PropertyCode::getBasePropertyPossibleValues();
     }
@@ -314,7 +314,6 @@ class ProfessionLevelsTest extends TestWithMockery
 
     /**
      * @param string $professionCode
-     *
      * @return ProfessionFirstLevel|ProfessionNextLevel|\Mockery\MockInterface
      */
     private function createProfessionFirstLevel($professionCode)
@@ -355,15 +354,19 @@ class ProfessionLevelsTest extends TestWithMockery
     /**
      * @param string $propertyName
      * @param string $professionCode
-     *
      * @return bool
      */
-    private function isPrimaryProperty($propertyName, $professionCode)
+    private function isPrimaryProperty($propertyName, $professionCode): bool
     {
         return in_array($propertyName, $this->getPrimaryProperties($professionCode), true);
     }
 
-    private function getPrimaryProperties($professionCode)
+    /**
+     * @param string $professionCode
+     * @return array
+     * @throws \RuntimeException
+     */
+    private function getPrimaryProperties(string $professionCode): array
     {
         switch ($professionCode) {
             case ProfessionCode::FIGHTER :
@@ -386,10 +389,9 @@ class ProfessionLevelsTest extends TestWithMockery
     /**
      * @param ProfessionZeroLevel $zeroLevel
      * @param ProfessionFirstLevel $firstLevel
-     *
      * @return ProfessionLevels
      */
-    private function createProfessionLevelsWith(ProfessionZeroLevel $zeroLevel, ProfessionFirstLevel $firstLevel)
+    private function createProfessionLevelsWith(ProfessionZeroLevel $zeroLevel, ProfessionFirstLevel $firstLevel): ProfessionLevels
     {
         $professionLevels = new ProfessionLevels($zeroLevel, $firstLevel);
         self::assertSame($firstLevel, $professionLevels->getFirstLevel());
@@ -465,7 +467,7 @@ class ProfessionLevelsTest extends TestWithMockery
      * @param int $levelValue
      * @return string
      */
-    private function getProfessionLevelClass($levelValue)
+    private function getProfessionLevelClass($levelValue): string
     {
         return (int)$levelValue === 1
             ? ProfessionFirstLevel::class
@@ -596,7 +598,7 @@ class ProfessionLevelsTest extends TestWithMockery
         $professionLevels->addLevel($anotherLevel);
     }
 
-    private function createProfessionLevelsForChangeResistTest($professionCode)
+    private function createProfessionLevelsForChangeResistTest(string $professionCode): ProfessionLevels
     {
         $firstLevel = $this->createProfessionFirstLevel($professionCode);
         $this->addPrimaryPropertiesAnswer($firstLevel, $professionCode);
@@ -668,10 +670,10 @@ class ProfessionLevelsTest extends TestWithMockery
     }
 
     /**
-     * @param $professionCode
+     * @param string $professionCode
      * @return ProfessionLevels
      */
-    private function createProfessionLevelsForMixTest($professionCode)
+    private function createProfessionLevelsForMixTest(string $professionCode): ProfessionLevels
     {
         $professionLevels = new ProfessionLevels(
             $this->createZeroLevel(),
@@ -683,10 +685,9 @@ class ProfessionLevelsTest extends TestWithMockery
 
     /**
      * @param ProfessionLevel $excludedProfession
-     *
      * @return \Mockery\MockInterface[]|ProfessionFirstLevel[]|ProfessionNextLevel[]
      */
-    private function getLevelsExcept(ProfessionLevel $excludedProfession)
+    private function getLevelsExcept(ProfessionLevel $excludedProfession): array
     {
         $professionLevels = $this->buildProfessionLevels();
 
@@ -701,7 +702,7 @@ class ProfessionLevelsTest extends TestWithMockery
     /**
      * @return array|ProfessionNextLevel[]
      */
-    private function buildProfessionLevels()
+    private function buildProfessionLevels(): array
     {
         $professions = [
             ProfessionCode::FIGHTER => Fighter::class,
@@ -735,10 +736,7 @@ class ProfessionLevelsTest extends TestWithMockery
     public function I_can_not_increase_primary_property_three_times_in_a_row()
     {
         try {
-            $firstLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(
-                ProfessionCode::FIGHTER,
-                1
-            );
+            $firstLevel = $this->createProfessionLevelWithPrimaryPropertiesIncreased(ProfessionCode::FIGHTER, 1);
             $zeroLevel = $this->createZeroLevel();
             // the first level does not come to property increment check
             $professionLevels = new ProfessionLevels($zeroLevel, $firstLevel);

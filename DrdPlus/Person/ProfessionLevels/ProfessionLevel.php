@@ -15,12 +15,11 @@ use DrdPlus\Professions\Profession;
 use Granam\Strict\Object\StrictObject;
 use Granam\Tools\ValueDescriber;
 
-/** @noinspection SingletonFactoryPatternViolationInspection
+/**
  * @ORM\MappedSuperclass()
  */
 abstract class ProfessionLevel extends StrictObject implements Entity
 {
-
     /**
      * @var integer
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO")
@@ -176,7 +175,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     /**
      * @return int
      */
-    private function getExpectedSumOfNextLevelProperties()
+    private function getExpectedSumOfNextLevelProperties(): int
     {
         return static::PRIMARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM + static::SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM;
     }
@@ -197,7 +196,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         Will $willIncrement,
         Intelligence $intelligenceIncrement,
         Charisma $charismaIncrement
-    )
+    ): int
     {
         return $strengthIncrement->getValue() + $agilityIncrement->getValue() + $knackIncrement->getValue()
             + $willIncrement->getValue() + $intelligenceIncrement->getValue() + $charismaIncrement->getValue();
@@ -210,11 +209,9 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     abstract protected function checkPropertyIncrement(BaseProperty $baseProperty, Profession $profession);
 
     /**
-     * Get id
-     *
-     * @return int
+     * @return int|null
      */
-    public function getId()
+    public function getId():? int
     {
         return $this->id;
     }
@@ -222,7 +219,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     /**
      * @return \DateTimeImmutable
      */
-    public function getLevelUpAt()
+    public function getLevelUpAt(): \DateTimeImmutable
     {
         return $this->levelUpAt;
     }
@@ -230,19 +227,19 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     /**
      * @return LevelRank
      */
-    public function getLevelRank()
+    public function getLevelRank(): LevelRank
     {
         return $this->levelRank;
     }
 
     /** @return bool */
-    public function isFirstLevel()
+    public function isFirstLevel(): bool
     {
         return $this->getLevelRank()->getValue() === 1;
     }
 
     /** @return bool */
-    public function isNextLevel()
+    public function isNextLevel(): bool
     {
         return $this->getLevelRank()->getValue() > 1;
     }
@@ -251,7 +248,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
      * @param PropertyCode $propertyCode
      * @return bool
      */
-    public function isPrimaryProperty(PropertyCode $propertyCode)
+    public function isPrimaryProperty(PropertyCode $propertyCode): bool
     {
         return static::isProfessionPrimaryProperty($this->getProfession(), $propertyCode);
     }
@@ -261,7 +258,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
      * @param PropertyCode $propertyCode
      * @return bool
      */
-    protected static function isProfessionPrimaryProperty(Profession $profession, PropertyCode $propertyCode)
+    protected static function isProfessionPrimaryProperty(Profession $profession, PropertyCode $propertyCode): bool
     {
         return $profession->isPrimaryProperty($propertyCode);
     }
@@ -269,7 +266,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     /**
      * @return Strength
      */
-    public function getStrengthIncrement()
+    public function getStrengthIncrement(): Strength
     {
         return $this->strengthIncrement;
     }
@@ -277,7 +274,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     /**
      * @return Agility
      */
-    public function getAgilityIncrement()
+    public function getAgilityIncrement(): Agility
     {
         return $this->agilityIncrement;
     }
@@ -285,7 +282,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     /**
      * @return Knack
      */
-    public function getKnackIncrement()
+    public function getKnackIncrement(): Knack
     {
         return $this->knackIncrement;
     }
@@ -293,7 +290,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     /**
      * @return Will
      */
-    public function getWillIncrement()
+    public function getWillIncrement(): Will
     {
         return $this->willIncrement;
     }
@@ -301,7 +298,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     /**
      * @return Intelligence
      */
-    public function getIntelligenceIncrement()
+    public function getIntelligenceIncrement(): Intelligence
     {
         return $this->intelligenceIncrement;
     }
@@ -309,17 +306,17 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     /**
      * @return Charisma
      */
-    public function getCharismaIncrement()
+    public function getCharismaIncrement(): Charisma
     {
         return $this->charismaIncrement;
     }
 
     /**
      * @param PropertyCode $propertyCode
-     * @return Agility|Charisma|Intelligence|Knack|Strength|Will
+     * @return Agility|Charisma|Intelligence|Knack|Strength|Will|BaseProperty
      * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\UnknownBaseProperty
      */
-    public function getBasePropertyIncrement(PropertyCode $propertyCode)
+    public function getBasePropertyIncrement(PropertyCode $propertyCode): BaseProperty
     {
         switch ($propertyCode->getValue()) {
             case PropertyCode::STRENGTH :
@@ -344,7 +341,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
     /**
      * @return Profession
      */
-    public function getProfession()
+    public function getProfession(): Profession
     {
         return $this->profession;
     }

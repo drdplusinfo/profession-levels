@@ -24,7 +24,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      * @dataProvider provideProfessionCode
      * @param string $professionCode
      */
-    public function I_can_create_it($professionCode)
+    public function I_can_create_it(string $professionCode)
     {
         $professionNextLevel = ProfessionNextLevel::createNextLevel(
             $profession = $this->createProfession($professionCode),
@@ -78,7 +78,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      * @dataProvider provideProfessionCode
      * @param string $professionCode
      */
-    public function I_can_get_level_details($professionCode)
+    public function I_can_get_level_details(string $professionCode)
     {
         /** @var ProfessionLevel $professionNextLevel */
         $professionNextLevel = ProfessionNextLevel::createNextLevel(

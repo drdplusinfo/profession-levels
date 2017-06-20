@@ -48,7 +48,7 @@ class ProfessionNextLevel extends ProfessionLevel
         Intelligence $intelligenceIncrement,
         Charisma $charismaIncrement,
         \DateTimeImmutable $levelUpAt = null
-    )
+    ): ProfessionNextLevel
     {
         return new static(
             $profession, $nextLevelRank, $strengthIncrement, $agilityIncrement, $knackIncrement,
@@ -80,6 +80,12 @@ class ProfessionNextLevel extends ProfessionLevel
 
     const MAX_NEXT_LEVEL_PROPERTY_MODIFIER = 1;
 
+    /**
+     * @param BaseProperty $baseProperty
+     * @param Profession $profession
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\NegativeNextLevelProperty
+     * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\TooHighNextLevelPropertyIncrement
+     */
     protected function checkPropertyIncrement(BaseProperty $baseProperty, Profession $profession)
     {
         if ($baseProperty->getValue() < 0) {
@@ -98,12 +104,12 @@ class ProfessionNextLevel extends ProfessionLevel
     /**
      * @return ProfessionLevels|null
      */
-    public function getProfessionLevels()
+    public function getProfessionLevels():? ProfessionLevels
     {
         return $this->professionLevels;
     }
 
-    /**+
+    /**
      * @param ProfessionLevels $professionLevels
      */
     public function setProfessionLevels(ProfessionLevels $professionLevels)
