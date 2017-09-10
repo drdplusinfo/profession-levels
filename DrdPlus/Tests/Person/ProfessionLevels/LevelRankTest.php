@@ -41,11 +41,18 @@ class LevelRankTest extends TestWithMockery
      */
     public function I_can_easily_find_out_if_is_first_or_next_level()
     {
+        $zeroLevelRank = LevelRank::getIt(0);
+        self::assertTrue($zeroLevelRank->isZeroLevel());
+        self::assertFalse($zeroLevelRank->isFirstLevel());
+        self::assertFalse($zeroLevelRank->isNextLevel());
+
         $firstLevelRank = LevelRank::getIt(1);
+        self::assertFalse($firstLevelRank->isZeroLevel());
         self::assertTrue($firstLevelRank->isFirstLevel());
         self::assertFalse($firstLevelRank->isNextLevel());
 
         $nextLevelRank = LevelRank::getIt(123);
+        self::assertFalse($firstLevelRank->isZeroLevel());
         self::assertFalse($nextLevelRank->isFirstLevel());
         self::assertTrue($nextLevelRank->isNextLevel());
     }

@@ -125,9 +125,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         usort($professionLevels, function (ProfessionLevel $aLevel, ProfessionLevel $anotherLevel) {
             $difference = $aLevel->getLevelRank()->getValue() - $anotherLevel->getLevelRank()->getValue();
 
-            return $difference > 0
-                ? 1 // firstly given level is higher than second one
-                : -1; // opposite
+            return $difference <=> 0;
         });
 
         return $professionLevels;
