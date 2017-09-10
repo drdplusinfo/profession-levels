@@ -13,7 +13,6 @@
     "roave/security-advisories": "dev-master",
     "doctrine/orm": "~2.0",
     "doctrineum/entity": "dev-master",
-    "doctrineum/datetime-immutable": "dev-master",
     "drd-plus/codes": "dev-master",
     "drd-plus/properties": "dev-master",
     "drd-plus/professions": "dev-master"

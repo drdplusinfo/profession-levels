@@ -36,7 +36,7 @@ class ProfessionLevelsDoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
         return dirname($reflection->getFileName());
     }
 
-    protected function createEntitiesToPersist()
+    protected function createEntitiesToPersist(): array
     {
         return self::createEntities();
     }
@@ -44,7 +44,7 @@ class ProfessionLevelsDoctrineEntitiesTest extends AbstractDoctrineEntitiesTest
     /**
      * @return array
      */
-    public static function createEntities()
+    public static function createEntities(): array
     {
         $professionLevels = new ProfessionLevels(
             ProfessionZeroLevel::createZeroLevel(Commoner::getIt()),

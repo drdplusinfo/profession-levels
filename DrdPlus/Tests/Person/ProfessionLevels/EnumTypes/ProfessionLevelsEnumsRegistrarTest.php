@@ -1,8 +1,8 @@
 <?php
 namespace DrdPlus\Person\ProfessionLevels\EnumTypes;
 
+use Doctrine\DBAL\Types\DateTimeImmutableType;
 use Doctrine\DBAL\Types\Type;
-use Doctrineum\DateTimeImmutable\DateTimeImmutableType;
 use DrdPlus\Professions\EnumTypes\ProfessionType;
 use DrdPlus\Properties\Base\EnumTypes\AgilityType;
 use DrdPlus\Properties\Base\EnumTypes\CharismaType;
