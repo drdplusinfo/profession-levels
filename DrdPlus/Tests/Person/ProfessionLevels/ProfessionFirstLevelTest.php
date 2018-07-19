@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use DrdPlus\Codes\ProfessionCode;
@@ -23,14 +25,15 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @test
      * @dataProvider provideProfessionCode
      * @param string $professionCode
+     * @throws \ReflectionException
+     * @throws \Exception
      */
-    public function I_can_create_it(string $professionCode)
+    public function I_can_create_it(string $professionCode): void
     {
         $professionFirstLevel = ProfessionFirstLevel::createFirstLevel(
             $this->createProfession($professionCode),
             $levelUpAt = new \DateTimeImmutable('2004-01-01')
         );
-        self::assertInstanceOf(ProfessionFirstLevel::class, $professionFirstLevel);
         /** @var ProfessionLevel $professionFirstLevel */
         self::assertNull($professionFirstLevel->getId());
         self::assertSame($professionCode, $professionFirstLevel->getProfession()->getValue());
@@ -54,7 +57,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         self::assertSame($levelUpAt, $professionFirstLevel->getLevelUpAt());
     }
 
-    public function provideProfessionCode()
+    public function provideProfessionCode(): array
     {
         return [
             [ProfessionCode::FIGHTER],
@@ -70,8 +73,10 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @test
      * @dataProvider provideProfessionCode
      * @param string $professionCode
+     * @throws \ReflectionException
+     * @throws \Exception
      */
-    public function I_can_get_level_details(string $professionCode)
+    public function I_can_get_level_details(string $professionCode): void
     {
         $reflectionClass = new \ReflectionClass(ProfessionFirstLevel::class);
         $constructor = $reflectionClass->getMethod('__construct');
@@ -104,14 +109,14 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param int $rankValue
      * @return LevelRank
      */
-    private function createLevelRank($rankValue = 1)
+    private function createLevelRank(int $rankValue = 1): LevelRank
     {
         /** @var LevelRank|\Mockery\MockInterface $levelRank */
         $levelRank = $this->mockery(LevelRank::class);
         $levelRank->shouldReceive('getValue')
             ->andReturn($rankValue);
         $levelRank->shouldReceive('isFirstLevel')
-            ->andReturn((int)$rankValue === 1);
+            ->andReturn($rankValue === 1);
         $levelRank->shouldReceive('isNextLevel')
             ->andReturn($rankValue > 1);
 
@@ -123,7 +128,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param int|null $propertyValue = null
      * @return Strength
      */
-    private function createStrength(string $professionCode, $propertyValue = null): Strength
+    private function createStrength(string $professionCode, int $propertyValue = null): Strength
     {
         return $this->createProperty($professionCode, Strength::class, PropertyCode::STRENGTH, $propertyValue);
     }
@@ -135,7 +140,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param string|null $propertyValue = null
      * @return MockInterface|Property|Strength|Agility|Knack|Will|Intelligence|Charisma
      */
-    private function createProperty(string $professionCode, string $propertyClass, string $propertyCode, $propertyValue = null)
+    private function createProperty(string $professionCode, string $propertyClass, string $propertyCode, $propertyValue = null): Property
     {
         $property = \Mockery::mock($propertyClass);
         $this->addPropertyExpectation($professionCode, $property, $propertyCode, $propertyValue);
@@ -147,8 +152,8 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         string $professionCode,
         MockInterface $property,
         string $propertyCode,
-        $propertyValue = null
-    )
+        int $propertyValue = null
+    ): void
     {
         $property->shouldReceive('getValue')
             ->andReturnUsing(function () use ($propertyValue, $propertyCode, $professionCode) {
@@ -169,7 +174,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param int|null $value
      * @return Agility
      */
-    private function createAgility($professionCode, $value = null)
+    private function createAgility(string $professionCode, int $value = null): Agility
     {
         return $this->createProperty($professionCode, Agility::class, PropertyCode::AGILITY, $value);
     }
@@ -179,7 +184,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param int|null $value
      * @return Knack
      */
-    private function createKnack($professionCode, $value = null)
+    private function createKnack(string $professionCode, int $value = null): Knack
     {
         return $this->createProperty($professionCode, Knack::class, PropertyCode::KNACK, $value);
     }
@@ -189,7 +194,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param int|null $value
      * @return Will
      */
-    private function createWill($professionCode, $value = null)
+    private function createWill(string $professionCode, int $value = null): Will
     {
         return $this->createProperty($professionCode, Will::class, PropertyCode::WILL, $value);
     }
@@ -199,7 +204,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param int|null $value
      * @return Intelligence
      */
-    private function createIntelligence($professionCode, $value = null)
+    private function createIntelligence(string $professionCode, int $value = null): Intelligence
     {
         return $this->createProperty($professionCode, Intelligence::class, PropertyCode::INTELLIGENCE, $value);
     }
@@ -209,12 +214,12 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param int|null $value
      * @return Charisma
      */
-    private function createCharisma($professionCode, $value = null)
+    private function createCharisma(string $professionCode, int $value = null): Charisma
     {
         return $this->createProperty($professionCode, Charisma::class, PropertyCode::CHARISMA, $value);
     }
 
-    private function getPropertyClassByCode($propertyCode)
+    private function getPropertyClassByCode($propertyCode): string
     {
         switch ($propertyCode) {
             case PropertyCode::STRENGTH :
@@ -236,22 +241,23 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
 
     /**
      * @test
+     * @throws \ReflectionException
      */
-    public function I_can_create_it_with_default_level_up_at()
+    public function I_can_create_it_with_default_level_up_at(): void
     {
         $professionFirstLevel = ProfessionFirstLevel::createFirstLevel(
             $this->createProfession(ProfessionCode::FIGHTER)
         );
         $levelUpAt = $professionFirstLevel->getLevelUpAt();
-        self::assertInstanceOf(\DateTimeImmutable::class, $levelUpAt);
-        self::assertSame(time(), $levelUpAt->getTimestamp());
+        self::assertSame(\time(), $levelUpAt->getTimestamp());
     }
 
     /**
      * @test
      * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelRank
+     * @throws \ReflectionException
      */
-    public function I_can_not_create_higher_first_level_than_one()
+    public function I_can_not_create_higher_first_level_than_one(): void
     {
         new PublicConstructorProfessionFistLevel(
             $this->createProfession(ProfessionCode::FIGHTER),
@@ -268,8 +274,9 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     /**
      * @test
      * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelRank
+     * @throws \ReflectionException
      */
-    public function I_can_not_create_lesser_first_level_than_one()
+    public function I_can_not_create_lesser_first_level_than_one(): void
     {
         new PublicConstructorProfessionFistLevel(
             $this->createProfession(ProfessionCode::FIGHTER),
@@ -287,6 +294,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @test
      * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelPropertyValue
      * @dataProvider provideTooHighFirstLevelPropertiesOneByOne
+     * @throws \ReflectionException
      *
      * @param string $professionCode
      * @param int $strength
@@ -297,8 +305,14 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param int $charisma
      */
     public function I_can_not_use_greater_than_allowed_first_level_property(
-        $professionCode, $strength, $agility, $knack, $will, $intelligence, $charisma
-    )
+        string $professionCode,
+        int $strength,
+        int $agility,
+        int $knack,
+        int $will,
+        int $intelligence,
+        int $charisma
+    ): void
     {
         new PublicConstructorProfessionFistLevel(
             $this->createProfession($professionCode),
@@ -312,7 +326,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         );
     }
 
-    public function provideTooHighFirstLevelPropertiesOneByOne()
+    public function provideTooHighFirstLevelPropertiesOneByOne(): array
     {
         $values = [];
         foreach ($this->getProfessionCodes() as $professionCode) {
@@ -335,7 +349,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         return $values;
     }
 
-    private function getProfessionCodes()
+    private function getProfessionCodes(): array
     {
         return [
             ProfessionCode::FIGHTER,
@@ -351,6 +365,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @test
      * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidFirstLevelPropertyValue
      * @dataProvider getTooLowFirstLevelPropertiesOneByOne
+     * @throws \ReflectionException
      *
      * @param $professionCode
      * @param $strength
@@ -361,8 +376,14 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
      * @param $charisma
      */
     public function I_can_not_use_lesser_than_allowed_first_level_property(
-        $professionCode, $strength, $agility, $knack, $will, $intelligence, $charisma
-    )
+        string $professionCode,
+        int $strength,
+        int $agility,
+        int $knack,
+        int $will,
+        int $intelligence,
+        int $charisma
+    ): void
     {
         new PublicConstructorProfessionFistLevel(
             $this->createProfession($professionCode),
@@ -376,7 +397,7 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
         );
     }
 
-    public function getTooLowFirstLevelPropertiesOneByOne()
+    public function getTooLowFirstLevelPropertiesOneByOne(): array
     {
         $values = [];
         foreach ($this->getProfessionCodes() as $professionCode) {
@@ -402,19 +423,20 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
     /**
      * @test
      * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\UnknownBaseProperty
+     * @throws \ReflectionException
      */
-    public function I_am_stopped_on_use_of_unknown_property_code()
+    public function I_am_stopped_on_use_of_unknown_property_code(): void
     {
         ProfessionFirstLevel::createFirstLevel(
             $this->createProfession(ProfessionCode::FIGHTER)
-        )->getBasePropertyIncrement($this->createPropetyCode('invalid'));
+        )->getBasePropertyIncrement($this->createPropertyCode('invalid'));
     }
 
     /**
-     * @param $value
+     * @param string $value
      * @return MockInterface|PropertyCode
      */
-    private function createPropetyCode($value)
+    private function createPropertyCode(string $value)
     {
         $propertyCode = $this->mockery(PropertyCode::class);
         $propertyCode->shouldReceive('getValue')

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types = 1);
+
 namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -28,7 +30,6 @@ class ProfessionFirstLevel extends ProfessionLevel
         \DateTimeImmutable $levelUpAt = null
     ): ProfessionFirstLevel
     {
-        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         return new static(
             $profession,
             new LevelRank(1),
@@ -42,7 +43,7 @@ class ProfessionFirstLevel extends ProfessionLevel
         );
     }
 
-    const PRIMARY_PROPERTY_FIRST_LEVEL_MODIFIER = 1;
+    public const PRIMARY_PROPERTY_FIRST_LEVEL_MODIFIER = 1;
 
     /**
      * @param PropertyCode $propertyCode

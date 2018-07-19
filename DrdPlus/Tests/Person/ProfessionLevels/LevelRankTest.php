@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use DrdPlus\Person\ProfessionLevels\LevelRank;
@@ -9,26 +11,27 @@ class LevelRankTest extends TestWithMockery
     /**
      * @test
      */
-    public function I_can_create_it()
+    public function I_can_create_it(): void
     {
-        $instance = LevelRank::getIt($value = 12345);
-        self::assertInstanceOf(LevelRank::class, $instance);
+        $levelRank = LevelRank::getIt($value = 12345);
+        self::assertSame(12345, $levelRank->getValue());
+        self::assertSame('12345', (string)$levelRank);
     }
 
     /**
      * @test
      */
-    public function I_can_get_its_value()
+    public function I_can_get_its_value(): void
     {
         $levelRank = LevelRank::getIt($value = 12345);
         self::assertSame($value, $levelRank->getValue());
-        self::assertSame("$value", "$levelRank");
+        self::assertSame((string)$value, (string)$levelRank);
     }
 
     /**
      * @test
      */
-    public function I_can_create_it_from_to_string_object()
+    public function I_can_create_it_from_to_string_object(): void
     {
         /** @noinspection PhpParamsInspection */
         $levelRank = LevelRank::getIt($someToStringObject = new SomeToStringObject($value = 12));
@@ -39,7 +42,7 @@ class LevelRankTest extends TestWithMockery
     /**
      * @test
      */
-    public function I_can_easily_find_out_if_is_first_or_next_level()
+    public function I_can_easily_find_out_if_is_first_or_next_level(): void
     {
         $zeroLevelRank = LevelRank::getIt(0);
         self::assertTrue($zeroLevelRank->isZeroLevel());
@@ -63,12 +66,12 @@ class LevelRankTest extends TestWithMockery
      * @dataProvider provideProhibitedLevelValue
      * @expectedException \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidLevelRank
      */
-    public function I_can_not_create_negative_level($prohibitedValue)
+    public function I_can_not_create_negative_level(int $prohibitedValue): void
     {
         LevelRank::getIt($prohibitedValue);
     }
 
-    public function provideProhibitedLevelValue()
+    public function provideProhibitedLevelValue(): array
     {
         return [[-1], [-12345]];
     }

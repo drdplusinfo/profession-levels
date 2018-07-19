@@ -1,4 +1,6 @@
 <?php
+declare(strict_types = 1);
+
 namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -59,7 +61,6 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     {
         $professionLevels = new static($professionZeroLevel, $professionFirstLevel);
         foreach ($professionNextLevels as $professionNextLevel) {
-            /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
             $professionLevels->addLevel($professionNextLevel);
         }
 
@@ -235,7 +236,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     private function checkPrimaryPropertyIncrementInARow(BaseProperty $propertyIncrement): bool
     {
         $previousLevels = $this->getProfessionNextLevels();
-        $previousNextLevelsCount = count($previousLevels);
+        $previousNextLevelsCount = \count($previousLevels);
         // main property can be increased twice in a row
         if ($previousNextLevelsCount < 2) {
             return true;
@@ -273,7 +274,6 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
      */
     private function getSamePropertyIncrement(ProfessionLevel $searchedThroughProfessionLevel, BaseProperty $patternPropertyIncrement)
     {
-        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         return $searchedThroughProfessionLevel->getBasePropertyIncrement(
             PropertyCode::getIt($patternPropertyIncrement->getCode())
         );
@@ -288,7 +288,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     {
         $nextLevels = $this->getProfessionNextLevels();
         // secondary property has to be increased at least alternately
-        if (count($nextLevels) === 0) {
+        if (\count($nextLevels) === 0) {
             return true;
         }
         if (!$this->hasIncrementSameProperty($nextLevels->last(), $propertyIncrement)) {
@@ -314,7 +314,6 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
      */
     public function getFirstLevelPropertyModifier(PropertyCode $propertyCode): int
     {
-        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         return $this->getFirstLevel()->getBasePropertyIncrement($propertyCode)->getValue();
     }
 
@@ -372,7 +371,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
      */
     public function getPropertyModifierSummary(PropertyCode $propertyCode): int
     {
-        return array_sum($this->getLevelsPropertyModifiers($propertyCode));
+        return \array_sum($this->getLevelsPropertyModifiers($propertyCode));
     }
 
     /**
@@ -381,9 +380,8 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
      */
     private function getLevelsPropertyModifiers(PropertyCode $propertyCode): array
     {
-        return array_map(
+        return \array_map(
             function (ProfessionLevel $professionLevel) use ($propertyCode) {
-                /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
                 return $professionLevel->getBasePropertyIncrement($propertyCode)->getValue();
             },
             $this->getSortedProfessionLevels()
@@ -405,9 +403,8 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
      */
     private function getNextLevelsPropertyModifiers(PropertyCode $propertyCode): array
     {
-        return array_map(
+        return \array_map(
             function (ProfessionLevel $professionLevel) use ($propertyCode) {
-                /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
                 return $professionLevel->getBasePropertyIncrement($propertyCode)->getValue();
             },
             $this->getProfessionNextLevels()->toArray()
@@ -509,7 +506,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
     {
         $sortedLevels = $this->getSortedProfessionLevels();
 
-        return end($sortedLevels);
+        return \end($sortedLevels);
     }
 
 }

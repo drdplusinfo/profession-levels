@@ -1,4 +1,6 @@
 <?php
+declare(strict_types = 1);
+
 namespace DrdPlus\Person\ProfessionLevels\EnumTypes;
 
 use Doctrine\DBAL\Types\DateTimeImmutableType;
@@ -17,7 +19,7 @@ class ProfessionLevelsEnumsRegistrarTest extends TestCase
     /**
      * @test
      */
-    public function I_can_register_all_needed_enums_at_once()
+    public function I_can_register_all_needed_enums_at_once(): void
     {
         ProfessionLevelsEnumRegistrar::registerAll();
 

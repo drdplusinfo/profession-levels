@@ -1,11 +1,13 @@
 <?php
+declare(strict_types = 1);
+
 namespace DrdPlus\Person\ProfessionLevels\EnumTypes;
 
 use Doctrineum\Integer\IntegerEnumType;
 
 class LevelRankType extends IntegerEnumType
 {
-    const LEVEL_RANK = 'level_rank';
+    public const LEVEL_RANK = 'level_rank';
 
     /**
      * @return string

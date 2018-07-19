@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use DrdPlus\Codes\ProfessionCode;
@@ -26,20 +28,19 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     /**
      * @param string $propertyCode
      * @param string $professionCode
-     *
      * @return bool
      */
-    protected function isPrimaryProperty($propertyCode, $professionCode)
+    protected function isPrimaryProperty(string $propertyCode, string $professionCode): bool
     {
-        return in_array($propertyCode, $this->getPrimaryProperties($professionCode), true);
+        return \in_array($propertyCode, $this->getPrimaryProperties($professionCode), true);
     }
 
     /**
      * @param string $professionCode
-     * @return string[]
+     * @return string[]|array
      * @throws \LogicException
      */
-    private function getPrimaryProperties($professionCode)
+    private function getPrimaryProperties(string $professionCode): array
     {
         switch ($professionCode) {
             case ProfessionCode::FIGHTER :
@@ -61,6 +62,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     /**
      * @param string $professionCode
      * @return MockInterface|Profession|Fighter|Wizard|Priest|Theurgist|Thief|Ranger
+     * @throws \ReflectionException
      */
     protected function createProfession($professionCode)
     {
@@ -69,7 +71,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
             ->with($this->type(PropertyCode::class))
             ->andReturnUsing(
                 function (PropertyCode $propertyCode) use ($professionCode) {
-                    return in_array($propertyCode->getValue(), $this->getPrimaryProperties($professionCode), true);
+                    return \in_array($propertyCode->getValue(), $this->getPrimaryProperties($professionCode), true);
                 }
             );
         $profession->shouldReceive('getPrimaryProperties')
@@ -83,13 +85,14 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
     /**
      * @param string $professionCode
      * @return string|Profession
+     * @throws \ReflectionException
      */
-    private function getProfessionClass($professionCode)
+    private function getProfessionClass(string $professionCode)
     {
         $reflection = new \ReflectionClass(Profession::class);
         $namespace = $reflection->getNamespaceName();
 
-        return $namespace . '\\' . ucfirst($professionCode);
+        return $namespace . '\\' . \ucfirst($professionCode);
     }
 
 }

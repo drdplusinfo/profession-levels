@@ -1,4 +1,6 @@
 <?php
+declare(strict_types = 1);
+
 namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -25,7 +27,6 @@ class ProfessionZeroLevel extends ProfessionLevel
      */
     public static function createZeroLevel(Commoner $commoner, \DateTimeImmutable $levelUpAt = null): ProfessionZeroLevel
     {
-        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         return new static(
             $commoner,
             new LevelRank(0),

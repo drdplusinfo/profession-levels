@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace DrdPlus\Person\ProfessionLevels;
 
 use DrdPlus\Professions\Profession;
@@ -56,8 +58,8 @@ class ProfessionNextLevel extends ProfessionLevel
         );
     }
 
-    const MINIMUM_NEXT_LEVEL = 2;
-    const MAXIMUM_NEXT_LEVEL = 21;
+    public const MINIMUM_NEXT_LEVEL = 2;
+    public const MAXIMUM_NEXT_LEVEL = 21;
 
     /**
      * @param LevelRank $levelRank
@@ -78,7 +80,7 @@ class ProfessionNextLevel extends ProfessionLevel
         }
     }
 
-    const MAX_NEXT_LEVEL_PROPERTY_MODIFIER = 1;
+    public const MAX_NEXT_LEVEL_PROPERTY_MODIFIER = 1;
 
     /**
      * @param BaseProperty $baseProperty
@@ -104,7 +106,7 @@ class ProfessionNextLevel extends ProfessionLevel
     /**
      * @return ProfessionLevels|null
      */
-    public function getProfessionLevels():? ProfessionLevels
+    public function getProfessionLevels(): ?ProfessionLevels
     {
         return $this->professionLevels;
     }
@@ -112,7 +114,7 @@ class ProfessionNextLevel extends ProfessionLevel
     /**
      * @param ProfessionLevels $professionLevels
      */
-    public function setProfessionLevels(ProfessionLevels $professionLevels)
+    public function setProfessionLevels(ProfessionLevels $professionLevels): void
     {
         $this->professionLevels = $professionLevels;
     }

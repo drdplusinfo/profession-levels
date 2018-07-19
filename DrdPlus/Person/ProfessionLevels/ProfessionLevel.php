@@ -1,4 +1,6 @@
 <?php
+declare(strict_types = 1);
+
 namespace DrdPlus\Person\ProfessionLevels;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -129,6 +131,7 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         $this->willIncrement = $willIncrement;
         $this->intelligenceIncrement = $intelligenceIncrement;
         $this->charismaIncrement = $charismaIncrement;
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->levelUpAt = $levelUpAt ?: new \DateTimeImmutable();
     }
 
@@ -169,8 +172,8 @@ abstract class ProfessionLevel extends StrictObject implements Entity
         }
     }
 
-    const PRIMARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
-    const SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
+    public const PRIMARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
+    public const SECONDARY_PROPERTY_NEXT_LEVEL_INCREMENT_SUM = 1;
 
     /**
      * @return int
