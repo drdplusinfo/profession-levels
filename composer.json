@@ -1,5 +1,5 @@
 {
-  "name": "drd-plus/profession-levels",
+  "name": "drdplus/profession-levels",
   "license": "MIT",
   "type": "project",
   "description": "Levels of professions for Drd+",
@@ -12,9 +12,9 @@
     "php": ">=7.1",
     "doctrine/orm": "~2.0",
     "doctrineum/entity": "^2.1",
-    "drd-plus/codes": "^1.0",
-    "drd-plus/properties": "^1.0",
-    "drd-plus/professions": "^1.0"
+    "drdplus/codes": "^1.0",
+    "drdplus/properties": "^1.0",
+    "drdplus/professions": "^1.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
