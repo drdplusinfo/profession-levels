@@ -1,21 +1,21 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
+use DrdPlus\BaseProperties\Property;
 use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Codes\Properties\PropertyCode;
 use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevels;
 use DrdPlus\Person\ProfessionLevels\ProfessionNextLevel;
-use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Base\Charisma;
-use DrdPlus\Properties\Base\Intelligence;
-use DrdPlus\Properties\Base\Knack;
-use DrdPlus\Properties\Base\Strength;
-use DrdPlus\Properties\Base\Will;
-use DrdPlus\Properties\Property;
+use DrdPlus\BaseProperties\Agility;
+use DrdPlus\BaseProperties\Charisma;
+use DrdPlus\BaseProperties\Intelligence;
+use DrdPlus\BaseProperties\Knack;
+use DrdPlus\BaseProperties\Strength;
+use DrdPlus\BaseProperties\Will;
 use Mockery\MockInterface;
 
 class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
@@ -25,6 +25,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      * @test
      * @dataProvider provideProfessionCode
      * @param string $professionCode
+     * @throws \ReflectionException
      */
     public function I_can_create_it(string $professionCode)
     {
@@ -39,9 +40,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
             $charismaIncrement = $this->createCharisma($professionCode),
             $levelUpAt = new \DateTimeImmutable()
         );
-        self::assertInstanceOf(ProfessionNextLevel::class, $professionNextLevel);
         /** @var ProfessionLevel $professionNextLevel */
-        self::assertNull($professionNextLevel->getId());
         self::assertSame($professionCode, $professionNextLevel->getProfession()->getValue());
         self::assertFalse($professionNextLevel->isFirstLevel());
         self::assertTrue($professionNextLevel->isNextLevel());
@@ -63,7 +62,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
         self::assertSame($levelUpAt, $professionNextLevel->getLevelUpAt());
     }
 
-    public function provideProfessionCode()
+    public function provideProfessionCode(): array
     {
         return [
             [ProfessionCode::FIGHTER],
@@ -140,7 +139,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      * @param string|null $propertyValue = null
      * @return MockInterface|Property|Strength|Agility|Knack|Will|Intelligence|Charisma
      */
-    private function createProperty($professionCode, $propertyClass, $propertyCode, $propertyValue = null)
+    private function createProperty(string $professionCode, string $propertyClass, string $propertyCode, string $propertyValue = null): Property
     {
         $property = $this->mockery($propertyClass);
         $this->addPropertyExpectation($professionCode, $property, $propertyCode, $propertyValue);
@@ -149,10 +148,10 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
     }
 
     private function addPropertyExpectation(
-        $professionCode,
+        string $professionCode,
         MockInterface $property,
-        $propertyName,
-        $propertyValue = null
+        string $propertyName,
+        string $propertyValue = null
     )
     {
         $property->shouldReceive('getValue')
@@ -174,7 +173,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      * @param int|null $value
      * @return Agility
      */
-    private function createAgility($professionCode, $value = null)
+    private function createAgility(string $professionCode, int $value = null)
     {
         return $this->createProperty($professionCode, Agility::class, PropertyCode::AGILITY, $value);
     }
@@ -184,7 +183,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      * @param int|null $value
      * @return Knack
      */
-    private function createKnack($professionCode, $value = null)
+    private function createKnack(string $professionCode, int $value = null)
     {
         return $this->createProperty($professionCode, Knack::class, PropertyCode::KNACK, $value);
     }
@@ -194,7 +193,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
      * @param int|null $value
      * @return Will
      */
-    private function createWill($professionCode, $value = null)
+    private function createWill(string $professionCode, int $value = null)
     {
         return $this->createProperty($professionCode, Will::class, PropertyCode::WILL, $value);
     }
@@ -219,7 +218,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
         return $this->createProperty($professionCode, Charisma::class, PropertyCode::CHARISMA, $value);
     }
 
-    private function getPropertyClassByCode($propertyCode)
+    private function getPropertyClassByCode(string $propertyCode): string
     {
         switch ($propertyCode) {
             case PropertyCode::STRENGTH :
@@ -415,7 +414,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
     /**
      * @return MockInterface|ProfessionLevels
      */
-    private function createProfessionLevels()
+    private function createProfessionLevels(): ProfessionLevels
     {
         return $this->mockery(ProfessionLevels::class);
     }

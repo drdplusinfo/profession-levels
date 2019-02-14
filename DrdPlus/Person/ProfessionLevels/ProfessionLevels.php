@@ -1,48 +1,31 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace DrdPlus\Person\ProfessionLevels;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
-use Doctrineum\Entity\Entity;
 use DrdPlus\Codes\Properties\PropertyCode;
-use DrdPlus\Properties\Base\BaseProperty;
-use DrdPlus\Properties\Base\Charisma;
-use DrdPlus\Properties\Base\Intelligence;
-use DrdPlus\Properties\Base\Knack;
-use DrdPlus\Properties\Base\Will;
+use DrdPlus\BaseProperties\BaseProperty;
+use DrdPlus\BaseProperties\Charisma;
+use DrdPlus\BaseProperties\Intelligence;
+use DrdPlus\BaseProperties\Knack;
+use DrdPlus\BaseProperties\Will;
 use Granam\Strict\Object\StrictObject;
 use Granam\Tools\ValueDescriber;
 
-/**
- * @ORM\Entity()
- */
-class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregate
+class ProfessionLevels extends StrictObject implements \IteratorAggregate
 {
     /**
-     * @var integer
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
      * @var ProfessionZeroLevel
-     * @ORM\OneToOne(targetEntity="ProfessionZeroLevel", cascade={"persist"})
      */
     private $professionZeroLevel;
 
     /**
      * @var ProfessionFirstLevel
-     * @ORM\OneToOne(targetEntity="ProfessionFirstLevel", cascade={"persist"})
      */
     private $professionFirstLevel;
 
     /**
      * @var ProfessionNextLevel[]
-     * @ORM\OneToMany(targetEntity="ProfessionNextLevel", cascade={"persist"}, mappedBy="professionLevels",
-     *     fetch="EAGER")
      */
     private $professionNextLevels;
 
@@ -67,31 +50,19 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         return $professionLevels;
     }
 
-    /**
-     * @param ProfessionZeroLevel $professionZeroLevel
-     * @param ProfessionFirstLevel $professionFirstLevel
-     */
     public function __construct(ProfessionZeroLevel $professionZeroLevel, ProfessionFirstLevel $professionFirstLevel)
     {
         $this->professionZeroLevel = $professionZeroLevel;
         $this->professionFirstLevel = $professionFirstLevel;
-        $this->professionNextLevels = new ArrayCollection();
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId():? int
-    {
-        return $this->id;
+        $this->professionNextLevels = [];
     }
 
     /**
      * All levels, achieved at any profession, unsorted
      *
-     * @return Collection|ProfessionLevel[]
+     * @return array|ProfessionLevel[]
      */
-    public function getProfessionNextLevels(): Collection
+    public function getProfessionNextLevels(): array
     {
         return $this->professionNextLevels;
     }
@@ -109,7 +80,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
      */
     public function getSortedProfessionLevels(): array
     {
-        $levels = $this->getProfessionNextLevels()->toArray();
+        $levels = $this->getProfessionNextLevels();
         $levels = $this->sortByLevelRank($levels);
         array_unshift($levels, $this->getFirstLevel());
         array_unshift($levels, $this->getZeroLevel());
@@ -123,7 +94,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
      */
     private function sortByLevelRank(array $professionLevels): array
     {
-        usort($professionLevels, function (ProfessionLevel $aLevel, ProfessionLevel $anotherLevel) {
+        \usort($professionLevels, function (ProfessionLevel $aLevel, ProfessionLevel $anotherLevel) {
             $difference = $aLevel->getLevelRank()->getValue() - $anotherLevel->getLevelRank()->getValue();
 
             return $difference <=> 0;
@@ -132,17 +103,11 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         return $professionLevels;
     }
 
-    /**
-     * @return ProfessionZeroLevel
-     */
     public function getZeroLevel(): ProfessionZeroLevel
     {
         return $this->professionZeroLevel;
     }
 
-    /**
-     * @return ProfessionFirstLevel
-     */
     public function getFirstLevel(): ProfessionFirstLevel
     {
         return $this->professionFirstLevel;
@@ -161,7 +126,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         $this->checkNewLevelSequence($newLevel);
         $this->checkPropertiesIncrementSequence($newLevel);
 
-        $this->getProfessionNextLevels()->add($newLevel);
+        $this->professionNextLevels[] = $newLevel;
         $newLevel->setProfessionLevels($this);
     }
 
@@ -241,13 +206,13 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         if ($previousNextLevelsCount < 2) {
             return true;
         }
-        $lastPrevious = $previousLevels->last();
+        $lastPrevious = \end($previousLevels);
         if (!$this->hasIncrementSameProperty($lastPrevious, $propertyIncrement)) {
             return true;
         }
-        $lastButOnePreviousKey = $previousLevels->getKeys()[$previousNextLevelsCount - 2];
+        $lastButOnePreviousKey = \array_keys($previousLevels)[$previousNextLevelsCount - 2];
         /** @var ProfessionLevel $lastPrevious */
-        $lastButOnePrevious = $previousLevels->get($lastButOnePreviousKey);
+        $lastButOnePrevious = $previousLevels[$lastButOnePreviousKey];
         if (!$this->hasIncrementSameProperty($lastButOnePrevious, $propertyIncrement)) {
             return true;
         }
@@ -291,7 +256,7 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         if (\count($nextLevels) === 0) {
             return true;
         }
-        if (!$this->hasIncrementSameProperty($nextLevels->last(), $propertyIncrement)) {
+        if (!$this->hasIncrementSameProperty(\end($nextLevels), $propertyIncrement)) {
             return true;
         }
         throw new Exceptions\TooHighSecondaryPropertyIncrease(
@@ -300,75 +265,46 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         );
     }
 
-    /**
-     * @return int
-     */
     public function getFirstLevelStrengthModifier(): int
     {
         return $this->getFirstLevelPropertyModifier(PropertyCode::getIt(PropertyCode::STRENGTH));
     }
 
-    /**
-     * @param PropertyCode $propertyCode
-     * @return int
-     */
     public function getFirstLevelPropertyModifier(PropertyCode $propertyCode): int
     {
         return $this->getFirstLevel()->getBasePropertyIncrement($propertyCode)->getValue();
     }
 
-    /**
-     * @return int
-     */
     public function getFirstLevelAgilityModifier(): int
     {
         return $this->getFirstLevelPropertyModifier(PropertyCode::getIt(PropertyCode::AGILITY));
     }
 
-    /**
-     * @return int
-     */
     public function getFirstLevelKnackModifier(): int
     {
         return $this->getFirstLevelPropertyModifier(PropertyCode::getIt(PropertyCode::KNACK));
     }
 
-    /**
-     * @return int
-     */
     public function getFirstLevelWillModifier(): int
     {
         return $this->getFirstLevelPropertyModifier(PropertyCode::getIt(PropertyCode::WILL));
     }
 
-    /**
-     * @return int
-     */
     public function getFirstLevelIntelligenceModifier(): int
     {
         return $this->getFirstLevelPropertyModifier(PropertyCode::getIt(PropertyCode::INTELLIGENCE));
     }
 
-    /**
-     * @return int
-     */
     public function getFirstLevelCharismaModifier(): int
     {
         return $this->getFirstLevelPropertyModifier(PropertyCode::getIt(PropertyCode::CHARISMA));
     }
 
-    /**
-     * @return int
-     */
     public function getStrengthModifierSummary(): int
     {
         return $this->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::STRENGTH));
     }
 
-    /**
-     * @param PropertyCode $propertyCode
-     * @return int
-     */
     public function getPropertyModifierSummary(PropertyCode $propertyCode): int
     {
         return \array_sum($this->getLevelsPropertyModifiers($propertyCode));
@@ -388,10 +324,6 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
         );
     }
 
-    /**
-     * @param PropertyCode $propertyCode
-     * @return int
-     */
     public function getNextLevelsPropertyModifier(PropertyCode $propertyCode): int
     {
         return array_sum($this->getNextLevelsPropertyModifiers($propertyCode));
@@ -407,101 +339,65 @@ class ProfessionLevels extends StrictObject implements Entity, \IteratorAggregat
             function (ProfessionLevel $professionLevel) use ($propertyCode) {
                 return $professionLevel->getBasePropertyIncrement($propertyCode)->getValue();
             },
-            $this->getProfessionNextLevels()->toArray()
+            $this->getProfessionNextLevels()
         );
     }
 
-    /**
-     * @return int
-     */
     public function getAgilityModifierSummary(): int
     {
         return $this->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::AGILITY));
     }
 
-    /**
-     * @return int
-     */
     public function getKnackModifierSummary(): int
     {
         return $this->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::KNACK));
     }
 
-    /**
-     * @return int
-     */
     public function getWillModifierSummary(): int
     {
         return $this->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::WILL));
     }
 
-    /**
-     * @return int
-     */
     public function getIntelligenceModifierSummary(): int
     {
         return $this->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::INTELLIGENCE));
     }
 
-    /**
-     * @return int
-     */
     public function getCharismaModifierSummary(): int
     {
         return $this->getPropertyModifierSummary(PropertyCode::getIt(PropertyCode::CHARISMA));
     }
 
-    /**
-     * @return int
-     */
     public function getNextLevelsStrengthModifier(): int
     {
         return $this->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::STRENGTH));
     }
 
-    /**
-     * @return int
-     */
     public function getNextLevelsAgilityModifier(): int
     {
         return $this->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::AGILITY));
     }
 
-    /**
-     * @return int
-     */
     public function getNextLevelsKnackModifier(): int
     {
         return $this->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::KNACK));
     }
 
-    /**
-     * @return int
-     */
     public function getNextLevelsWillModifier(): int
     {
         return $this->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::WILL));
     }
 
-    /**
-     * @return int
-     */
     public function getNextLevelsIntelligenceModifier(): int
     {
         return $this->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::INTELLIGENCE));
     }
 
-    /**
-     * @return int
-     */
     public function getNextLevelsCharismaModifier(): int
     {
         return $this->getNextLevelsPropertyModifier(PropertyCode::getIt(PropertyCode::CHARISMA));
     }
 
-    /**
-     * @return ProfessionLevel
-     */
     public function getCurrentLevel(): ProfessionLevel
     {
         $sortedLevels = $this->getSortedProfessionLevels();

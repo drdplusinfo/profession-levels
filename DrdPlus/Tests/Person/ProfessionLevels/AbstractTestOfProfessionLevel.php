@@ -64,7 +64,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
      * @return MockInterface|Profession|Fighter|Wizard|Priest|Theurgist|Thief|Ranger
      * @throws \ReflectionException
      */
-    protected function createProfession($professionCode)
+    protected function createProfession(string $professionCode): Profession
     {
         $profession = \Mockery::mock($this->getProfessionClass($professionCode));
         $profession->shouldReceive('isPrimaryProperty')

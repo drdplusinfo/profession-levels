@@ -4,24 +4,18 @@ declare(strict_types=1);
 namespace DrdPlus\Person\ProfessionLevels;
 
 use DrdPlus\Professions\Profession;
-use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Base\BaseProperty;
-use DrdPlus\Properties\Base\Charisma;
-use DrdPlus\Properties\Base\Intelligence;
-use DrdPlus\Properties\Base\Knack;
-use DrdPlus\Properties\Base\Strength;
-use DrdPlus\Properties\Base\Will;
-use Doctrine\ORM\Mapping as ORM;
+use DrdPlus\BaseProperties\Agility;
+use DrdPlus\BaseProperties\BaseProperty;
+use DrdPlus\BaseProperties\Charisma;
+use DrdPlus\BaseProperties\Intelligence;
+use DrdPlus\BaseProperties\Knack;
+use DrdPlus\BaseProperties\Strength;
+use DrdPlus\BaseProperties\Will;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(uniqueConstraints={})
- */
 class ProfessionNextLevel extends ProfessionLevel
 {
     /**
      * @var ProfessionLevels
-     * @ORM\ManyToOne(targetEntity="ProfessionLevels", inversedBy="professionNextLevels", cascade={"persist"})
      */
     private $professionLevels;
 
@@ -103,17 +97,11 @@ class ProfessionNextLevel extends ProfessionLevel
         }
     }
 
-    /**
-     * @return ProfessionLevels|null
-     */
     public function getProfessionLevels(): ?ProfessionLevels
     {
         return $this->professionLevels;
     }
 
-    /**
-     * @param ProfessionLevels $professionLevels
-     */
     public function setProfessionLevels(ProfessionLevels $professionLevels): void
     {
         $this->professionLevels = $professionLevels;

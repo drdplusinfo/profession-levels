@@ -10,11 +10,10 @@
   },
   "require": {
     "php": ">=7.1",
-    "doctrine/orm": "~2.0",
-    "doctrineum/entity": "^2.1",
-    "drdplus/codes": "^1.0",
-    "drdplus/properties": "^1.0",
-    "drdplus/professions": "^1.0"
+    "drdplus/codes": "~2.0",
+    "drdplus/properties": "~2.0",
+    "drdplus/professions": "~2.0",
+    "granam/integer-enum": "^1.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",

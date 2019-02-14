@@ -3,19 +3,19 @@ declare(strict_types=1);
 
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
+use DrdPlus\BaseProperties\Property;
 use DrdPlus\Codes\ProfessionCode;
 use DrdPlus\Codes\Properties\PropertyCode;
 use DrdPlus\Person\ProfessionLevels\LevelRank;
 use DrdPlus\Person\ProfessionLevels\ProfessionFirstLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
 use DrdPlus\Professions\Profession;
-use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Base\Charisma;
-use DrdPlus\Properties\Base\Intelligence;
-use DrdPlus\Properties\Base\Knack;
-use DrdPlus\Properties\Base\Strength;
-use DrdPlus\Properties\Base\Will;
-use DrdPlus\Properties\Property;
+use DrdPlus\BaseProperties\Agility;
+use DrdPlus\BaseProperties\Charisma;
+use DrdPlus\BaseProperties\Intelligence;
+use DrdPlus\BaseProperties\Knack;
+use DrdPlus\BaseProperties\Strength;
+use DrdPlus\BaseProperties\Will;
 use Mockery\MockInterface;
 
 class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
@@ -35,7 +35,6 @@ class ProfessionFirstLevelTest extends AbstractTestOfProfessionLevel
             $levelUpAt = new \DateTimeImmutable('2004-01-01')
         );
         /** @var ProfessionLevel $professionFirstLevel */
-        self::assertNull($professionFirstLevel->getId());
         self::assertSame($professionCode, $professionFirstLevel->getProfession()->getValue());
         self::assertTrue($professionFirstLevel->isFirstLevel());
         self::assertFalse($professionFirstLevel->isNextLevel());

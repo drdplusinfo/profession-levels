@@ -1,10 +1,10 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace DrdPlus\Person\ProfessionLevels;
 
-use Doctrineum\Integer\IntegerEnum;
 use Granam\Integer\IntegerInterface;
+use Granam\IntegerEnum\IntegerEnum;
 use Granam\Tools\ValueDescriber;
 
 /**
@@ -24,7 +24,7 @@ class LevelRank extends IntegerEnum
     /**
      * @param int|IntegerInterface $value
      * @throws \DrdPlus\Person\ProfessionLevels\Exceptions\InvalidLevelRank
-     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @throws \Granam\ScalarEnum\Exceptions\WrongValueForScalarEnum
      */
     public function __construct($value)
     {
@@ -36,25 +36,16 @@ class LevelRank extends IntegerEnum
         }
     }
 
-    /**
-     * @return bool
-     */
     public function isZeroLevel(): bool
     {
         return $this->getValue() === 0;
     }
 
-    /**
-     * @return bool
-     */
     public function isFirstLevel(): bool
     {
         return $this->getValue() === 1;
     }
 
-    /**
-     * @return bool
-     */
     public function isNextLevel(): bool
     {
         return $this->getValue() > 1;

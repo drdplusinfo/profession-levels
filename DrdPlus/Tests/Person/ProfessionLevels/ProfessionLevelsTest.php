@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
@@ -12,13 +12,13 @@ use DrdPlus\Person\ProfessionLevels\ProfessionLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionLevels;
 use DrdPlus\Person\ProfessionLevels\ProfessionNextLevel;
 use DrdPlus\Person\ProfessionLevels\ProfessionZeroLevel;
-use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Base\BaseProperty;
-use DrdPlus\Properties\Base\Charisma;
-use DrdPlus\Properties\Base\Intelligence;
-use DrdPlus\Properties\Base\Knack;
-use DrdPlus\Properties\Base\Strength;
-use DrdPlus\Properties\Base\Will;
+use DrdPlus\BaseProperties\Agility;
+use DrdPlus\BaseProperties\BaseProperty;
+use DrdPlus\BaseProperties\Charisma;
+use DrdPlus\BaseProperties\Intelligence;
+use DrdPlus\BaseProperties\Knack;
+use DrdPlus\BaseProperties\Strength;
+use DrdPlus\BaseProperties\Will;
 use \DrdPlus\Professions\Fighter;
 use \DrdPlus\Professions\Priest;
 use \DrdPlus\Professions\Profession;
@@ -153,7 +153,6 @@ class ProfessionLevelsTest extends TestWithMockery
             $levelsFromIteration[] = $professionLevel;
         }
         self::assertEquals($levelsFromIteration, $professionLevels->getSortedProfessionLevels());
-        self::assertNull($professionLevels->getId());
     }
 
     /*
@@ -433,7 +432,7 @@ class ProfessionLevelsTest extends TestWithMockery
 
         self::assertSame($zeroLevel, $professionLevels->getZeroLevel());
         self::assertSame($firstLevel, $professionLevels->getFirstLevel());
-        self::assertSame([$nextLevel], $professionLevels->getProfessionNextLevels()->toArray());
+        self::assertSame([$nextLevel], $professionLevels->getProfessionNextLevels());
         self::assertEquals([$zeroLevel, $firstLevel, $nextLevel], $professionLevels->getSortedProfessionLevels());
         self::assertEquals($nextLevel, $professionLevels->getCurrentLevel());
 
@@ -537,7 +536,7 @@ class ProfessionLevelsTest extends TestWithMockery
         self::assertSame($zeroLevel, $professionLevels->getZeroLevel());
         self::assertSame($firstLevel, $professionLevels->getFirstLevel(), 'After adding a new level the old one is no more the first.');
         self::assertSame([$zeroLevel, $firstLevel, $secondLevel, $thirdLevel], $professionLevels->getSortedProfessionLevels());
-        self::assertSame([$secondLevel, $thirdLevel], $professionLevels->getProfessionNextLevels()->toArray());
+        self::assertSame([$secondLevel, $thirdLevel], $professionLevels->getProfessionNextLevels());
 
         $levelsArray = [];
         foreach ($professionLevels as $professionLevel) {

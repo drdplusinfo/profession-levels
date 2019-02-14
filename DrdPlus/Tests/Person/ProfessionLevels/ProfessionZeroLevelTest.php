@@ -4,12 +4,12 @@ declare(strict_types = 1);
 namespace DrdPlus\Person\ProfessionLevels;
 
 use DrdPlus\Professions\Commoner;
-use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Base\Charisma;
-use DrdPlus\Properties\Base\Intelligence;
-use DrdPlus\Properties\Base\Knack;
-use DrdPlus\Properties\Base\Strength;
-use DrdPlus\Properties\Base\Will;
+use DrdPlus\BaseProperties\Agility;
+use DrdPlus\BaseProperties\Charisma;
+use DrdPlus\BaseProperties\Intelligence;
+use DrdPlus\BaseProperties\Knack;
+use DrdPlus\BaseProperties\Strength;
+use DrdPlus\BaseProperties\Will;
 use PHPUnit\Framework\TestCase;
 
 class ProfessionZeroLevelTest extends TestCase

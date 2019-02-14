@@ -1,30 +1,21 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace DrdPlus\Person\ProfessionLevels;
 
-use Doctrine\ORM\Mapping as ORM;
 use DrdPlus\Codes\Properties\PropertyCode;
 use DrdPlus\Professions\Profession;
-use DrdPlus\Properties\Base\Agility;
-use DrdPlus\Properties\Base\BaseProperty;
-use DrdPlus\Properties\Base\Charisma;
-use DrdPlus\Properties\Base\Intelligence;
-use DrdPlus\Properties\Base\Knack;
-use DrdPlus\Properties\Base\Strength;
-use DrdPlus\Properties\Base\Will;
+use DrdPlus\BaseProperties\Agility;
+use DrdPlus\BaseProperties\BaseProperty;
+use DrdPlus\BaseProperties\Charisma;
+use DrdPlus\BaseProperties\Intelligence;
+use DrdPlus\BaseProperties\Knack;
+use DrdPlus\BaseProperties\Strength;
+use DrdPlus\BaseProperties\Will;
 
-/**
- * @ORM\Entity()
- */
 class ProfessionFirstLevel extends ProfessionLevel
 {
 
-    /**
-     * @param Profession $profession
-     * @param \DateTimeImmutable|null $levelUpAt
-     * @return ProfessionFirstLevel
-     */
     public static function createFirstLevel(
         Profession $profession,
         \DateTimeImmutable $levelUpAt = null
@@ -45,11 +36,6 @@ class ProfessionFirstLevel extends ProfessionLevel
 
     public const PRIMARY_PROPERTY_FIRST_LEVEL_MODIFIER = 1;
 
-    /**
-     * @param PropertyCode $propertyCode
-     * @param Profession $profession
-     * @return int
-     */
     private static function getBasePropertyFirstLevelModifier(PropertyCode $propertyCode, Profession $profession): int
     {
         return static::isProfessionPrimaryProperty($profession, $propertyCode)
