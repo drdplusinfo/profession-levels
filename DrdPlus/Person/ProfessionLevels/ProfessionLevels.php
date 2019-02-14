@@ -27,7 +27,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     /**
      * @var ProfessionNextLevel[]
      */
-    private $professionNextLevels;
+    private $professionNextLevels = [];
 
     /**
      * @param ProfessionZeroLevel $professionZeroLevel
@@ -54,7 +54,6 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     {
         $this->professionZeroLevel = $professionZeroLevel;
         $this->professionFirstLevel = $professionFirstLevel;
-        $this->professionNextLevels = [];
     }
 
     /**
