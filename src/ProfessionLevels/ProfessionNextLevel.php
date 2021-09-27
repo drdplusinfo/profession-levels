@@ -13,10 +13,7 @@ use DrdPlus\BaseProperties\Will;
 
 class ProfessionNextLevel extends ProfessionLevel
 {
-    /**
-     * @var ProfessionLevels
-     */
-    private $professionLevels;
+    private ?\DrdPlus\Person\ProfessionLevels\ProfessionLevels $professionLevels = null;
 
     /**
      * @param Profession $profession

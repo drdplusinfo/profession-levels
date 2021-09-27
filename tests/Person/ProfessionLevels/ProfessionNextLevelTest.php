@@ -301,7 +301,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
     public function I_can_not_create_next_level_with_too_high_properties_sum($professionCode)
     {
         $this->expectException(\DrdPlus\Person\ProfessionLevels\Exceptions\InvalidNextLevelPropertiesSum::class);
-        $this->expectExceptionMessageRegExp('" 2, got 6$"');
+        $this->expectExceptionMessageMatches('" 2, got 6$"');
         ProfessionNextLevel::createNextLevel(
             $this->createProfession($professionCode),
             $levelRank = LevelRank::getIt(2),
@@ -322,7 +322,7 @@ class ProfessionNextLevelTest extends AbstractTestOfProfessionLevel
     public function I_can_not_create_next_level_with_too_low_properties_sum($professionCode)
     {
         $this->expectException(\DrdPlus\Person\ProfessionLevels\Exceptions\InvalidNextLevelPropertiesSum::class);
-        $this->expectExceptionMessageRegExp('" 2, got 0$"');
+        $this->expectExceptionMessageMatches('" 2, got 0$"');
         ProfessionNextLevel::createNextLevel(
             $this->createProfession($professionCode),
             $levelRank = LevelRank::getIt(2),

@@ -11,7 +11,7 @@ use DrdPlus\Professions\Theurgist;
 use DrdPlus\Professions\Thief;
 use DrdPlus\Professions\Wizard;
 use \DrdPlus\Professions\Profession;
-use Granam\Tests\Tools\TestWithMockery;
+use Granam\TestWithMockery\TestWithMockery;
 use Granam\Tools\ValueDescriber;
 use Mockery\MockInterface;
 
@@ -69,9 +69,7 @@ abstract class AbstractTestOfProfessionLevel extends TestWithMockery
         $profession->shouldReceive('isPrimaryProperty')
             ->with($this->type(PropertyCode::class))
             ->andReturnUsing(
-                function (PropertyCode $propertyCode) use ($professionCode) {
-                    return \in_array($propertyCode->getValue(), $this->getPrimaryProperties($professionCode), true);
-                }
+                fn(PropertyCode $propertyCode) => \in_array($propertyCode->getValue(), $this->getPrimaryProperties($professionCode), true)
             );
         $profession->shouldReceive('getPrimaryProperties')
             ->andReturn($this->getPrimaryProperties($professionCode));

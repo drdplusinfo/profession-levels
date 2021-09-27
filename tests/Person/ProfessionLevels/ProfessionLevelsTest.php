@@ -25,7 +25,7 @@ use \DrdPlus\Professions\Ranger;
 use \DrdPlus\Professions\Theurgist;
 use \DrdPlus\Professions\Thief;
 use \DrdPlus\Professions\Wizard;
-use Granam\Tests\Tools\TestWithMockery;
+use Granam\TestWithMockery\TestWithMockery;
 use Mockery\MockInterface;
 
 class ProfessionLevelsTest extends TestWithMockery
@@ -341,7 +341,7 @@ class ProfessionLevelsTest extends TestWithMockery
             ->andReturn($levelRank = $this->mockery(LevelRank::class));
         $levelRank->shouldReceive('getValue')
             ->andReturn($levelValue);
-        if ($professionLevels) {
+        if ($professionLevels !== null) {
             $professionLevel->shouldReceive('setProfessionLevels')
                 ->with($professionLevels)
                 ->atMost()
@@ -675,12 +675,10 @@ class ProfessionLevelsTest extends TestWithMockery
      */
     private function createProfessionLevelsForMixTest(string $professionCode): ProfessionLevels
     {
-        $professionLevels = new ProfessionLevels(
+        return new ProfessionLevels(
             $this->createZeroLevel(),
             $firstLevel = $this->createFirstLevel($professionCode)
         );
-
-        return $professionLevels;
     }
 
     /**
@@ -693,9 +691,7 @@ class ProfessionLevelsTest extends TestWithMockery
 
         return array_filter(
             $professionLevels,
-            function (ProfessionLevel $level) use ($excludedProfession) {
-                return $level->getProfession()->getValue() !== $excludedProfession->getProfession()->getValue();
-            }
+            fn(ProfessionLevel $level) => $level->getProfession()->getValue() !== $excludedProfession->getProfession()->getValue()
         );
     }
 

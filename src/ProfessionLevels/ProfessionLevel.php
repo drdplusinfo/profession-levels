@@ -16,50 +16,23 @@ use Granam\Tools\ValueDescriber;
 
 abstract class ProfessionLevel extends StrictObject
 {
-    /**
-     * @var Profession
-     */
-    private $profession;
+    private \DrdPlus\Professions\Profession $profession;
 
-    /**
-     * @var LevelRank
-     */
-    private $levelRank;
+    private \DrdPlus\Person\ProfessionLevels\LevelRank $levelRank;
 
-    /**
-     * @var \DateTimeImmutable
-     */
-    private $levelUpAt;
+    private \DateTimeImmutable $levelUpAt;
 
-    /**
-     * @var Strength
-     */
-    private $strengthIncrement;
+    private \DrdPlus\BaseProperties\Strength $strengthIncrement;
 
-    /**
-     * @var Agility
-     */
-    private $agilityIncrement;
+    private \DrdPlus\BaseProperties\Agility $agilityIncrement;
 
-    /**
-     * @var Knack
-     */
-    private $knackIncrement;
+    private \DrdPlus\BaseProperties\Knack $knackIncrement;
 
-    /**
-     * @var Will
-     */
-    private $willIncrement;
+    private \DrdPlus\BaseProperties\Will $willIncrement;
 
-    /**
-     * @var Intelligence
-     */
-    private $intelligenceIncrement;
+    private \DrdPlus\BaseProperties\Intelligence $intelligenceIncrement;
 
-    /**
-     * @var Charisma
-     */
-    private $charismaIncrement;
+    private \DrdPlus\BaseProperties\Charisma $charismaIncrement;
 
     /**
      * @param Profession $profession

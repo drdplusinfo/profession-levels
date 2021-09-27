@@ -3,7 +3,7 @@
 namespace DrdPlus\Tests\Person\ProfessionLevels;
 
 use DrdPlus\Person\ProfessionLevels\LevelRank;
-use Granam\Tests\Tools\TestWithMockery;
+use Granam\TestWithMockery\TestWithMockery;
 
 class LevelRankTest extends TestWithMockery
 {

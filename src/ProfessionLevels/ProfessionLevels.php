@@ -13,15 +13,9 @@ use Granam\Tools\ValueDescriber;
 
 class ProfessionLevels extends StrictObject implements \IteratorAggregate
 {
-    /**
-     * @var ProfessionZeroLevel
-     */
-    private $professionZeroLevel;
+    private \DrdPlus\Person\ProfessionLevels\ProfessionZeroLevel $professionZeroLevel;
 
-    /**
-     * @var ProfessionFirstLevel
-     */
-    private $professionFirstLevel;
+    private \DrdPlus\Person\ProfessionLevels\ProfessionFirstLevel $professionFirstLevel;
 
     /**
      * @var ProfessionNextLevel[]
@@ -251,7 +245,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     {
         $nextLevels = $this->getProfessionNextLevels();
         // secondary property has to be increased at least alternately
-        if (\count($nextLevels) === 0) {
+        if ($nextLevels === []) {
             return true;
         }
         if (!$this->hasIncrementSameProperty(\end($nextLevels), $propertyIncrement)) {
@@ -315,9 +309,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     private function getLevelsPropertyModifiers(PropertyCode $propertyCode): array
     {
         return \array_map(
-            function (ProfessionLevel $professionLevel) use ($propertyCode) {
-                return $professionLevel->getBasePropertyIncrement($propertyCode)->getValue();
-            },
+            fn(ProfessionLevel $professionLevel) => $professionLevel->getBasePropertyIncrement($propertyCode)->getValue(),
             $this->getSortedProfessionLevels()
         );
     }
@@ -334,9 +326,7 @@ class ProfessionLevels extends StrictObject implements \IteratorAggregate
     private function getNextLevelsPropertyModifiers(PropertyCode $propertyCode): array
     {
         return \array_map(
-            function (ProfessionLevel $professionLevel) use ($propertyCode) {
-                return $professionLevel->getBasePropertyIncrement($propertyCode)->getValue();
-            },
+            fn(ProfessionLevel $professionLevel) => $professionLevel->getBasePropertyIncrement($propertyCode)->getValue(),
             $this->getProfessionNextLevels()
         );
     }

@@ -1,7 +1,5 @@
 <?php declare(strict_types=1);
 
-declare(strict_types = 1);
-
 namespace DrdPlus\Person\ProfessionLevels;
 
 use DrdPlus\Professions\Commoner;
@@ -53,7 +51,7 @@ class ProfessionZeroLevelTest extends TestCase
     public function I_can_not_create_it_with_higher_level_thank_zero()
     {
         $this->expectException(\DrdPlus\Person\ProfessionLevels\Exceptions\InvalidZeroLevelRank::class);
-        $this->expectExceptionMessageRegExp('~[^\d]0[^\d]~');
+        $this->expectExceptionMessageMatches('~[^\d]0[^\d]~');
         $professionZeroLevel = ProfessionZeroLevel::createZeroLevel($commoner = Commoner::getIt());
         $reflection = new \ReflectionClass(ProfessionZeroLevel::class);
         /** @see \DrdPlus\Person\ProfessionLevels\ProfessionLevel::__construct */
@@ -112,11 +110,7 @@ class ProfessionZeroLevelTest extends TestCase
         foreach ($properties as $propertyToIncrement) {
             $incrementedProperties = [];
             foreach ($properties as $property) {
-                if ($property === $propertyToIncrement) {
-                    $incrementedProperties[] = $property::getIt(1);
-                } else {
-                    $incrementedProperties[] = $property::getIt(0);
-                }
+                $incrementedProperties[] = $property === $propertyToIncrement ? $property::getIt(1) : $property::getIt(0);
             }
             $incremented[] = $incrementedProperties;
         }
